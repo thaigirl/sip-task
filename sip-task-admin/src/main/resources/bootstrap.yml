@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: admin
+  profiles:
+    active: ${ENV:dev}
+sip:
+  datasource:
+    expression: execution(* com.sip.task.admin.*.service.*Service.*(..))

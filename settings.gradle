@@ -1,0 +1,3 @@
+rootProject.name = 'sip-task'
+include "sip-task-admin",
+        "sip-task-core"
