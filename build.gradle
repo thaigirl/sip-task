@@ -76,7 +76,8 @@ subprojects {
 project(":sip-task-admin") {
     dependencies {
         compile("mysql:mysql-connector-java:5.1.45",
-                "com.basicfu.sip:sip-core:0.0.4-4-SNAPSHOT")
+                "com.basicfu.sip:sip-core:0.0.4-4-SNAPSHOT",
+                "org.quartz-scheduler:quartz:2.2.3")
 
     }
 }

@@ -1,3 +1,6 @@
 rootProject.name = 'sip-task'
 include "sip-task-admin",
         "sip-task-core"
+include 'sip-task-executor-samples'
+findProject(':sip-task-executor-samples')?.name = 'samples'
+
