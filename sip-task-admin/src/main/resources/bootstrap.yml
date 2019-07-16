@@ -6,3 +6,31 @@ spring:
 sip:
   datasource:
     expression: execution(* com.sip.task.admin.*.service.*Service.*(..))
+
+org:
+  quartz:
+    scheduler:
+      instanceName: DefaultQuartzScheduler
+      instanceId: AUTO
+      wrapJobExecutionInUserTransaction: false
+      rmi:
+        export: false
+        proxy: false
+    threadPool:
+      class: org.quartz.simpl.SimpleThreadPool
+      threadCount: 50
+      threadPriority: 5
+      threadsInheritContextClassLoaderOfInitializingThread: true
+    jobStore:
+      misfireThreshold: 60000
+      maxMisfiresToHandleAtATime: 1
+      tablePrefix: QRTZ
+      class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      isClustered: false
+      clusterCheckinInterval: 5000
+
+
+
+
+
+

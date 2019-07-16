@@ -1,3 +1,6 @@
+drop database if exists `sip-task`;
+create database `sip-task` default charset utf8 collate utf8_general_ci;
+USE `sip-task`;
 
 DROP TABLE IF EXISTS QRTZ_FIRED_TRIGGERS;
 DROP TABLE IF EXISTS QRTZ_PAUSED_TRIGGER_GRPS;
