@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: admin
+  profiles:
+    active: ${ENV:dev}
+
+
+
+
+

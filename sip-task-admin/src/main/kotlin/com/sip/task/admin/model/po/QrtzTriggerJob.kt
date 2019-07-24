@@ -43,7 +43,8 @@ class QrtzTriggerJob {
      *
      * @param code 执行器任务编码
      */
-    var code: String? = null
+    @Column(name = "exec_code")
+    var execCode: String? = null
     /**
      * 设置任务执行超时时间，单位秒
      *
