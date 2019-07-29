@@ -4,44 +4,37 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
-class TaskLogger : Logger {
+class TaskLogger {
 
-    var slf4jLogger = LoggerFactory.getLogger(this.javaClass)
-    override fun debug(var1: String) {
-        slf4jLogger.debug(var1)
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    companion object{
+        var slf4jLogger = LoggerFactory.getLogger(this.javaClass)
+        fun debug(var1: String) {
+            slf4jLogger.debug(var1)
+        }
 
-    override fun debug(var1: String, vararg var2: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun debug(var1: String, vararg var2: Any) {
+        }
 
-    override fun info(var1: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun info(var1: String) {
+        }
 
-    override fun info(var1: String, vararg var2: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun info(var1: String, vararg var2: Any) {
+        }
 
-    override fun error(var1: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun error(var1: String) {
+        }
 
-    override fun error(var1: String, vararg var2: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun error(var1: String, vararg var2: Any) {
+        }
 
-    override fun error(var1: String, var2: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun error(var1: String, var2: Throwable) {
+        }
 
-    override fun warn(var1: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        fun warn(var1: String) {
+        }
 
-    override fun warn(var1: String, vararg var2: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        fun warn(var1: String, vararg var2: Any) {
+        }
     }
 
 
