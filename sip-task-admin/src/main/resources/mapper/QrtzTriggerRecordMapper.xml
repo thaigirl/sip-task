@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.baidu.erp.mapper.QrtzTriggerRecordMapper" >
-  <resultMap id="BaseResultMap" type="com.sip.task.admin.model.po.QrtzTriggerRecord" >
+  <resultMap id="BaseResultMap" type="com.sip.task.admin.model.po.QrtzTriggerRecordDto" >
     <!--
       WARNING - @mbg.generated
     -->

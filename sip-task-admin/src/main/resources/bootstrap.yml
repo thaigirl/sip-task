@@ -3,31 +3,39 @@ spring:
     name: admin
   profiles:
     active: ${ENV:dev}
+  quartz:
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: DefaultQuartzScheduler
+            instanceId: AUTO
+            wrapJobExecutionInUserTransaction: false
+            rmi:
+              export: false
+              proxy: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 50
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+          jobStore:
+            misfireThreshold: 60000
+            maxMisfiresToHandleAtATime: 1
+            tablePrefix: QRTZ_
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            isClustered: false
+            clusterCheckinInterval: 5000
+            dataSource: myDs
+          dataSource:
+            myDs:
+              driver: com.mysql.jdbc.Driver
+              URL: jdbc:mysql://${ENV_MYSQL_HOST:mysql-dev.dmka.cn}:${ENV_MYSQL_PORT:4321}/sip-task?characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+              user: root
+              password: root
 sip:
   datasource:
     expression: execution(* com.sip.task.admin.*.service.*Service.*(..))
-
-org:
-  quartz:
-    scheduler:
-      instanceName: DefaultQuartzScheduler
-      instanceId: AUTO
-      wrapJobExecutionInUserTransaction: false
-      rmi:
-        export: false
-        proxy: false
-    threadPool:
-      class: org.quartz.simpl.SimpleThreadPool
-      threadCount: 50
-      threadPriority: 5
-      threadsInheritContextClassLoaderOfInitializingThread: true
-    jobStore:
-      misfireThreshold: 60000
-      maxMisfiresToHandleAtATime: 1
-      tablePrefix: QRTZ
-      class: org.quartz.impl.jdbcjobstore.JobStoreTX
-      isClustered: false
-      clusterCheckinInterval: 5000
 
 
 

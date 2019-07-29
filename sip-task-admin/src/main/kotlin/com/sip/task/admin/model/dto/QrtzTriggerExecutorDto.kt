@@ -1,12 +1,7 @@
-package com.sip.task.admin.model.po
+package com.sip.task.admin.model.dto
 
-import javax.persistence.*
+class QrtzTriggerExecutorDto {
 
-@Table(name = "QRTZ_TRIGGER_EXECUTOR")
-class QrtzTriggerExecutor{
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
     /**
@@ -21,7 +16,6 @@ class QrtzTriggerExecutor{
      *
      * @param desc 描述
      */
-    @Column(name = "`desc`")
     var desc: String? = null
 
     /**
@@ -29,7 +23,6 @@ class QrtzTriggerExecutor{
      *
      * @param order 排序
      */
-    @Column(name = "`order`")
     var order: Byte? = null
 
     /**
@@ -37,7 +30,6 @@ class QrtzTriggerExecutor{
      *
      * @param addressList 执行器地址列表，多地址逗号分隔
      */
-    @Column(name = "address_list")
     var addressList: String? = null
 
     /**
@@ -45,7 +37,6 @@ class QrtzTriggerExecutor{
      *
      * @param createTime 创建时间
      */
-    @Column(name = "create_time")
     var createTime: Long? = null
 
     /**
@@ -53,7 +44,6 @@ class QrtzTriggerExecutor{
      *
      * @param createUser 创建人
      */
-    @Column(name = "create_user")
     var createUser: Long? = null
 
     /**
@@ -61,7 +51,6 @@ class QrtzTriggerExecutor{
      *
      * @param updateTime 更新时间
      */
-    @Column(name = "update_time")
     var updateTime: Long? = null
 
     /**
@@ -69,6 +58,5 @@ class QrtzTriggerExecutor{
      *
      * @param updateUser 更新人
      */
-    @Column(name = "update_user")
     var updateUser: Long? = null
 }
