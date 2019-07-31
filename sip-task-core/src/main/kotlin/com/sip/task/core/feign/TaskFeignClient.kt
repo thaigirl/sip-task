@@ -8,4 +8,6 @@ interface TaskFeignClient {
 
     fun feedBackStatus(recordId: Long, status: String)
 
+    fun logger(level: String, recordId: Long, msg: String)
+
 }
