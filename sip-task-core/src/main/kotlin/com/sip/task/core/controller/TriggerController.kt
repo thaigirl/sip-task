@@ -18,18 +18,18 @@ class TriggerController {
     fun microschedule(@PathVariable recordId: Long?, @RequestBody params: Map<String, Any>): ResponseDto {
         log.info("start scheduling task, 【recordId:$recordId】,【parameters:${JSON.toJSONString(params)}】")
         val execCode = params["code"]?.toString()
-        return if (StringUtils.isBlank(execCode)) {
-            ResponseDto.fail("executorCode can not be null")
-        }else if (recordId == null){
-            ResponseDto.fail("recordId can not be null")
-        }else {
-            ExecutorContext.setCurrentTaskRecordId(recordId)
-            val executor = ExecutorContext.loadExecutor(execCode!!)
-            if (executor == null){
-                ResponseDto.fail("instance of $execCode not found")
+        return when {
+            StringUtils.isBlank(execCode) -> ResponseDto.fail("executorCode can not be null")
+            recordId == null -> ResponseDto.fail("recordId can not be null")
+            else -> {
+                ExecutorContext.setCurrentTaskRecordId(recordId)
+                val executor = ExecutorContext.loadExecutor(execCode!!)
+                if (executor == null){
+                    ResponseDto.fail("instance of $execCode not found")
+                }
+                executor!!.exec(recordId,params)
+                ResponseDto.success()
             }
-            executor!!.exec(recordId,params)
-            ResponseDto.success()
         }
     }
 }

@@ -33,8 +33,12 @@ class ExecutorInstance {
         ExecutorContext.getExecutorService().submit {
             try {
                 FeignContext.feedBackStatus(StatusEnum.Running)
-                val parameters = formatParameter(inputParams)
-                method!!.invoke(beanClass,parameters)
+                if (this.params.isNullOrEmpty()){
+                    method!!.invoke(beanClass)
+                }else{
+                    val parameters = formatParameter(inputParams)
+                    method!!.invoke(beanClass,parameters)
+                }
                 FeignContext.feedBackStatus(StatusEnum.Success)
             }catch (var1: Exception){
                 TaskLogger.error("an exception occurred during the task",var1)
