@@ -1,5 +1,8 @@
 package com.sip.task.core.context
 
+import com.sip.task.core.dto.StatusEnum
+import com.sip.task.core.logger.TaskLogger
+import com.sip.task.core.util.ParamUtils
 import java.lang.reflect.Method
 import java.lang.reflect.Parameter
 
@@ -26,19 +29,28 @@ class ExecutorInstance {
      * 2.invoke
      * 3.回写反馈
      */
-    fun exec(scheduleLogId: Long?, params: Map<String, Any>) {
+    fun exec(scheduleLogId: Long?, inputParams: Map<String, Any>) {
         ExecutorContext.getExecutorService().submit {
-
+            try {
+                FeignContext.feedBackStatus(StatusEnum.Running)
+                val parameters = formatParameter(inputParams)
+                method!!.invoke(beanClass,parameters)
+                FeignContext.feedBackStatus(StatusEnum.Success)
+            }catch (var1: Exception){
+                TaskLogger.error("an exception occurred during the task",var1)
+                FeignContext.feedBackStatus(StatusEnum.Failed)
+            }
         }
     }
 
 
     private fun formatParameter(inputParam: Map<String, Any>): Array<Any?> {
-        if (params.isNullOrEmpty()) return emptyArray()
-        val ret = arrayOfNulls<Any>(params!!.size)
-        for (i in 0 until params!!.size){
-            val param = params!![i]
-            ret[i] = inputParam[param.name]
+        if (this.params.isNullOrEmpty()) return emptyArray()
+        val ret = arrayOfNulls<Any>(this.params!!.size)
+        for (i in 0 until this.params!!.size){
+            val param = this.params!![i]
+            val type = param.type
+            ret[i] = ParamUtils.formateValue(type,inputParam[param.name])
         }
         return ret
     }
