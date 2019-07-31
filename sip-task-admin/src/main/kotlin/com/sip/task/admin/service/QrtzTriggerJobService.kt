@@ -2,23 +2,21 @@ package com.sip.task.admin.service
 
 import com.basicfu.sip.core.common.example
 import com.basicfu.sip.core.service.BaseService
+import com.basicfu.sip.schedule.common.exception.TaskException
 import com.github.pagehelper.PageInfo
 import com.sip.task.admin.common.util.ScheduleUtil
-import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
 import com.sip.task.admin.mapper.QrtzTriggerJobMapper
 import com.sip.task.admin.model.dto.QrtzTriggerExecutorDto
-import com.sip.task.admin.model.po.QrtzTriggerExecutor
 import com.sip.task.admin.model.po.QrtzTriggerJob
 import com.sip.task.admin.model.po.QrtzTriggerJobDto
 import com.sip.task.admin.model.po.QrtzTriggerJobVo
-import com.sip.task.admin.model.vo.QrtzTriggerExecutorVo
 import org.quartz.Scheduler
 import org.quartz.SchedulerException
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.PostMapping
+import javax.annotation.PostConstruct
 
 /**
  * <p>
@@ -33,6 +31,24 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
     @Autowired
     lateinit var scheduler: Scheduler
 
+    /**
+     * 项目启动时，初始化定时器
+     */
+    @PostConstruct
+    @Throws(SchedulerException::class, TaskException::class)
+    fun init() {
+        val jobList = mapper.selectAll()
+        for (job in jobList) {
+            val cronTrigger = ScheduleUtil.getCronTrigger(scheduler, job.id)
+            // 如果不存在，则创建
+            if (cronTrigger == null) {
+                ScheduleUtil.createScheduleJob(scheduler, job)
+            } else {
+                ScheduleUtil.updateScheduleJob(scheduler, job)
+            }
+        }
+    }
+
     fun list(vo: QrtzTriggerJobVo): PageInfo<QrtzTriggerJobDto> {
         return selectPage(example<QrtzTriggerJob> { })
     }
@@ -43,15 +59,27 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
 
     fun insert(vo: QrtzTriggerJobVo): Int {
         val po = dealInsert(to<QrtzTriggerJob>(vo))
-        return mapper.insertSelective(po)
+        val rows = mapper.insertSelective(po)
+        if (rows > 0 && po != null) {
+            ScheduleUtil.createScheduleJob(scheduler, po)
+        }
+        return rows
     }
 
     fun update(vo: QrtzTriggerJobVo): Int {
         val po = dealUpdate(to<QrtzTriggerJob>(vo))
-        return mapper.updateByPrimaryKeySelective(po)
+        val rows = mapper.updateByPrimaryKeySelective(po)
+        if (rows > 0 && po != null) {
+            ScheduleUtil.updateScheduleJob(scheduler, po)
+        }
+        return rows
     }
 
     fun delete(ids: List<Long>?): Int {
+        mapper.deleteByIds(ids?.joinToString(","))
+        ids?.forEach { it ->
+            ScheduleUtil.deleteScheduleJob(scheduler, it)
+        }
         return deleteByIds(ids)
     }
 

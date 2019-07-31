@@ -10,8 +10,6 @@ import java.util.*
 
 /**
  * 抽象quartz调用
- *
- * @author ruoyi
  */
 abstract class AbstractQuartzJob : org.quartz.Job {
 

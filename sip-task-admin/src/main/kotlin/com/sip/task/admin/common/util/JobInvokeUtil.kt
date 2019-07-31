@@ -7,8 +7,6 @@ import java.lang.reflect.InvocationTargetException
 
 /**
  * 任务执行工具
- *
- * @author ruoyi
  */
 object JobInvokeUtil {
 

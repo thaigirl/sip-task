@@ -32,12 +32,6 @@ class QrtzTriggerJobDto {
      */
     var strategy: String? = null
     /**
-     * 设置执行器任务编码
-     *
-     * @param code 执行器任务编码
-     */
-    var execCode: String? = null
-    /**
      * 设置任务执行超时时间，单位秒
      *
      * @param timeout 任务执行超时时间，单位秒
@@ -74,21 +68,11 @@ class QrtzTriggerJobDto {
      */
     var updateUser: Long? = null
     /**
-     * 状态（0正常 1暂停）
+     * 状态（0否 1是）
      */
-    var status: String? = null
+    var enable: Boolean? = null
     /**
-     * cron执行表达式
+     * 执行器任务编码
      */
-    var cronExpression: String? = null
-
-    /**
-     * 计划执行错误策略（1立即执行 2执行一次 3放弃执行）
-     */
-    var misfirePolicy: String? = null
-
-    /**
-     * 是否并发执行（0允许 1禁止）
-     */
-    var concurrent: String? = null
+    var code: String? = null
 }

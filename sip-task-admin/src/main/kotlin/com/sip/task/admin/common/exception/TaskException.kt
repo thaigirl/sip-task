@@ -2,8 +2,6 @@ package com.basicfu.sip.schedule.common.exception
 
 /**
  * 计划策略异常
- *
- * @author ruoyi
  */
 class TaskException @JvmOverloads constructor(msg: String, val code: Code, nestedEx: Exception? = null) : Exception(msg, nestedEx) {
 

@@ -3,6 +3,7 @@ target/
 output/
 out/
 build
+logs/
 # *.jar
 *.war
 *.zip

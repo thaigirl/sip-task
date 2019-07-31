@@ -1,9 +1,10 @@
 package com.sip.task.admin.model.po
 
+import java.io.Serializable
 import javax.persistence.*
 
 @Table(name = "QRTZ_TRIGGER_JOB")
-class QrtzTriggerJob {
+class QrtzTriggerJob : Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,7 @@ class QrtzTriggerJob {
     /**
      * @param desc
      */
+    @Column(name = "`desc`")
     var desc: String? = null
     /**
      * 设置报警邮件,多个用逗号分隔
@@ -38,13 +40,6 @@ class QrtzTriggerJob {
      * @param strategy 执行器路由策略
      */
     var strategy: String? = null
-    /**
-     * 设置执行器任务编码
-     *
-     * @param code 执行器任务编码
-     */
-    @Column(name = "exec_code")
-    var execCode: String? = null
     /**
      * 设置任务执行超时时间，单位秒
      *
@@ -91,4 +86,8 @@ class QrtzTriggerJob {
      * 状态（0否 1是）
      */
     var enable: Boolean? = null
+    /**
+     * 执行器任务编码
+     */
+    var code: String? = null
 }

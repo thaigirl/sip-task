@@ -2,7 +2,7 @@ package com.sip.task.admin.controller
 
 import com.basicfu.sip.core.annotation.Insert
 import com.basicfu.sip.core.annotation.Update
-import com.basicfu.sip.schedule.common.constants.ScheduleConstants
+import com.basicfu.sip.core.model.Result
 import com.sip.task.admin.model.po.QrtzTriggerJobVo
 import com.sip.task.admin.service.QrtzTriggerJobService
 import org.quartz.SchedulerException
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import com.basicfu.sip.core.model.Result
 
 @RestController
 @RequestMapping("/job")
@@ -35,17 +34,17 @@ class QrtzTriggerJobController {
 
     @PostMapping("/insert")
     fun insert(@Validated(Insert::class) @RequestBody vo: QrtzTriggerJobVo): Result<Any> {
-        vo.createTime=(System.currentTimeMillis() / 1000)
-        vo.createUser=1
-        vo.updateTime=(System.currentTimeMillis() / 1000)
-        vo.updateUser=1
+        vo.createTime = (System.currentTimeMillis() / 1000)
+        vo.createUser = 1
+        vo.updateTime = (System.currentTimeMillis() / 1000)
+        vo.updateUser = 1
         return Result.success(qrtzTriggerJobService.insert(vo))
     }
 
     @PostMapping("/update")
     fun update(@Validated(Update::class) @RequestBody vo: QrtzTriggerJobVo): Result<Any> {
-        vo.updateTime=(System.currentTimeMillis() / 1000)
-        vo.updateUser=1
+        vo.updateTime = (System.currentTimeMillis() / 1000)
+        vo.updateUser = 1
         return Result.success(qrtzTriggerJobService.update(vo))
     }
 
@@ -72,11 +71,10 @@ class QrtzTriggerJobController {
     @Throws(SchedulerException::class)
     fun changeStatus(vo: QrtzTriggerJobVo): Int {
         var rows = 0
-        val status = vo.status
-        if (ScheduleConstants.Status.NORMAL.value == status) {
-            rows = qrtzTriggerJobService.resumeJob(vo)
-        } else if (ScheduleConstants.Status.PAUSE.value == status) {
-            rows = qrtzTriggerJobService.pauseJob(vo)
+        rows = if (vo.enable == true) {
+            qrtzTriggerJobService.resumeJob(vo)
+        } else {
+            qrtzTriggerJobService.pauseJob(vo)
         }
         return rows
     }

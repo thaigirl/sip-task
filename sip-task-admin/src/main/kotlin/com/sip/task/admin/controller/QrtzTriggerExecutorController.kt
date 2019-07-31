@@ -1,6 +1,5 @@
 package com.sip.task.admin.controller
 
-import com.alibaba.fastjson.JSONObject
 import com.basicfu.sip.core.annotation.Insert
 import com.basicfu.sip.core.annotation.Update
 import com.basicfu.sip.core.model.Result
@@ -33,23 +32,22 @@ class QrtzTriggerExecutorController {
 
     @PostMapping("/insert")
     fun insert(@Validated(Insert::class) @RequestBody vo: QrtzTriggerExecutorVo): Result<Any> {
-        vo.createTime=(System.currentTimeMillis() / 1000)
-        vo.createUser=1
-        vo.updateTime=(System.currentTimeMillis() / 1000)
-        vo.updateUser=1
+        vo.createTime = (System.currentTimeMillis() / 1000)
+        vo.createUser = 1
+        vo.updateTime = (System.currentTimeMillis() / 1000)
+        vo.updateUser = 1
         return Result.success(qrtzTriggerExecutorService.insert(vo))
     }
 
     @PostMapping("/update")
     fun update(@Validated(Update::class) @RequestBody vo: QrtzTriggerExecutorVo): Result<Any> {
-        vo.updateTime=(System.currentTimeMillis() / 1000)
-        vo.updateUser=1
+        vo.updateTime = (System.currentTimeMillis() / 1000)
+        vo.updateUser = 1
         return Result.success(qrtzTriggerExecutorService.update(vo))
     }
 
-    @PostMapping("/delete")
-    fun delete(@RequestBody reqObj: JSONObject): Result<Any> {
-        val ids = reqObj.getJSONArray("ids") as List<Long>
+    @DeleteMapping("/delete")
+    fun delete(@RequestBody ids: List<Long>): Result<Any> {
         return Result.success(qrtzTriggerExecutorService.delete(ids))
     }
 

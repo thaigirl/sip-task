@@ -43,10 +43,9 @@ object ScheduleUtil {
     fun getCronTrigger(scheduler: Scheduler, jobId: Long?): CronTrigger? {
         try {
             return scheduler.getTrigger(getTriggerKey(jobId)) as CronTrigger
-        } catch (e: SchedulerException) {
+        } catch (e: Exception) {
             log.error("getCronTrigger 异常：", e)
         }
-
         return null
     }
 
