@@ -18,8 +18,4 @@ object Formatter {
     fun array(format: String, vararg arguments: Any): String {
         return MessageFormatter.arrayFormat(format, arguments).message
     }
-
-    fun currentTime(): String {
-        return dateFormat.format(Date())
-    }
 }

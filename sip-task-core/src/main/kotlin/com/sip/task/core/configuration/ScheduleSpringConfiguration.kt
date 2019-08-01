@@ -9,26 +9,26 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-class ScheduleSpringConfiguration:ApplicationContextAware {
+class ScheduleSpringConfiguration : ApplicationContextAware {
 
     /**
      * 初始化所有包含@ScheduleTask注解的方法
      */
     override fun setApplicationContext(applicationContext: ApplicationContext) {
         val beans = applicationContext.getBeanNamesForType(Object::class.java)
-        beans.forEach { it ->
+        beans.forEach {
             val bean = applicationContext.getBean(it)
-            val clazz = bean.javaClass
-            if (isProxy(bean)){
-                //是否是代理对象
-                //TODO do something
+            var clazz = bean::class.java
+            //是否是代理对象
+            if (isProxy(bean)) {
+                clazz = AopUtils.getTargetClass(bean)
             }
             val methods = clazz.methods
-            methods.forEach {mhd->
-                if (mhd.isAnnotationPresent(ScheduleTask::class.java)){
+            methods.forEach { mhd ->
+                if (mhd.isAnnotationPresent(ScheduleTask::class.java)) {
                     val code = mhd.getAnnotation(ScheduleTask::class.java).code
-                    val instance = ExecutorInstance(code,bean,clazz,mhd,mhd.parameters)
-                    ExecutorContext.putExecutor(code,instance)
+                    val instance = ExecutorInstance(code, bean, clazz, mhd, mhd.parameters)
+                    ExecutorContext.putExecutor(code, instance)
                 }
             }
 

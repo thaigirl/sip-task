@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient
 interface TaskFeignClient {
 
 
-    fun feedBackStatus(recordId: Long, status: String)
+    fun feedBackTaskStatus(recordId: Long, status: String)
 
     fun logger(level: String, recordId: Long, msg: String)
 

@@ -14,8 +14,6 @@ class ExecutorInstance {
     private var method: Method? = null
     private var params: Array<Parameter>? = null
 
-
-    constructor()
     constructor(execCode: String, beanInstance: Any, beanClass: Class<out Any>, method: Method, params: Array<Parameter>) {
         this.execCode = execCode
         this.beanInstance = beanInstance
@@ -32,17 +30,17 @@ class ExecutorInstance {
     fun exec(scheduleLogId: Long?, inputParams: Map<String, Any>) {
         ExecutorContext.getExecutorService().submit {
             try {
-                FeignContext.feedBackStatus(StatusEnum.Running)
+                FeignContext.feedBackTaskStatus(StatusEnum.Running)
                 if (this.params.isNullOrEmpty()){
                     method!!.invoke(beanClass)
                 }else{
                     val parameters = formatParameter(inputParams)
                     method!!.invoke(beanClass,parameters)
                 }
-                FeignContext.feedBackStatus(StatusEnum.Success)
+                FeignContext.feedBackTaskStatus(StatusEnum.Success)
             }catch (var1: Exception){
                 TaskLogger.error("an exception occurred during the task",var1)
-                FeignContext.feedBackStatus(StatusEnum.Failed)
+                FeignContext.feedBackTaskStatus(StatusEnum.Failed)
             }
         }
     }

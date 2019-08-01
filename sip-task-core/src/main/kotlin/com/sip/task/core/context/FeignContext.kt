@@ -21,8 +21,8 @@ class FeignContext {
         private lateinit var feignClient: TaskFeignClient
 
 
-        fun feedBackStatus(status: StatusEnum){
-            feignClient.feedBackStatus(ExecutorContext.getCurrentTaskRecordId(),status.name)
+        fun feedBackTaskStatus(status: StatusEnum){
+            feignClient.feedBackTaskStatus(ExecutorContext.getCurrentTaskRecordId(),status.name)
         }
     }
 }
