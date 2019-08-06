@@ -15,7 +15,7 @@ class TriggerController {
 
     @PostMapping("/{recordId}")
     @ResponseBody
-    fun microschedule(@PathVariable recordId: Long?, @RequestBody params: Map<String, Any>): ResponseDto {
+    fun trigger(@PathVariable recordId: Long?, @RequestBody params: Map<String, Any>): ResponseDto {
         log.info("start scheduling task, 【recordId:$recordId】,【parameters:${JSON.toJSONString(params)}】")
         val execCode = params["code"]?.toString()
         return when {
