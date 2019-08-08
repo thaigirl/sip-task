@@ -52,6 +52,12 @@ class QrtzTriggerRecord {
     @Column(name = "fail_retry_count")
     var failRetryCount: Int? = null
     /**
+     * 设置执行器路由策略
+     *
+     * @param strategy 执行器路由策略
+     */
+    var strategy: String? = null
+    /**
      * 设置调度执行开始时间
      *
      * @param startTime 调度执行开始时间

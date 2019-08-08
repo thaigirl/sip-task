@@ -21,7 +21,6 @@ object ParamUtils {
     fun formateValue(paramType: Class<*>, value: Any?): Any? {
         if (value == null) return null
         val sdf = SimpleDateFormat(DATE_FORMATER)
-        //TODO 基本类型的转换本来想用反射实现,但是kotlin获取long类型为java.lang.Class,为啥不是java.lang.long啊... 暂时先这样写吧
         return when (paramType) {
             value::class.java -> value
             Date::class.java -> try {
@@ -77,8 +76,6 @@ object ParamUtils {
         methodNameMap[java.lang.Long.TYPE] = "valueOf"
         methodNameMap[Int::class.java] = "valueOf"
         methodNameMap[Integer.TYPE] = "valueOf"
-        methodNameMap[Boolean::class.java] = "valueOf"
-        methodNameMap[java.lang.Boolean.TYPE] = "valueOf"
         methodNameMap[Short::class.java] = "valueOf"
         methodNameMap[java.lang.Short.TYPE] = "valueOf"
         methodNameMap[Byte::class.java] = "valueOf"
@@ -93,4 +90,10 @@ object ParamUtils {
 
 
 
+}
+
+fun main() {
+    val methods = Long::class.java.simpleName
+    print(methods)
+//    methods.forEach { println(it) }
 }

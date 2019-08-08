@@ -77,7 +77,7 @@ class TaskLogger {
 
         fun writeLog(level: LogLevel, msg: String) {
             val log = Formatter.formatLog(msg, level.name, slf4jLogger.name, Date())
-            client.logger(level.name, ExecutorContext.getCurrentTaskRecordId(), log)
+            client.logger(ExecutorContext.getCurrentTaskRecordId(), log)
         }
     }
 

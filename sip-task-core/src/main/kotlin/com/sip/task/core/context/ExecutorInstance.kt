@@ -30,17 +30,17 @@ class ExecutorInstance {
     fun exec(scheduleLogId: Long?, inputParams: Map<String, Any>) {
         ExecutorContext.getExecutorService().submit {
             try {
-                FeignContext.feedBackTaskStatus(StatusEnum.Running)
+                FeignContext.feedBackTaskStatus(StatusEnum.RUNNING)
                 if (this.params.isNullOrEmpty()){
                     method!!.invoke(beanClass)
                 }else{
                     val parameters = formatParameter(inputParams)
                     method!!.invoke(beanClass,parameters)
                 }
-                FeignContext.feedBackTaskStatus(StatusEnum.Success)
+                FeignContext.feedBackTaskStatus(StatusEnum.SUCCESS)
             }catch (var1: Exception){
                 TaskLogger.error("an exception occurred during the task",var1)
-                FeignContext.feedBackTaskStatus(StatusEnum.Failed)
+                FeignContext.feedBackTaskStatus(StatusEnum.FAILED)
             }
         }
     }
