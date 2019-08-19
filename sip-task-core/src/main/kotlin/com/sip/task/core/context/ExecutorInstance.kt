@@ -35,7 +35,7 @@ class ExecutorInstance {
                     method!!.invoke(beanClass)
                 }else{
                     val parameters = formatParameter(inputParams)
-                    method!!.invoke(beanClass,parameters)
+                    method!!.invoke(beanClass,*parameters)
                 }
                 FeignContext.feedBackTaskStatus(StatusEnum.SUCCESS)
             }catch (var1: Exception){

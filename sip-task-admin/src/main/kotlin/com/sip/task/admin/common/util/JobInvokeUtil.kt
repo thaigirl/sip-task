@@ -1,5 +1,6 @@
 package com.basicfu.sip.schedule.util
 
+import com.sip.task.admin.model.dto.ExecuteInstance
 import com.sip.task.admin.model.po.QrtzTriggerJob
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
@@ -17,7 +18,7 @@ object JobInvokeUtil {
      * @param job 系统任务
      */
     @Throws(Exception::class)
-    fun invokeMethod(job: QrtzTriggerJob) {
+    fun invokeMethod(instance: ExecuteInstance) {
         log.info("执行job,url和code")
     }
 }
