@@ -1,7 +1,7 @@
 package com.basicfu.sip.schedule.util
 
+import cn.hutool.http.HttpRequest
 import com.alibaba.fastjson.JSON
-import com.basicfu.sip.core.util.HttpUtil
 import com.sip.task.admin.model.dto.ExecuteInstance
 import com.sip.task.admin.model.dto.JobInvokeResult
 import org.slf4j.LoggerFactory
@@ -31,20 +31,25 @@ object JobInvokeUtil {
             try {
                 index++
                 log.info("发送http请求,地址:{},参数:{}", ele, instance.param)
-                val result = HttpUtil.post(ele, instance.param)
-                log.info("发送http请求,响应为:{}", result)
+                var response = HttpRequest.post(ele).body(JSON.toJSONString(instance.param)).execute()
+                log.info("http请求响应,状态码:{},内容:{}", response.status, response.body())
                 // 响应为空,重试
-                if (result.isNullOrBlank()) {
+                if (response.body().isNullOrBlank()) {
                     return@forEach
                 }
-                var resObj = JSON.parseObject(result)
+                if (response.status != 200) {
+                    jobInvokeResult.status = response.status.toString()
+                    jobInvokeResult.msg = response.body()
+                    return@forEach
+                }
+                var resObj = JSON.parseObject(response.body())
                 jobInvokeResult.status = resObj.getString("status")
                 jobInvokeResult.msg = resObj.getString("msg")
-                jobInvokeResult.code = resObj.getString("code")
                 // status为fail,重试
                 if (jobInvokeResult.status == "fail") {
                     return@forEach
                 }
+                return jobInvokeResult
             } catch (e: Exception) {
                 log.info("http请求异常,重试下一个地址")
             }

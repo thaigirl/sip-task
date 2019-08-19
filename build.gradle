@@ -39,7 +39,8 @@ subprojects {
                 "org.springframework.boot:spring-boot-starter-actuator",
                 "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
                 "org.jetbrains.kotlin:kotlin-reflect",
-                "com.alibaba:fastjson:${fastjsonVersion}"
+                "com.alibaba:fastjson:${fastjsonVersion}",
+                'cn.hutool:hutool-all:4.6.2'
         )
         testCompile('org.springframework.boot:spring-boot-starter-test')
     }
