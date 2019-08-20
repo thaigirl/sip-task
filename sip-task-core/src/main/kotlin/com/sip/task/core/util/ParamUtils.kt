@@ -91,9 +91,3 @@ object ParamUtils {
 
 
 }
-
-fun main() {
-    val methods = Long::class.java.simpleName
-    print(methods)
-//    methods.forEach { println(it) }
-}
