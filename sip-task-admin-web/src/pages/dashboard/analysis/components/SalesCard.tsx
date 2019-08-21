@@ -3,6 +3,7 @@ import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
 
 import { RangePickerValue } from 'antd/es/date-picker/interface';
 import React from 'react';
+// @ts-ignore
 import numeral from 'numeral';
 import { VisitDataType } from '../data.d';
 import { Bar } from './Charts';

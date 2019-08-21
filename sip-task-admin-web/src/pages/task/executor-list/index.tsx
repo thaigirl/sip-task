@@ -12,7 +12,7 @@ import {
   Menu,
   Row,
   Select,
-  message,
+  message, Modal,
 } from 'antd';
 import React, {Component, Fragment} from 'react';
 
@@ -116,15 +116,19 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>更新</a>
           <Divider type="vertical"/>
-          <a href="">订阅警报</a>
+          <a onClick={() => this.handleDelete(record)}>删除</a>
         </Fragment>
       ),
     },
   ];
 
   componentDidMount() {
+    this.query()
+  }
+
+  query() {
     const {dispatch} = this.props;
     dispatch({
       type: 'executor/fetch',
@@ -247,12 +251,15 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleAdd = (fields: { desc: any }) => {
+  handleAdd = (fields: FormValsType) => {
     const {dispatch} = this.props;
     dispatch({
       type: 'executor/add',
       payload: {
+        name: fields.name,
         desc: fields.desc,
+        order: fields.order,
+        addressList: fields.addressList,
       },
     });
 
@@ -265,15 +272,37 @@ class TableList extends Component<TableListProps, TableListState> {
     dispatch({
       type: 'executor/update',
       payload: {
+        id: fields.id,
         name: fields.name,
         desc: fields.desc,
-        key: fields.id,
+        order: fields.order,
+        addressList: fields.addressList,
       },
     });
 
     message.success('配置成功');
     this.handleUpdateModalVisible();
   };
+
+  handleDelete = (fields: FormValsType) => {
+    const id = fields.id || 0;
+    Modal.confirm({
+      title: '删除执行器',
+      content: '确定删除该执行器吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.sendDelete(id),
+    });
+  };
+
+  sendDelete = (id: number) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'executor/remove',
+      payload: [id],
+    });
+    message.success('删除成功');
+  }
 
   renderSimpleForm() {
     const {form} = this.props;
@@ -398,7 +427,6 @@ class TableList extends Component<TableListProps, TableListState> {
       executor: {data},
       loading,
     } = this.props;
-
     const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
@@ -415,6 +443,7 @@ class TableList extends Component<TableListProps, TableListState> {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
+
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
@@ -436,6 +465,7 @@ class TableList extends Component<TableListProps, TableListState> {
               )}
             </div>
             <StandardTable
+              rowKey={"id"}
               selectedRows={selectedRows}
               loading={loading}
               data={data}

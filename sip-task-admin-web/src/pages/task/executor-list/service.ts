@@ -10,19 +10,15 @@ export async function queryExecutor(params: TableListParams) {
 export async function removeExecutor(params: TableListParams) {
   return request('/api/executor/delete', {
     method: 'DELETE',
-    data: {
-      ...params,
-      method: 'delete',
-    },
+    data:  params
   });
 }
 
 export async function addExecutor(params: TableListParams) {
-  return request('/api/executor/add', {
+  return request('/api/executor/insert', {
     method: 'POST',
     data: {
       ...params,
-      method: 'post',
     },
   });
 }

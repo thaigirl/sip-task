@@ -1,6 +1,7 @@
 import { Card, Col, Icon, Row, Table, Tooltip } from 'antd';
 import { FormattedMessage } from 'umi-plugin-react/locale';
 import React from 'react';
+// @ts-ignore
 import numeral from 'numeral';
 import { SearchDataType, VisitDataType } from '../data.d';
 

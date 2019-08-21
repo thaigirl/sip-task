@@ -6,6 +6,7 @@ import {TableListData} from './data.d';
 
 export interface StateType {
   data: TableListData;
+  search: any;
 }
 
 export type Effect = (
@@ -35,6 +36,7 @@ const Model: ModelType = {
       list: [],
       pagination: {},
     },
+    search: {}
   },
 
   effects: {
@@ -43,32 +45,50 @@ const Model: ModelType = {
       yield put({
         type: 'save',
         payload: {
-          list: response.data.list,
-          pagination: response.data.page,
+          data: {
+            list: response.data.list,
+            pagination: response.data.page,
+          }
         },
       });
     },
-    * add({payload, callback}, {call, put}) {
+    * add({payload, callback}, {call, put, select}) {
       const response = yield call(addExecutor, payload);
       yield put({
         type: 'save',
         payload: response,
       });
+      const search = yield  select(state => state.search);
+      yield put({
+        type: 'fetch',
+        payload: search
+      });
       if (callback) callback();
     },
-    * remove({payload, callback}, {call, put}) {
+    * remove({payload, callback}, {call, put, select}) {
       const response = yield call(removeExecutor, payload);
       yield put({
         type: 'save',
         payload: response,
       });
+      const search = yield  select(state => state.search);
+      yield put({
+        type: 'fetch',
+        payload: search
+      });
       if (callback) callback();
     },
-    * update({payload, callback}, {call, put}) {
+    * update({payload, callback}, {call, put, select}) {
+
       const response = yield call(updateExecutor, payload);
       yield put({
         type: 'save',
         payload: response,
+      });
+      const search = yield  select(state => state.search);
+      yield put({
+        type: 'fetch',
+        payload: search
       });
       if (callback) callback();
     },
@@ -78,7 +98,7 @@ const Model: ModelType = {
     save(state, action) {
       return {
         ...state,
-        data: action.payload,
+        ...action.payload,
       };
     },
   },
