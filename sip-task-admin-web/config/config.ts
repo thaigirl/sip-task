@@ -213,6 +213,18 @@ export default {
               ],
             },
             {
+              path: '/task',
+              icon: 'table',
+              name: 'task',
+              routes: [
+                {
+                  name: 'executor-list',
+                  path: '/task/executor-list',
+                  component: './task/executor-list',
+                },
+              ],
+            },
+            {
               path: '/profile',
               name: 'profile',
               icon: 'profile',
@@ -368,13 +380,11 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
   proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
+    '/api/': {
+      target: 'http://localhost:8700/',
       changeOrigin: true,
-      pathRewrite: { '^/server': '' },
+      pathRewrite: { '^/api': '' },
     },
   },
-  */
 } as IConfig;
