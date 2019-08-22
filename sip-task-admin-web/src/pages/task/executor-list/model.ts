@@ -22,6 +22,7 @@ export interface ModelType {
     add: Effect;
     remove: Effect;
     update: Effect;
+    reload: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -40,48 +41,42 @@ const Model: ModelType = {
   },
 
   effects: {
-    * fetch({payload}, {call, put, select}) {
+    * fetch({payload}, {call, put}) {
       const response = yield call(queryExecutor, payload);
       yield put({
         type: 'save',
         payload: {
           data: {
             list: response.data.list,
-            pagination: response.data.page,
+            pagination: {
+              total: response.data.list.total,
+              pageSize: response.data.list.pageSize,
+              current: response.data.list.pageNum,
+            },
           },
           search: payload
         },
       });
     },
-    * add({payload, callback}, {call, put, select}) {
+    * add({payload, callback}, {call, put}) {
       yield call(addExecutor, payload);
-      // @ts-ignore
-      const search = yield select(state => state.executor.search);
-      yield put({
-        type: 'fetch',
-        payload: search
-      });
+      yield put({type: 'reload'});
       if (callback) callback();
     },
-    * remove({payload, callback}, {call, put, select}) {
+    * remove({payload, callback}, {call, put}) {
       yield call(removeExecutor, payload);
-      // @ts-ignore
-      const search = yield select(state => state.executor.search);
-      yield put({
-        type: 'fetch',
-        payload: search
-      });
+      yield put({type: 'reload'});
       if (callback) callback();
     },
-    * update({payload, callback}, {call, put, select}) {
+    * update({payload, callback}, {call, put}) {
       yield call(updateExecutor, payload);
+      yield put({type: 'reload'});
+      if (callback) callback();
+    },
+    * reload({call, put, select}) {
       // @ts-ignore
       const search = yield select(state => state.executor.search);
-      yield put({
-        type: 'fetch',
-        payload: search
-      });
-      if (callback) callback();
+      yield put({type: 'fetch', payload: {search}});
     },
   },
 

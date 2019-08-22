@@ -16,7 +16,6 @@ import React, {Component, Fragment} from 'react';
 import {Dispatch} from 'redux';
 import {FormComponentProps} from 'antd/es/form';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {SorterResult} from 'antd/es/table';
 import {connect} from 'dva';
 import {StateType} from './model';
 import CreateForm from './components/CreateForm';
@@ -132,7 +131,6 @@ class TableList extends Component<TableListProps, TableListState> {
   handleStandardTableChange = (
     pagination: Partial<TableListPagination>,
     filtersArg: Record<keyof TableListItem, string[]>,
-    sorter: SorterResult<TableListItem>,
   ) => {
     const {dispatch} = this.props;
     const {formValues} = this.state;
@@ -144,14 +142,11 @@ class TableList extends Component<TableListProps, TableListState> {
     }, {});
 
     const params: Partial<TableListParams> = {
-      currentPage: pagination.pageNum,
+      pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
     };
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
 
     dispatch({
       type: 'executor/fetch',
@@ -329,7 +324,6 @@ class TableList extends Component<TableListProps, TableListState> {
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
       </Menu>
     );
 
