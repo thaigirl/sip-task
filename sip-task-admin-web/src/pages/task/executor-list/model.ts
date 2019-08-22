@@ -40,7 +40,7 @@ const Model: ModelType = {
   },
 
   effects: {
-    * fetch({payload}, {call, put}) {
+    * fetch({payload}, {call, put, select}) {
       const response = yield call(queryExecutor, payload);
       yield put({
         type: 'save',
@@ -48,17 +48,15 @@ const Model: ModelType = {
           data: {
             list: response.data.list,
             pagination: response.data.page,
-          }
+          },
+          search: payload
         },
       });
     },
     * add({payload, callback}, {call, put, select}) {
-      const response = yield call(addExecutor, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      const search = yield  select(state => state.search);
+      yield call(addExecutor, payload);
+      // @ts-ignore
+      const search = yield select(state => state.executor.search);
       yield put({
         type: 'fetch',
         payload: search
@@ -66,12 +64,9 @@ const Model: ModelType = {
       if (callback) callback();
     },
     * remove({payload, callback}, {call, put, select}) {
-      const response = yield call(removeExecutor, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      const search = yield  select(state => state.search);
+      yield call(removeExecutor, payload);
+      // @ts-ignore
+      const search = yield select(state => state.executor.search);
       yield put({
         type: 'fetch',
         payload: search
@@ -79,13 +74,9 @@ const Model: ModelType = {
       if (callback) callback();
     },
     * update({payload, callback}, {call, put, select}) {
-
-      const response = yield call(updateExecutor, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      const search = yield  select(state => state.search);
+      yield call(updateExecutor, payload);
+      // @ts-ignore
+      const search = yield select(state => state.executor.search);
       yield put({
         type: 'fetch',
         payload: search

@@ -211,13 +211,11 @@ class TableList extends Component<TableListProps, TableListState> {
 
       const values = {
         ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
       };
 
       this.setState({
         formValues: values,
       });
-
       dispatch({
         type: 'executor/fetch',
         payload: values,
