@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service
 class QrtzTriggerExecutorService : BaseService<QrtzTriggerExecutorMapper, QrtzTriggerExecutor>() {
 
     fun list(vo: QrtzTriggerExecutorVo): PageInfo<QrtzTriggerExecutorDto> {
-        return selectPage(example<QrtzTriggerExecutor> { })
+        return selectPage(example<QrtzTriggerExecutor> {
+            andLike(QrtzTriggerExecutor::name,vo.name)
+        })
     }
 
     fun all(): List<QrtzTriggerExecutorDto> {

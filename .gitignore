@@ -30,3 +30,7 @@ tree.txt
 .DS_Store
 Thumbs.db
 
+# nodejs ignore
+node_modules
+.umi
+yarn.lock
