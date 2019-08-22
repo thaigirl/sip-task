@@ -21,6 +21,7 @@ import UpdateForm, {FormValsType} from './components/UpdateForm';
 import {TableListItem, TableListPagination, TableListParams} from './data.d';
 
 import styles from './style.less';
+import {formatDateTime} from "@/utils/utils";
 
 const FormItem = Form.Item;
 const getValue = (obj: { [x: string]: string[] }) =>
@@ -87,16 +88,9 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'addressList',
     },
     {
-      title: '创建时间',
-      dataIndex: 'createTime',
-    },
-    {
-      title: '创建人',
-      dataIndex: 'createUser',
-    },
-    {
       title: '更新时间',
       dataIndex: 'updateTime',
+      render: (text) => text ? formatDateTime(text) : ''
     },
     {
       title: '更新人',
@@ -313,7 +307,6 @@ class TableList extends Component<TableListProps, TableListState> {
       loading,
     } = this.props;
     const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
-    console.log("data:",this.props.executor.data)
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
