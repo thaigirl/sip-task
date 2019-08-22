@@ -3,11 +3,8 @@ import {
   Card,
   Col,
   Divider,
-  Dropdown,
   Form,
-  Icon,
   Input,
-  Menu,
   Row,
   message, Modal,
 } from 'antd';
@@ -166,29 +163,19 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  handleMenuClick = (e: { key: string }) => {
-    const {dispatch} = this.props;
+  handleMenuClick = () => {
     const {selectedRows} = this.state;
-
     if (!selectedRows) return;
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'executor/remove',
-          payload: {
-            key: selectedRows.map(row => row.id),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-      default:
-        break;
-    }
+    const ids = selectedRows.map(row => row.id);
+    Modal.confirm({
+      title: '删除执行器',
+      content: '确定删除该执行器吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.sendDelete(ids),
+    });
   };
+
 
   handleSelectRows = (rows: TableListItem[]) => {
     this.setState({
@@ -271,15 +258,20 @@ class TableList extends Component<TableListProps, TableListState> {
       content: '确定删除该执行器吗？',
       okText: '确认',
       cancelText: '取消',
-      onOk: () => this.sendDelete(id),
+      onOk: () => this.sendDelete([id]),
     });
   };
 
-  sendDelete = (id: number) => {
+  sendDelete = (ids: any) => {
     const {dispatch} = this.props;
     dispatch({
       type: 'executor/remove',
-      payload: [id],
+      payload: ids,
+      callback: () => {
+        this.setState({
+          selectedRows: [],
+        });
+      },
     });
     message.success('删除成功');
   }
@@ -321,12 +313,7 @@ class TableList extends Component<TableListProps, TableListState> {
       loading,
     } = this.props;
     const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-      </Menu>
-    );
-
+    console.log("data:",this.props.executor.data)
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -347,12 +334,7 @@ class TableList extends Component<TableListProps, TableListState> {
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down"/>
-                    </Button>
-                  </Dropdown>
+                  <Button onClick={this.handleMenuClick}>批量删除</Button>
                 </span>
               )}
             </div>

@@ -41,7 +41,7 @@ const Model: ModelType = {
   },
 
   effects: {
-    * fetch({payload}, {call, put}) {
+    * fetch({payload}, {call, put,select}) {
       const response = yield call(queryExecutor, payload);
       yield put({
         type: 'save',
@@ -49,9 +49,9 @@ const Model: ModelType = {
           data: {
             list: response.data.list,
             pagination: {
-              total: response.data.list.total,
-              pageSize: response.data.list.pageSize,
-              current: response.data.list.pageNum,
+              total: response.data.page.total,
+              pageSize: response.data.page.pageSize,
+              current: response.data.page.pageNum,
             },
           },
           search: payload
@@ -73,7 +73,7 @@ const Model: ModelType = {
       yield put({type: 'reload'});
       if (callback) callback();
     },
-    * reload({call, put, select}) {
+    * reload({payload, callback},{call, put, select}) {
       // @ts-ignore
       const search = yield select(state => state.executor.search);
       yield put({type: 'fetch', payload: {search}});
