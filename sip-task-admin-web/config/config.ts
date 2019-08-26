@@ -222,6 +222,11 @@ export default {
                   path: '/task/executor-list',
                   component: './task/executor-list',
                 },
+                {
+                  name: 'job',
+                  path: '/task/job',
+                  component: './task/job',
+                },
               ],
             },
             {

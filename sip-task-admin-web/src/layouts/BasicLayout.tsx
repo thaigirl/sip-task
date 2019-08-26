@@ -3,11 +3,11 @@
  * You can view component api by:
  * https://github.com/ant-design/ant-design-pro-layout
  */
+// @ts-ignore
 import ProLayout, {
   MenuDataItem,
   BasicLayoutProps as ProLayoutProps,
   Settings,
-  SettingDrawer,
   SettingDrawer,
 } from '@ant-design/pro-layout';
 import React, { useEffect } from 'react';

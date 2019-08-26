@@ -16,6 +16,7 @@ class QrtzTriggerJob : Serializable {
      */
     @Column(name = "executor_id")
     var executorId: Long? = null
+    var name: String? = null
     /**
      * 设置任务执行CRON
      *
