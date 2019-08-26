@@ -22,12 +22,14 @@ class QrtzTriggerExecutorService : BaseService<QrtzTriggerExecutorMapper, QrtzTr
 
     fun list(vo: QrtzTriggerExecutorVo): PageInfo<QrtzTriggerExecutorDto> {
         return selectPage(example<QrtzTriggerExecutor> {
-            andLike(QrtzTriggerExecutor::name,vo.name)
+            andLike(QrtzTriggerExecutor::name, vo.name)
         })
     }
 
     fun all(): List<QrtzTriggerExecutorDto> {
-        return to(mapper.selectAll())
+        var list = mapper.selectAll()
+        list.sortByDescending { it.createTime }
+        return to(list)
     }
 
     fun insert(vo: QrtzTriggerExecutorVo): Int {
