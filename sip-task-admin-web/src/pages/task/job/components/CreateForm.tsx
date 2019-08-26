@@ -45,7 +45,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         let exec = executors[i];
         arr.push(<Option key = {exec.id} value={exec.id}>{exec.name}</Option>)
       }
-      return arr
+      return arr;
     };
 
 
@@ -63,9 +63,14 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col md={12} sm={24}>
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行器">
-              <Select value = {checkValue} onChange={changeCheckValue} style={{width: "100%" }}>
-                {options()}
-              </Select>
+              {form.getFieldDecorator('username', {
+                initialValue: executors.length ? executors[0].id : '',
+                rules: [{ required: true, message: 'Please input your username!' }],
+              })(
+                <Select style={{width: "100%" }} placeholder={'请选择'}>
+                  {options()}
+                </Select>
+              )}
             </FormItem>
           </Col>
           <Col md={12} sm={24}>

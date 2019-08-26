@@ -1,4 +1,4 @@
-import {Col, Form, Input, Row, Select,Icon} from 'antd';
+import {Col, Form, Input, Row, Select} from 'antd';
 
 import {FormComponentProps} from 'antd/es/form';
 import React from 'react';
@@ -26,8 +26,11 @@ const ParamRow: React.FC<ParamProps> = props => {
       <Col md={6} sm={24}>
         <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="type">
           <Select defaultValue="STRING" style={{width: 120}}>
+            // @ts-ignore
             <Option value="STRING">字符串</Option>
+            // @ts-ignore
             <Option value="NUMBER">数字</Option>
+            // @ts-ignore
             <Option value="DATE">日期</Option>
           </Select>
         </FormItem>
