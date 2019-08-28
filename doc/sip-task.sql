@@ -210,21 +210,23 @@ CREATE TABLE `QRTZ_TRIGGER_JOB` (
   `desc` VARCHAR(255) NOT NULL COMMENT '任务描述',
   `alarm_email` VARCHAR(255) DEFAULT NULL COMMENT '报警邮件,多个用逗号分隔',
   `strategy` VARCHAR(50) DEFAULT NULL COMMENT '执行器路由策略,阻塞/并发',
-  `exec_code` VARCHAR(255) DEFAULT NULL COMMENT '执行器任务编码',
+  `code` VARCHAR(255) DEFAULT NULL COMMENT '执行器任务编码',
   `timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行超时时间，单位秒',
   `fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
+  `enable` TINYINT(1) NOT NULL DEFAULT '0' COMMENT '是否启用',
   `create_time` BIGINT NOT NULL COMMENT  '创建时间',
   `create_user` BIGINT NOT NULL COMMENT  '创建人',
   `update_time` BIGINT NOT NULL COMMENT  '更新时间',
-  `update_user` BIGINT NOT NULL COMMENT  '更新人'
+  `update_user` BIGINT NOT NULL COMMENT  '更新人',
+  UNIQUE KEY UK_CODE(executor_id,code)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '任务';
 
 
 DROP TABLE IF EXISTS `QRTZ_TRIGGER_RECORD`;
 CREATE TABLE `QRTZ_TRIGGER_RECORD` (
-  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `executor_id` BIGINT NOT NULL COMMENT '执行器主键ID',
-  `job_id` int(11) NOT NULL COMMENT '任务，主键ID',
+  `job_id` BIGINT NOT NULL COMMENT '任务，主键ID',
   `executor_address` varchar(255) DEFAULT NULL COMMENT '执行器地址，本次执行的地址',
   `exec_code` varchar(255) DEFAULT NULL COMMENT '执行器任务编码',
   `timeout` int(11) NOT NULL DEFAULT '0' COMMENT '任务执行超时时间，单位秒',
