@@ -52,5 +52,14 @@ const request = extend({
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
 });
-
+/**
+ * 对于状态码实际是 200 的错误
+ */
+request.interceptors.response.use(async (response) => {
+  const data = await response.clone().json();
+  if(data && data.success!=0) {
+    console.log("状态码实际是 200 的错误")
+  }
+  return response;
+})
 export default request;
