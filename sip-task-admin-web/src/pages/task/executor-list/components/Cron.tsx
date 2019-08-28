@@ -177,7 +177,7 @@ class Cron extends React.Component {
           Cron工具
         </Button>
         <Modal
-          title="Basic Modal"
+          title="Cron计算器"
           visible={this.state.visible}
           footer={[
             <Button key="back" onClick={this.handleCancel}>
