@@ -57,19 +57,14 @@ object ScheduleUtil {
         val jobClass = getQuartzJobClass(job)
         // 构建job信息
         val jobDetail = JobBuilder.newJob(jobClass).withIdentity(getJobKey(job.id)).build()
-
         // 表达式调度构建器
         var cronScheduleBuilder = CronScheduleBuilder.cronSchedule(job.cron)
-
         // 按新的cronExpression表达式构建一个新的trigger
         val trigger = TriggerBuilder.newTrigger().withIdentity(getTriggerKey(job.id))
                 .withSchedule<CronTrigger>(cronScheduleBuilder).build()
-
         // 放入参数，运行时的方法可以获取
-        jobDetail.jobDataMap.put(ScheduleConstants.TASK_PROPERTIES, job)
-
+        jobDetail.jobDataMap[ScheduleConstants.TASK_PROPERTIES] = job
         scheduler.scheduleJob(jobDetail, trigger)
-
         // 暂停任务
         if (job.enable == false) {
             pauseJob(scheduler, job.id)
@@ -82,19 +77,12 @@ object ScheduleUtil {
     @Throws(SchedulerException::class, TaskException::class)
     fun updateScheduleJob(scheduler: Scheduler, job: QrtzTriggerJob) {
         val jobKey = getJobKey(job.id)
-
         // 判断是否存在
         if (scheduler.checkExists(jobKey)) {
             // 先移除，然后做更新操作
             scheduler.deleteJob(jobKey)
         }
-
         createScheduleJob(scheduler, job)
-
-        // 暂停任务
-        if (job.enable == false) {
-            pauseJob(scheduler, job.id)
-        }
     }
 
     /**

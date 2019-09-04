@@ -34,10 +34,6 @@ class QrtzTriggerJobController {
 
     @PostMapping("/insert")
     fun insert(@Validated(Insert::class) @RequestBody vo: QrtzTriggerJobVo): Result<Any> {
-        vo.createTime = (System.currentTimeMillis() / 1000)
-        vo.createUser = 1
-        vo.updateTime = (System.currentTimeMillis() / 1000)
-        vo.updateUser = 1
         return Result.success(qrtzTriggerJobService.insert(vo))
     }
 

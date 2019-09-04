@@ -23,7 +23,7 @@ class QrtzTriggerRecord {
      * @param jobId 任务，主键ID
      */
     @Column(name = "job_id")
-    var jobId: Int? = null
+    var jobId: Long? = null
     /**
      * 设置执行器地址，本次执行的地址
      *
@@ -36,8 +36,7 @@ class QrtzTriggerRecord {
      *
      * @param code 执行器任务编码
      */
-    @Column(name = "exec_code")
-    var execCode: String? = null
+    var code: String? = null
     /**
      * 设置任务执行超时时间，单位秒
      *
@@ -91,18 +90,4 @@ class QrtzTriggerRecord {
      */
     @Column(name = "create_user")
     var createUser: Long? = null
-    /**
-     * 设置更新时间
-     *
-     * @param updateTime 更新时间
-     */
-    @Column(name = "update_time")
-    var updateTime: Long? = null
-    /**
-     * 设置更新人
-     *
-     * @param updateUser 更新人
-     */
-    @Column(name = "update_user")
-    var updateUser: Long? = null
 }

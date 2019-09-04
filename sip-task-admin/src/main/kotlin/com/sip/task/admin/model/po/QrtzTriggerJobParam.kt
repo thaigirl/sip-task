@@ -10,7 +10,10 @@ class QrtzTriggerJobParam {
     var id: Long? = null
     @Column(name = "job_id")
     var jobId: Long? = null
+    @Column(name = "`key`")
     var key: String? = null
+    @Column(name = "`type`")
     var type: String? = null
+    @Column(name = "`value`")
     var value: String? = null
 }

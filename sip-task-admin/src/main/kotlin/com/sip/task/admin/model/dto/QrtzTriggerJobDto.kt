@@ -4,6 +4,7 @@ class QrtzTriggerJobDto {
 
     var id: Long? = null
     var executorId: Long? = null
+    var executorName: String? = null
     var cron: String? = null
     var name: String? = null
     var desc: String? = null
@@ -17,4 +18,5 @@ class QrtzTriggerJobDto {
     var updateUser: Long? = null
     var enable: Boolean? = null
     var code: String? = null
+    var param: List<QrtzTriggerJobParam>? = null
 }
