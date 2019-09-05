@@ -34,6 +34,9 @@ object JobInvokeUtil {
                 log.info("发送http请求,地址:{},参数:{}", url, instance.param)
                 var response = HttpRequest.post(url).body(JSON.toJSONString(instance.param)).execute()
                 log.info("http请求响应,状态码:{},内容:{}", response.status, response.body())
+                jobInvokeResult.log="请求地址:".plus(url).plus("<br/>")
+                        .plus("响应码:").plus(response.status).plus("<br/>")
+                        .plus("响应内容:").plus(response.body()).plus("<br/>")
                 // 响应为空,重试
                 if (response.body().isNullOrBlank()) {
                     return@forEach
@@ -53,8 +56,9 @@ object JobInvokeUtil {
                 return jobInvokeResult
             } catch (e: Exception) {
                 log.info("http请求异常,重试下一个地址")
+                jobInvokeResult.status = "-1"
+                jobInvokeResult.msg = "http请求异常,重试下一个地址"
             }
-
         }
         return jobInvokeResult
     }

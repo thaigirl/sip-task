@@ -7,4 +7,5 @@ class JobInvokeResult {
     var status: String? = null
     var msg: String? = null
     var code: String? = null
+    var log: String? = null
 }
