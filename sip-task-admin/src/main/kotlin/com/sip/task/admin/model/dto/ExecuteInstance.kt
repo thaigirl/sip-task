@@ -6,8 +6,8 @@ package com.sip.task.admin.model.dto
  */
 class ExecuteInstance {
 
-    val address: List<String>? = null
-    val recordId: Long? = null
-    val param: Map<String, String>? = null
-    val failRetryCount: Long? = null
+    var address: List<String>? = null
+    var recordId: Long? = null
+    var param: Map<String, String>? = null
+    var failRetryCount: Int? = null
 }
