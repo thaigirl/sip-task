@@ -30,8 +30,9 @@ object JobInvokeUtil {
             }
             try {
                 index++
-                log.info("发送http请求,地址:{},参数:{}", ele, instance.param)
-                var response = HttpRequest.post(ele).body(JSON.toJSONString(instance.param)).execute()
+                var url = ele.plus("?recordId=" + instance.recordId)
+                log.info("发送http请求,地址:{},参数:{}", url, instance.param)
+                var response = HttpRequest.post(url).body(JSON.toJSONString(instance.param)).execute()
                 log.info("http请求响应,状态码:{},内容:{}", response.status, response.body())
                 // 响应为空,重试
                 if (response.body().isNullOrBlank()) {
