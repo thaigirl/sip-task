@@ -3,11 +3,13 @@ package com.sip.task.admin.service
 import com.basicfu.sip.core.common.example
 import com.basicfu.sip.core.service.BaseService
 import com.github.pagehelper.PageInfo
+import com.sip.task.admin.common.cache.ExecutorCache
 import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
 import com.sip.task.admin.model.dto.QrtzTriggerExecutorDto
 import com.sip.task.admin.model.po.QrtzTriggerExecutor
 import com.sip.task.admin.model.vo.QrtzTriggerExecutorVo
 import org.springframework.stereotype.Service
+import javax.annotation.PostConstruct
 
 /**
  * <p>
@@ -19,6 +21,12 @@ import org.springframework.stereotype.Service
  */
 @Service
 class QrtzTriggerExecutorService : BaseService<QrtzTriggerExecutorMapper, QrtzTriggerExecutor>() {
+
+    @PostConstruct
+    fun init() {
+        var list = mapper.selectAll()
+        ExecutorCache.init(list)
+    }
 
     fun list(vo: QrtzTriggerExecutorVo): PageInfo<QrtzTriggerExecutorDto> {
         return selectPage(example<QrtzTriggerExecutor> {
@@ -34,15 +42,20 @@ class QrtzTriggerExecutorService : BaseService<QrtzTriggerExecutorMapper, QrtzTr
 
     fun insert(vo: QrtzTriggerExecutorVo): Int {
         val po = dealInsert(to<QrtzTriggerExecutor>(vo))
-        return mapper.insertSelective(po)
+        val num=mapper.insertSelective(po)
+        ExecutorCache.set(po!!.id!!,po!!)
+        return num
     }
 
     fun update(vo: QrtzTriggerExecutorVo): Int {
         val po = dealUpdate(to<QrtzTriggerExecutor>(vo))
-        return mapper.updateByPrimaryKeySelective(po)
+        val num=mapper.updateByPrimaryKeySelective(po)
+        ExecutorCache.set(po!!.id!!,po!!)
+        return num
     }
 
     fun delete(ids: List<Long>?): Int {
+        ids?.forEach { ExecutorCache.remove(it) }
         return deleteByIds(ids)
     }
 
