@@ -6,7 +6,8 @@ import {TableListData,executor} from './data.d';
 
 export interface StateType {
   data: TableListData;
-  executors: Array<executor>
+  executors: Array<executor>;
+  modalVisible: boolean;
 }
 
 export type Effect = (
@@ -23,6 +24,7 @@ export interface ModelType {
     remove: Effect;
     update: Effect;
     executorAll: Effect;
+    reload: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -36,7 +38,8 @@ const Model: ModelType = {
       list: [],
       pagination: {},
     },
-    executors: []
+    executors: [],
+    modalVisible: false
   },
 
   effects: {
@@ -45,42 +48,53 @@ const Model: ModelType = {
       yield put({
         type: 'save',
         payload: {
-          list: response.data.list,
-          pagination: response.data.page,
+          data:{
+            list: response.data.list,
+            pagination: response.data.page,
+          }
         },
       });
     },
     * add({payload, callback}, {call, put}) {
-      const response = yield call(addJob, payload);
+      yield call(addJob, payload);
       yield put({
-        type: 'save',
-        payload: response,
+        type: 'reload'
       });
       if (callback) callback();
     },
     * remove({payload, callback}, {call, put}) {
-      const response = yield call(removeJob, payload);
+      yield call(removeJob, payload);
       yield put({
-        type: 'save',
-        payload: response,
+        type: 'reload'
       });
       if (callback) callback();
     },
     * update({payload, callback}, {call, put}) {
-      const response = yield call(updateJob, payload);
+      let response = yield call(updateJob, payload);
+      if (response && response.code != 0) {
+        yield put({
+          type: 'save',
+          payload: {
+            modalVisible: true
+          },
+        });
+      }else {
+        yield put({
+          type: 'reload'
+        });
+        if (callback) callback();
+      }
+    },
+    * executorAll({payload, callback}, {call, put}) {
+      yield call(executorAll, payload);
       yield put({
-        type: 'save',
-        payload: response,
+        type: 'reload'
       });
       if (callback) callback();
     },
-    * executorAll({payload, callback}, {call, put}) {
-      const response = yield call(executorAll, payload);
-      yield put({
-        type: 'save',
-        payload: {executors:response.data},
-      });
-      if (callback) callback();
+    * reload({payload, callback},{call, put, select}) {
+      const search = yield select(state => state);
+      yield put({type: 'fetch', payload: {search}});
     },
   },
 

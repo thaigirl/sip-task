@@ -1,4 +1,5 @@
-import {BaseItem,BasePagination,BaseTableListData} from '../page'
+import {BaseItem, BasePagination, BaseTableListData} from '../page'
+
 export interface TableListItem extends BaseItem {
   executorId: number;
   cron: string;
@@ -10,14 +11,24 @@ export interface TableListItem extends BaseItem {
   failRetryCount: number;
   enable: boolean;
   code: string;
-}
-export interface TableListData extends BaseTableListData{
-  list: TableListItem[]
-}
-export interface TableListPagination extends BasePagination{
+  executorName: string;
+  param: Param[];
 }
 
-export interface queryParam{
+export interface Param {
+  key: string,
+  type: string,
+  value: string
+}
+
+export interface TableListData extends BaseTableListData {
+  list: TableListItem[]
+}
+
+export interface TableListPagination extends BasePagination {
+}
+
+export interface queryParam {
   executorId: string;
   enable: boolean;
   code: string;
@@ -26,6 +37,6 @@ export interface queryParam{
   pageNum: number;
 }
 
-export interface executor extends BaseItem{
+export interface executor extends BaseItem {
   name: string;
 }

@@ -1,8 +1,14 @@
-import {Form, Input, Modal} from 'antd';
+import {Col, Divider, Form, Input, InputNumber, Modal, Row, Select, Switch} from 'antd';
 import React, {Component} from 'react';
 
 import {FormComponentProps} from 'antd/es/form';
 import {TableListItem} from '../data.d';
+import TextArea from "antd/es/input/TextArea";
+import Button from "antd/lib/button/button";
+import ParamRow from "@/pages/task/job/components/ParamRow";
+
+const {Option} = Select;
+const FormItem = Form.Item;
 
 export interface FormValsType extends Partial<TableListItem> {
   target?: string;
@@ -17,10 +23,13 @@ export interface UpdateFormProps extends FormComponentProps {
   handleUpdate: (values: FormValsType) => void;
   updateModalVisible: boolean;
   values: Partial<TableListItem>;
+  removeIndex: (key:string)=>void;
+  changeRowIndex: (bl: boolean,index:string) => void;
+  handleParamChange: (key:any,e:any,type:any)=>void;
+  initExcutorOption: () => any;
+  rowIndexArr: Map<string,any>;
 }
 
-const FormItem = Form.Item;
-const {TextArea} = Input;
 
 export interface UpdateFormState {
   formVals: FormValsType;
@@ -42,7 +51,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
 
   constructor(props: UpdateFormProps) {
     super(props);
-
+    console.log(props.values);
     this.state = {
       formVals: {
         id: props.values.id,
@@ -61,27 +70,9 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
   }
 
 
-  renderContent = (formVals: FormValsType) => {
-    const {form} = this.props;
-    return [
-      <FormItem key="name" {...this.formLayout} label="任务名称">
-        {form.getFieldDecorator('name', {
-          rules: [{required: true, message: '请输入任务名称名称！'}],
-          initialValue: formVals.name,
-        })(<Input placeholder="请输入"/>)}
-      </FormItem>,
-      <FormItem key="desc" {...this.formLayout} label="描述">
-        {form.getFieldDecorator('desc', {
-          rules: [{required: true, message: '请输入至少五个字符的规则描述！', min: 5}],
-          initialValue: formVals.desc,
-        })(<TextArea rows={4} placeholder="请输入至少五个字符"/>)}
-      </FormItem>,
-    ];
-
-  };
 
   render() {
-    const {updateModalVisible, handleUpdateModalVisible, form, handleUpdate, values} = this.props;
+    const {updateModalVisible, handleUpdateModalVisible, form, handleUpdate, values,rowIndexArr,handleParamChange,removeIndex,initExcutorOption,changeRowIndex} = this.props;
     const {formVals} = this.state;
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
@@ -91,9 +82,18 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
         handleUpdate(fieldsValue);
       });
     };
+    const content = (): any => {
+      let arr :any[]=[];
+      rowIndexArr.forEach((value,key)=>{
+        console.log(rowIndexArr);
+        arr.push(<ParamRow param = {value}  handleParamChange = {handleParamChange} removeIndex = {removeIndex} unk={key} key={key}/>);
+      });
+      return arr
+    };
+
     return (
       <Modal
-        width={640}
+        width={"800px"}
         bodyStyle={{padding: '32px 40px 48px'}}
         destroyOnClose
         title="编辑任务"
@@ -102,7 +102,110 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
         onCancel={() => handleUpdateModalVisible(false, values)}
         afterClose={() => handleUpdateModalVisible()}
       >
-        {this.renderContent(formVals)}
+        <Divider>JOB信息</Divider>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行器">
+              {form.getFieldDecorator('executorId', {
+                initialValue: formVals.executorId,
+                rules: [{ required: true, message: '请选择执行器' }],
+              })(
+                <Select style={{width: "100%" }} placeholder={'请选择'}>
+                  {initExcutorOption()}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="名称">
+              {form.getFieldDecorator('name', {
+                initialValue: formVals.name,
+                rules: [{required: true, message: '请输入至少一个字符！', min: 1}],
+              })(<Input placeholder="请输入"/>)}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="调度CODE">
+              {form.getFieldDecorator('code', {
+                initialValue: formVals.code,
+                rules: [{required: true, message: '请输入至少一个字符！', min: 1}],
+              })(<Input placeholder="请输入"/>)}
+            </FormItem>
+          </Col>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="CRON">
+              {form.getFieldDecorator('cron', {
+                initialValue: formVals.cron,
+                rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
+              })(<Input placeholder="请输入"/>)}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行策略">
+              {form.getFieldDecorator(`strategy`, {
+                initialValue: formVals.strategy,
+                rules: [{ required: true, message: '请选择执行策略' }],
+              })(
+                <Select  style={{width: "100%"}}>
+                  <Option value="BLOCKING">阻塞</Option>
+                  <Option value="CONCURRENT">并行</Option>
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="超时时间(s)">
+              {form.getFieldDecorator('timeout', {
+                initialValue: formVals.timeout,
+                rules: [{required: true, message: '请输入数字 '}],
+              })(<InputNumber style={{width: "100%" }} placeholder="请输入"/>)}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="重试次数">
+              {form.getFieldDecorator('failRetryCount', {
+                initialValue: formVals.failRetryCount,
+                rules: [{required: true, message: '请输入数字！'}],
+              })(<InputNumber style={{width: "100%" }} placeholder="请输入"/>)}
+            </FormItem>
+          </Col>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="报警邮件">
+              {form.getFieldDecorator('alarmEmail', {
+                initialValue: formVals.alarmEmail,
+                rules: [{required: false, message: '多个用"，"分割 ', min: 5}],
+              })(<Input placeholder="多个用'，'分割"/>)}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="描述">
+              {form.getFieldDecorator('desc', {
+                initialValue: formVals.desc,
+                rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
+              })(<TextArea placeholder="请输入"/>)}
+            </FormItem>
+          </Col>
+          <Col md={12} sm={24}>
+            <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="是否启用">
+              {form.getFieldDecorator('enable',{
+                initialValue: formVals.enable,
+              } )
+              (<Switch defaultChecked={true} />)}
+            </FormItem>
+          </Col>
+        </Row>
+        <Divider>参数</Divider>
+        <Button icon="plus" type="primary" onClick={() => changeRowIndex(true,"")}>
+        </Button>
+        {content()}
       </Modal>
     );
   }

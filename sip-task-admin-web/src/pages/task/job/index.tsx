@@ -1,19 +1,4 @@
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Dropdown,
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Menu,
-  Row,
-  Select,
-  message,
-} from 'antd';
+import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, message, Row, Select,} from 'antd';
 import React, {Component, Fragment} from 'react';
 
 import {Dispatch} from 'redux';
@@ -25,7 +10,7 @@ import {StateType} from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, {StandardTableColumnProps} from './components/StandardTable';
 import UpdateForm, {FormValsType} from './components/UpdateForm';
-import {TableListItem, TableListPagination, queryParam,executor} from './data.d';
+import {executor, Param, queryParam, TableListItem, TableListPagination} from './data.d';
 import uuid from 'uuid'
 
 import styles from './style.less';
@@ -45,6 +30,7 @@ interface TableListProps extends FormComponentProps {
   executeJob: StateType;
 }
 
+
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
@@ -52,9 +38,8 @@ interface TableListState {
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
-  rowIndexArr: Map<string,any>;
+  rowIndexArr: Map<string, Param>;
   executors: Array<executor>;
-  checkValue:any;
 }
 
 @connect(
@@ -83,13 +68,12 @@ class TableList extends Component<TableListProps, TableListState> {
     stepFormValues: {},
     rowIndexArr: new Map(),
     executors: [],
-    checkValue:null,
   };
 
 
-  changeRowIndex = (bl:boolean,key:string) => {
-    if (bl){
-      this.state.rowIndexArr.set(uuid(),'');
+  changeRowIndex = (bl: boolean, key: string) => {
+    if (bl) {
+      this.state.rowIndexArr.set(uuid(), {type:"STRING",key:"",value:""});
       this.setState({
         rowIndexArr: this.state.rowIndexArr
       });
@@ -101,7 +85,7 @@ class TableList extends Component<TableListProps, TableListState> {
     }
   };
 
-  removeIndex = (key:any)=>{
+  removeIndex = (key: any) => {
     this.state.rowIndexArr.delete(key)
     this.setState({
       rowIndexArr: this.state.rowIndexArr
@@ -115,19 +99,30 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'name',
     },
     {
-      title: '描述',
-      dataIndex: 'desc',
+      title: '执行器',
+      dataIndex: 'executorName',
+    },
+    {
+      title: 'cron表达式',
+      dataIndex: 'cron',
     },
     {
       title: '执行策略',
       dataIndex: 'strategy',
+      render: strategy => (
+        strategy == "BLOCKING" ? "阻塞" : "并行"
+      )
     },
     {
       title: '状态',
       dataIndex: 'enable',
       render: enable => (
-        enable == 0 ? "未启用": "已启用"
+        enable == 0 ? "未启用" : "已启用"
       )
+    },
+    {
+      title: '描述',
+      dataIndex: 'desc',
     },
     {
       title: '操作',
@@ -142,13 +137,12 @@ class TableList extends Component<TableListProps, TableListState> {
   ];
 
 
-
-
   componentDidMount() {
     const {dispatch} = this.props;
     dispatch({
-      type: 'executor/fetch',
+      type: 'executeJob/fetch',
     });
+    this.initExecutorData()
   }
 
   handleStandardTableChange = (
@@ -176,8 +170,14 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  //初始化执行器下拉框
+  //初始化执行器下拉框值
   initExecutorData = () => {
+    const {
+      executeJob: {executors},
+    } = this.props;
+    if (executors.length > 0) {
+      return
+    }
     const {form, dispatch} = this.props;
     form.resetFields();
     this.setState({
@@ -187,14 +187,39 @@ class TableList extends Component<TableListProps, TableListState> {
       type: 'executeJob/executorAll',
       payload: {},
     });
-
+  };
+  initExcutorOption = ()=>{
+    const {
+      executeJob: {executors},
+    } = this.props;
+    const arr : any[] = [];
+    for (let i = 0; i < executors.length; i++) {
+      let exec = executors[i];
+      arr.push(<Option key = {exec.id} value={exec.id}>{exec.name}</Option>)
+    }
+    return arr;
   };
 
-  //修改值
-  changeCheckValue =(e:string)=>{
+
+  //参数修改
+  handleParamChange = (key: any, e: any, type: any) => {
+    let param = this.state.rowIndexArr.get(key)!!;
+    switch (type) {
+      case 'type':
+        param.type = e;
+        break;
+      case 'key':
+        param.key = e.target.value;
+        break;
+      case 'value':
+        param.value = e.target.value;
+        break;
+    }
+    this.state.rowIndexArr.set(key, param);
     this.setState({
-      checkValue: e
-    })
+      rowIndexArr: this.state.rowIndexArr
+    });
+    console.log(this.state.rowIndexArr)
   };
 
 
@@ -249,21 +274,16 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-
     const {dispatch, form} = this.props;
-
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-
       const values = {
         ...fieldsValue,
         updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
       };
-
       this.setState({
         formValues: values,
       });
-
       dispatch({
         type: 'executeJob/fetch',
         payload: values,
@@ -274,6 +294,10 @@ class TableList extends Component<TableListProps, TableListState> {
   handleModalVisible = (flag?: boolean) => {
     if (flag) {
       this.initExecutorData();
+    }else {
+      this.setState({
+        rowIndexArr: new Map()
+      })
     }
     this.setState({
       modalVisible: !!flag,
@@ -281,18 +305,39 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
+    let map = new Map();
+    if (record && record.param) {
+      for (let i in record.param) {
+        map.set(uuid(),record.param[i])
+      }
+    }
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
+      rowIndexArr: map
     });
   };
 
-  handleAdd = (fields: { desc: any }) => {
+  handleAdd = (fields: FormValsType) => {
     const {dispatch} = this.props;
+    let param : Param[] = [];
+    for (let i of this.state.rowIndexArr.values()) {
+      param.push(i)
+    }
     dispatch({
       type: 'executeJob/add',
       payload: {
+        executorId: fields.executorId,
+        cron: fields.cron,
         desc: fields.desc,
+        name: fields.name,
+        alarmEmail: fields.alarmEmail,
+        strategy: fields.strategy,
+        timeout: fields.timeout,
+        failRetryCount: fields.failRetryCount,
+        enable: fields.enable,
+        code: fields.code,
+        param: param
       },
     });
 
@@ -300,19 +345,32 @@ class TableList extends Component<TableListProps, TableListState> {
     this.handleModalVisible();
   };
 
+
   handleUpdate = (fields: FormValsType) => {
     const {dispatch} = this.props;
+    let param : Param[] = [];
+    for (let i of this.state.rowIndexArr.values()) {
+      param.push(i)
+    }
     dispatch({
       type: 'executeJob/update',
       payload: {
-        name: fields.name,
+        id: fields.id,
+        executorId: fields.executorId,
+        cron: fields.cron,
         desc: fields.desc,
-        key: fields.id,
+        name: fields.name,
+        alarmEmail: fields.alarmEmail,
+        strategy: fields.strategy,
+        timeout: fields.timeout,
+        failRetryCount: fields.failRetryCount,
+        enable: fields.enable,
+        code: fields.code,
+        param: param
       },
     });
-
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
+    console.log("当前状态:"+this.props.executeJob.modalVisible);
+    this.handleUpdateModalVisible(false);
   };
 
   renderSimpleForm() {
@@ -361,42 +419,33 @@ class TableList extends Component<TableListProps, TableListState> {
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{md: 8, lg: 24, xl: 48}}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
+          <Col md={5} sm={24}>
+            <FormItem label="执行器">
+              {getFieldDecorator('executorId', {
+                initialValue: '',
+                rules: [{ required: false, message: '请选择执行器' }],
+              })(
+                <Select style={{width: "100%" }} placeholder={'请选择'}>
+                  <Option value="">请选择</Option>
+                  {this.initExcutorOption()}
+                </Select>
+              )}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem label="名称">
               {getFieldDecorator('name')(<Input placeholder="请输入"/>)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{width: '100%'}}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status3')(
-                <Select placeholder="请选择" style={{width: '100%'}}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <div style={{overflow: 'hidden'}}>
-          <div style={{float: 'right', marginBottom: 24}}>
+          <Col md={5} sm={24}>
             <Button type="primary" htmlType="submit">
               查询
             </Button>
             <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
               重置
             </Button>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </Form>
     );
   }
@@ -408,10 +457,10 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      executeJob: {data,executors},
+      executeJob: {data, executors},
       loading,
     } = this.props;
-    const {selectedRows, modalVisible, updateModalVisible, stepFormValues,rowIndexArr} = this.state;
+    const {selectedRows, modalVisible, updateModalVisible, stepFormValues, rowIndexArr} = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -424,11 +473,17 @@ class TableList extends Component<TableListProps, TableListState> {
       removeIndex: this.removeIndex,
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      changeCheckValue:this.changeCheckValue,
+      handleParamChange: this.handleParamChange,
+      initExcutorOption: this.initExcutorOption,
     };
     const updateMethods = {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
+      changeRowIndex: this.changeRowIndex,
+      removeIndex: this.removeIndex,
+      handleModalVisible: this.handleModalVisible,
+      handleParamChange: this.handleParamChange,
+      initExcutorOption: this.initExcutorOption,
     };
     return (
       <PageHeaderWrapper>
@@ -466,6 +521,7 @@ class TableList extends Component<TableListProps, TableListState> {
           <UpdateForm
             {...updateMethods}
             updateModalVisible={updateModalVisible}
+            rowIndexArr={rowIndexArr}
             values={stepFormValues}
           />
         ) : null}

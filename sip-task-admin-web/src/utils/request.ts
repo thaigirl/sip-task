@@ -45,7 +45,7 @@ const errorHandler = (error: { response: Response }): Response => {
   return response;
 };
 
-/**
+/**≤
  * 配置request请求时的默认参数
  */
 const request = extend({
@@ -58,8 +58,11 @@ const request = extend({
 request.interceptors.response.use(async (response) => {
   const data = await response.clone().json();
   if(data && data.code!=0) {
-    console.log("状态码实际是 200 的错误")
+    notification.error({
+      message: '响应异常',
+      description: data.msg,
+    });
   }
   return response;
-})
+});
 export default request;

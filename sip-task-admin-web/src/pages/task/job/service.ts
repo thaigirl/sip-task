@@ -18,7 +18,7 @@ export async function removeJob(params: queryParam) {
 }
 
 export async function addJob(params: queryParam) {
-  return request('/api/job/add', {
+  return request('/api/job/insert', {
     method: 'POST',
     data: {
       ...params,
