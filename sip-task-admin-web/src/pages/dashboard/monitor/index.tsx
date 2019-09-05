@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { Dispatch } from 'redux';
 import { GridContent } from '@ant-design/pro-layout';
 import { connect } from 'dva';
+// @ts-ignore
 import numeral from 'numeral';
 import { StateType } from './model';
 import { Pie, WaterWave, Gauge, TagCloud } from './components/Charts';

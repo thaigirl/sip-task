@@ -317,9 +317,10 @@ class TableList extends Component<TableListProps, TableListState> {
       handleUpdate: this.handleUpdate,
     };
 
+
     return (
       <PageHeaderWrapper>
-        <Cron/>
+        <Cron dispatch={this.props.dispatch} fiveRecentTimedata={this.props.executor.cron}/>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>

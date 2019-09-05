@@ -1,5 +1,9 @@
-import React from 'react';
-import {List, Tabs, Collapse, Card, Table, Row, Col, Button, Input, Modal, Radio, InputNumber, Checkbox} from 'antd';
+import React, {Component} from 'react';
+import {List, Tabs, Collapse, Row, Col, Button, Input, Modal, Radio, InputNumber, Checkbox, Divider} from 'antd';
+import {connect} from "dva";
+import {ConnectProps} from "@/models/connect";
+import {Dispatch} from "redux";
+import {StateType} from "@/pages/task/executor-list/model";
 
 const {Panel} = Collapse;
 const {TabPane} = Tabs;
@@ -33,72 +37,75 @@ function CronExpression() {
   );
 };
 
+interface CronProps extends ConnectProps {
+  dispatch: Dispatch<any>;
+  fiveRecentTimedata: [];
+}
 
-class Cron extends React.Component {
+@connect(
+  ({
+     executor,
+   }: {
+    executor: StateType;
+  }) => ({
+    fiveRecentTimedata: executor.cron,
+  }),
+)
+
+class Cron extends Component<CronProps> {
   state = {
     visible: false,
-    fiveRecentTimedata: [
-      '2019-08-28 14:12:01',
-      '2019-08-28 14:12:02',
-      '2019-08-28 14:12:03',
-      '2019-08-28 14:12:04',
-      '2019-08-28 14:12:05',
-    ],
-    radioValue: 1,
-    tableData: [
-      {
-        expression: '表达式字段:',
-        v_second: '*',
-        v_min: '*',
-        v_hour: '*',
-        v_day: '*',
-        v_mouth: '*',
-        v_week: '*',
-        v_year: '*',
-      },
-    ],
-    tableColumns: [
-      {
-        title: '',
-        dataIndex: 'expression',
-        key: 'expression',
-      },
-      {
-        title: '秒',
-        dataIndex: 'v_second',
-        key: 'v_second',
-      },
-      {
-        title: '分钟',
-        dataIndex: 'v_min',
-        key: 'v_min',
-      },
-      {
-        title: '小时',
-        dataIndex: 'v_hour',
-        key: 'v_hour',
-      },
-      {
-        title: '日',
-        dataIndex: 'v_day',
-        key: 'v_day',
-      },
-      {
-        title: '月',
-        dataIndex: 'v_mouth',
-        key: 'v_mouth',
-      },
-      {
-        title: '星期',
-        dataIndex: 'v_week',
-        key: 'v_week',
-      },
-      {
-        title: '年',
-        dataIndex: 'v_year',
-        key: 'v_year',
-      },
-    ],
+    cron: '* * * * * ?',
+    tabValue: "1",
+    fiveRecentTimedata: [],
+    secondValue: 1,
+    secondStart_0: 1,
+    secondEnd_0: 1,
+    secondStart_1: 1,
+    secondEnd_1: 1,
+    secondList: [],
+    minuteValue: 1,
+    minuteStart_0: 1,
+    minuteEnd_0: 1,
+    minuteStart_1: 1,
+    minuteEnd_1: 1,
+    minuteList: [],
+    hourValue: 1,
+    hourStart_0: 1,
+    hourEnd_0: 1,
+    hourStart_1: 1,
+    hourEnd_1: 1,
+    hourList: [],
+    dayValue: 1,
+    dayStart_0: 1,
+    dayEnd_0: 1,
+    dayStart_1: 1,
+    dayEnd_1: 1,
+    dayStart_2: 1,
+    dayList: [],
+    monthValue: 1,
+    monthStart_0: 1,
+    monthEnd_0: 1,
+    monthStart_1: 1,
+    monthEnd_1: 1,
+    monthList: [],
+    weekValue: 1,
+    weekStart_0: 1,
+    weekEnd_0: 1,
+    weekStart_1: 1,
+    weekEnd_1: 1,
+    weekStart_2: 1,
+    weekList: [],
+    yearValue: 1,
+    yearStart_0: 2000,
+    yearEnd_0: 2001,
+    v_second: '*',
+    v_minute: '*',
+    v_hour: '*',
+    v_day: '*',
+    v_mouth: '*',
+    v_week: '?',
+    v_year: '',
     text: [
       {
         title: 'CronTrigger',
@@ -145,6 +152,12 @@ class Cron extends React.Component {
     ],
   };
 
+  componentWillReceiveProps(nextProps: Readonly<CronProps>, nextContext: any): void {
+    this.setState({
+      fiveRecentTimedata: nextProps.fiveRecentTimedata,
+    })
+  }
+
   showModal = () => {
     this.setState({
       visible: true,
@@ -158,11 +171,617 @@ class Cron extends React.Component {
     });
   };
 
-  onRadioChange = (e: any) => {
+  onSecondChange = (e: any) => {
     this.setState({
-      radioValue: e.target.value,
+      secondValue: e.target.value,
+    },()=>{
+      this.everyTime('v_second');
+    });
+
+  };
+  onMinuteChange = (e: any) => {
+    this.setState({
+      minuteValue: e.target.value,
+    },()=>{
+      this.everyTime('v_minute');
     });
   };
+  onHourChange = (e: any) => {
+    this.setState({
+      hourValue: e.target.value,
+    },()=>{
+      this.everyTime('v_hour');
+    });
+  };
+  onDayChange = (e: any) => {
+    this.setState({
+      dayValue: e.target.value,
+    },()=>{
+      this.everyTime('v_day');
+    });
+  };
+  onMonthChange = (e: any) => {
+    this.setState({
+      monthValue: e.target.value,
+    },()=>{
+      this.everyTime('v_month');
+    });
+  };
+  onWeekChange = (e: any) => {
+    this.setState({
+      weekValue: e.target.value,
+    },()=>{
+      this.everyTime('v_week');
+    });
+  };
+  onYearChange = (e: any) => {
+    this.setState({
+      yearValue: e.target.value,
+    },()=>{
+      this.everyTime('v_year');
+    });
+  };
+  onTabsChange = (e: string) => {
+    this.setState({
+      tabValue: e,
+    });
+  };
+
+  onValueChange = (key: string, value: any) => {
+
+    this.setState({
+      [`${key}`]: value
+    },()=>{
+      switch (this.state.tabValue) {
+        case '1':
+          this.everyTime('v_second');
+          break;
+        case '2':
+          this.everyTime('v_minute');
+          break;
+        case '3':
+          this.everyTime('v_hour');
+          break;
+        case '4':
+          this.everyTime('v_day');
+          break;
+        case '5':
+          this.everyTime('v_month');
+          break;
+        case '6':
+          this.everyTime('v_week');
+          break;
+        case '7':
+          this.everyTime('v_year');
+          break;
+      }
+    });
+  };
+
+  onCronChange = (key: string, value: any) => {
+    value = value.target.value;
+    this.getCronTime(value)
+    this.change(value)
+    this.setState({
+      cron: value
+    });
+  };
+
+  getCronTime = (cron: string) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'executor/cron',
+      payload: {cron: cron}
+    });
+  }
+
+  change = (txt: string) => {
+    // 获取参数中表达式的值
+    if (txt) {
+      const regs = txt.split(' ');
+      this.setState({
+        v_second: regs[0],
+        v_minute: regs[1],
+        v_hour: regs[2],
+        v_day: regs[3],
+        v_mouth: regs[4],
+        v_week: regs[5],
+      })
+      this.initObj(regs[0], "second");
+      this.initObj(regs[1], "minute");
+      this.initObj(regs[2], "hour");
+      this.initDay(regs[3]);
+      this.initMonth(regs[4]);
+      this.initWeek(regs[5]);
+      if (regs.length > 6) {
+        this.setState({
+          v_year: regs[6],
+        })
+        this.initYear(regs[6]);
+      }
+    }
+  }
+
+  initObj = (strVal: string, strid: string) => {
+    let arr = [];
+    switch (strid) {
+      case 'second':
+        if (strVal == "*") {
+          this.setState({
+            secondValue: 1,
+          })
+        } else if (strVal.split('-').length > 1) {
+          arr = strVal.split('-');
+          this.setState({
+            secondValue: 2,
+            secondStart_0: arr[0],
+            secondEnd_0: arr[1],
+          })
+        } else if (strVal.split('/').length > 1) {
+          arr = strVal.split('-');
+          this.setState({
+            secondValue: 3,
+            secondStart_1: arr[0],
+            secondEnd_1: arr[1],
+          })
+        } else {
+          if (strVal != "?") {
+            arr = strVal.split(",");
+            this.setState({
+              secondValue: 4,
+              secondList: arr,
+            })
+          }
+        }
+        break;
+      case 'minute':
+        if (strVal == "*") {
+          this.setState({
+            minuteValue: 1,
+          })
+        } else if (strVal.split('-').length > 1) {
+          arr = strVal.split('-');
+          this.setState({
+            minuteValue: 2,
+            minuteStart_0: arr[0],
+            minuteEnd_0: arr[1],
+          })
+        } else if (strVal.split('/').length > 1) {
+          arr = strVal.split('-');
+          this.setState({
+            minuteValue: 3,
+            minuteStart_1: arr[0],
+            minuteEnd_1: arr[1],
+          })
+        } else {
+          if (strVal != "?") {
+            arr = strVal.split(",");
+            this.setState({
+              minuteValue: 4,
+              minuteList: arr,
+            })
+          }
+        }
+        break;
+      case 'hour':
+        if (strVal == "*") {
+          this.setState({
+            hourValue: 1,
+          })
+        } else if (strVal.split('-').length > 1) {
+          arr = strVal.split('-');
+          this.setState({
+            hourValue: 2,
+            hourStart_0: arr[0],
+            hourEnd_0: arr[1],
+          })
+        } else if (strVal.split('/').length > 1) {
+          arr = strVal.split('-');
+          this.setState({
+            hourValue: 3,
+            hourStart_1: arr[0],
+            hourEnd_1: arr[1],
+          })
+        } else {
+          if (strVal != "?") {
+            arr = strVal.split(",");
+            this.setState({
+              hourValue: 4,
+              hourList: arr,
+            })
+          }
+        }
+        break;
+    }
+  }
+
+  initDay = (strVal: string) => {
+    let arr = [];
+    if (strVal == "*") {
+      this.setState({
+        dayValue: 1,
+      })
+    } else if (strVal == "?") {
+      this.setState({
+        dayValue: 2,
+      })
+    } else if (strVal.split('-').length > 1) {
+      arr = strVal.split('-');
+      this.setState({
+        dayValue: 3,
+        dayStart_0: arr[0],
+        dayEnd_0: arr[1],
+      })
+    } else if (strVal.split('/').length > 1) {
+      arr = strVal.split('/');
+      this.setState({
+        dayValue: 4,
+        dayStart_1: arr[0],
+        dayEnd_1: arr[1],
+      })
+    } else if (strVal.split('W').length > 1) {
+      arr = strVal.split('W');
+      this.setState({
+        dayValue: 5,
+        dayStart_2: arr[0],
+      })
+    } else if (strVal == "L") {
+      this.setState({
+        dayValue: 6,
+      })
+    } else {
+      arr = strVal.split(",");
+      this.setState({
+        dayValue: 7,
+        dayList: arr,
+      })
+    }
+  }
+
+  initMonth = (strVal: string) => {
+    let arr = null;
+    if (strVal == "*") {
+      this.setState({
+        monthValue: 1,
+      })
+    } else if (strVal == "?") {
+      this.setState({
+        monthValue: 2,
+      })
+    } else if (strVal.split('-').length > 1) {
+      arr = strVal.split('-');
+      this.setState({
+        monthValue: 3,
+        mouthStart_0: arr[0],
+        mouthEnd_0: arr[1],
+      })
+    } else if (strVal.split('/').length > 1) {
+      arr = strVal.split('/');
+      this.setState({
+        monthValue: 3,
+        mouthStart_1: arr[0],
+        mouthEnd_1: arr[1],
+      })
+    } else {
+      arr = strVal.split(",");
+      this.setState({
+        monthValue: 3,
+        mouthList: arr,
+      })
+    }
+  }
+
+  initWeek = (strVal: string) => {
+    let arr = null;
+    if (strVal == "*") {
+      this.setState({
+        weekValue: 1,
+      })
+    } else if (strVal == "?") {
+      this.setState({
+        weekValue: 2,
+      })
+    } else if (strVal.split('/').length > 1) {
+      arr = strVal.split('/');
+      this.setState({
+        weekValue: 3,
+        weekStart_0: arr[0],
+        weekEnd_0: arr[1],
+      })
+    } else if (strVal.split('-').length > 1) {
+      arr = strVal.split('-');
+      this.setState({
+        weekValue: 4,
+        weekStart_1: arr[0],
+        weekEnd_1: arr[1],
+      })
+    } else if (strVal.split('L').length > 1) {
+      arr = strVal.split('L');
+      this.setState({
+        weekValue: 5,
+        weekStart_2: arr[0],
+      })
+    } else {
+      arr = strVal.split(",");
+      this.setState({
+        weekValue: 6,
+        weekList: arr,
+      })
+    }
+  }
+
+  initYear = (strVal: string) => {
+    if (strVal == "*") {
+      this.setState({
+        yearValue: 2
+      })
+    } else if (strVal.split('-').length > 1) {
+      const ary = strVal.split('-');
+      this.setState({
+        yearValue: 3,
+        yearStart_0: ary[0],
+        yearEnd_0: ary[1],
+      })
+    }
+  }
+
+  everyTime = (type: string) => {
+    let data='',stateMap={};
+    switch (type) {
+      case 'v_second':
+        if (this.state.secondValue==1 ) {
+          stateMap['v_minute']='*';
+          stateMap['v_hour']='*';
+          stateMap['v_day']='*';
+          stateMap['v_month']='*';
+          stateMap['v_week']='?';
+          stateMap['v_year']='*';
+        }
+        switch (this.state.secondValue) {
+          case 1:
+            data = '*'
+            break;
+          case 2:
+            data=this.state.secondStart_0+'-'+this.state.secondEnd_0
+            break;
+          case 3:
+            data=this.state.secondStart_1+'/'+this.state.secondEnd_1
+            break;
+          case 4:
+            data=this.state.secondList.join(',');
+            break;
+        }
+        break;
+      case 'v_minute':
+        if (this.state.minuteValue!=1 ) {
+          if (this.state.v_second == '*') {
+            stateMap['v_second']=0;
+          }
+        }else{
+          stateMap['v_hour']='*';
+          stateMap['v_day']='*';
+          stateMap['v_month']='*';
+          stateMap['v_week']='?';
+          stateMap['v_year']='*';
+        }
+        switch (this.state.minuteValue) {
+          case 1:
+            data = '*'
+            break;
+          case 2:
+            data=this.state.minuteStart_0+'-'+this.state.minuteEnd_0
+            break;
+          case 3:
+            data=this.state.minuteStart_1+'/'+this.state.minuteEnd_1
+            break;
+          case 4:
+            data=this.state.minuteList.join(',');
+            break;
+        }
+        break;
+      case 'v_hour':
+        if (this.state.hourValue != 1) {
+          if (this.state.v_second == '*') {
+            stateMap['v_second']=0;
+          }
+          if (this.state.v_minute == '*') {
+            stateMap['v_minute']=0;
+          }
+        }else{
+          stateMap['v_day']='*';
+          stateMap['v_month']='*';
+          stateMap['v_week']='?';
+          stateMap['v_year']='*';
+        }
+
+        switch (this.state.hourValue) {
+          case 1:
+            data = '*'
+            break;
+          case 2:
+            data=this.state.hourStart_0+'-'+this.state.hourEnd_0
+            break;
+          case 3:
+            data=this.state.hourStart_1+'/'+this.state.hourEnd_1
+            break;
+          case 4:
+            data=this.state.hourList.join(',');
+            break;
+        }
+        break;
+      case 'v_day':
+        if (this.state.dayValue != 1) {
+          if (this.state.v_second == '*') {
+            stateMap['v_second']=0;
+          }
+          if (this.state.v_minute == '*') {
+            stateMap['v_minute']=0;
+          }
+          if (this.state.v_hour == '*') {
+            stateMap['v_hour']=0;
+          }
+        }else{
+          stateMap['v_month']='*';
+          stateMap['v_week']='?';
+          stateMap['v_year']='*';
+        }
+
+        switch (this.state.dayValue) {
+          case 1:
+            data = '*'
+            break;
+          case 2:
+            data='?'
+            break;
+          case 3:
+            data=this.state.dayStart_0+'-'+this.state.dayEnd_0
+            break;
+          case 4:
+            data=this.state.dayStart_1+'/'+this.state.dayEnd_1
+            break;
+          case 5:
+            data=this.state.dayStart_2+'W';
+            break;
+          case 6:
+            data='L';
+            break;
+          case 7:
+            data=this.state.dayList.join(',');
+            break;
+        }
+        break;
+      case 'v_month':
+        if (this.state.monthValue != 1) {
+          if (this.state.v_second == '*') {
+            stateMap['v_second']=0;
+          }
+          if (this.state.v_minute == '*') {
+            stateMap['v_minute']=0;
+          }
+          if (this.state.v_hour == '*') {
+            stateMap['v_hour']=0;
+          }
+          if (this.state.v_day == '*') {
+            stateMap['v_day']=0;
+          }
+        }else{
+          stateMap['v_week']='?';
+          stateMap['v_year']='*';
+        }
+
+        switch (this.state.monthValue) {
+          case 1:
+            data = '*'
+            break;
+          case 2:
+            data='?'
+            break;
+          case 3:
+            data=this.state.monthStart_0+'-'+this.state.monthEnd_0
+            break;
+          case 4:
+            data=this.state.monthStart_1+'/'+this.state.monthEnd_1
+            break;
+          case 5:
+            data=this.state.monthList.join(',');
+            break;
+        }
+        break;
+      case 'v_week':
+        if (this.state.weekValue != 1) {
+          if (this.state.v_second == '*') {
+            stateMap['v_second']=0;
+          }
+          if (this.state.v_minute == '*') {
+            stateMap['v_minute']=0;
+          }
+          if (this.state.v_hour == '*') {
+            stateMap['v_hour']=0;
+          }
+          if (this.state.v_day == '*') {
+            stateMap['v_day']=0;
+          }
+          if (this.state.v_mouth == '*') {
+            stateMap['v_mouth']=0;
+          }
+        }else{
+          stateMap['v_year']='*';
+        }
+
+        switch (this.state.weekValue) {
+          case 1:
+            data = '*'
+            break;
+          case 2:
+            data='?'
+            break;
+          case 3:
+            data=this.state.weekStart_0+'-'+this.state.weekEnd_0
+            break;
+          case 4:
+            data=this.state.weekStart_1+'#'+this.state.weekEnd_1
+            break;
+          case 5:
+            data=this.state.weekStart_2+'L';
+            break;
+          case 6:
+            data='L';
+            break;
+          case 7:
+            data=this.state.weekList.join(',');
+            break;
+        }
+        break;
+      case 'v_week':
+        if (this.state.weekValue != 1) {
+          if (this.state.v_second == '*') {
+            stateMap['v_second']=0;
+          }
+          if (this.state.v_minute == '*') {
+            stateMap['v_minute']=0;
+          }
+          if (this.state.v_hour == '*') {
+            stateMap['v_hour']=0;
+          }
+          if (this.state.v_day == '*') {
+            stateMap['v_day']=0;
+          }
+          if (this.state.v_mouth == '*') {
+            stateMap['v_mouth']=0;
+          }
+        }else{
+          stateMap['v_year']='*';
+        }
+
+        switch (this.state.weekValue) {
+          case 1:
+            data = ''
+            break;
+          case 2:
+            data='*'
+            break;
+          case 3:
+            data=this.state.weekStart_0+'-'+this.state.weekEnd_0
+            break;
+        }
+        break;
+    }
+    stateMap[`${type}`]=data,
+    this.setState(stateMap, () => {
+      this.resetCronTime()
+    });
+  }
+
+  resetCronTime=()=>{
+    let cron = this.state.v_second + ' ' + this.state.v_minute + ' ' + this.state.v_hour + ' ' + this.state.v_day + ' ' + this.state.v_mouth + ' ' + this.state.v_week;
+    if (this.state.v_year != '') {
+      cron += ' ' + this.state.v_year;
+    }
+    this.setState({
+      cron: cron,
+    });
+    this.getCronTime(cron)
+  }
 
   render(): React.ReactNode {
     const radioStyle = {
@@ -170,6 +789,7 @@ class Cron extends React.Component {
       height: '40px',
       lineHeight: '30px',
     };
+
 
     return (
       <div>
@@ -185,24 +805,30 @@ class Cron extends React.Component {
             </Button>,
           ]}
           width={"80%"}
+          onCancel={this.handleCancel}
         >
           <Tabs defaultActiveKey="1">
             <TabPane tab="Cron表达式在线工具" key="1">
-              <Tabs defaultActiveKey="1">
+              <Tabs defaultActiveKey="1" activeKey={this.state.tabValue} onChange={this.onTabsChange}>
                 <TabPane tab="秒" key="1">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onSecondChange} value={this.state.secondValue}>
                     <Radio style={radioStyle} value={1}>
                       每秒 允许的通配符[, - * /]
                     </Radio>
                     <Radio style={radioStyle} value={2}>
-                      周期从<InputNumber/>-<InputNumber/>秒
+                      周期从<InputNumber value={this.state.secondStart_0}
+                                      onChange={this.onValueChange.bind(this, 'secondStart_0')}/>-<InputNumber
+                      value={this.state.secondEnd_0} onChange={this.onValueChange.bind(this, 'secondEnd_0')}/>秒
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      从<InputNumber/>秒开始,每<InputNumber/>秒执行一次
+                      从<InputNumber onChange={this.onValueChange.bind(this, 'secondStart_1')}
+                                    value={this.state.secondStart_1}/>秒开始,每<InputNumber value={this.state.secondEnd_1}
+                                                                                        onChange={this.onValueChange.bind(this, 'secondEnd_1')}/>秒执行一次
                     </Radio>
                     <Radio style={radioStyle} value={4}>
                       指定<br/>
-                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}}>
+                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}} value={this.state.secondList}
+                                      onChange={this.onValueChange.bind(this, 'secondList')}>
                         <Col span={24}>
                           <Checkbox value="00">00</Checkbox>
                           <Checkbox value="01">01</Checkbox>
@@ -280,19 +906,24 @@ class Cron extends React.Component {
                   </Radio.Group>
                 </TabPane>
                 <TabPane tab="分钟" key="2">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onMinuteChange} value={this.state.minuteValue}>
                     <Radio style={radioStyle} value={1}>
                       分钟 允许的通配符[, - * /]
                     </Radio>
                     <Radio style={radioStyle} value={2}>
-                      周期从<InputNumber/>-<InputNumber/>分钟
+                      周期从<InputNumber value={this.state.minuteStart_0}
+                                      onChange={this.onValueChange.bind(this, 'minuteStart_0')}/>-<InputNumber
+                      value={this.state.minuteEnd_0} onChange={this.onValueChange.bind(this, 'minuteEnd_0')}/>分钟
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      从<InputNumber/>分钟开始,每<InputNumber/>分钟执行一次
+                      从<InputNumber value={this.state.minuteStart_1}
+                                    onChange={this.onValueChange.bind(this, 'minuteStart_1')}/>分钟开始,每<InputNumber
+                      value={this.state.minuteEnd_1} onChange={this.onValueChange.bind(this, 'minuteEnd_1')}/>分钟执行一次
                     </Radio>
                     <Radio style={radioStyle} value={4}>
                       指定<br/>
-                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}}>
+                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}} value={this.state.minuteList}
+                                      onChange={this.onValueChange.bind(this, 'minuteList')}>
                         <Col span={24}>
                           <Checkbox value="00">00</Checkbox>
                           <Checkbox value="01">01</Checkbox>
@@ -370,19 +1001,24 @@ class Cron extends React.Component {
                   </Radio.Group>
                 </TabPane>
                 <TabPane tab="小时" key="3">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onHourChange} value={this.state.hourValue}>
                     <Radio style={radioStyle} value={1}>
                       小时 允许的通配符[, - * /]
                     </Radio>
                     <Radio style={radioStyle} value={2}>
-                      周期从<InputNumber/>-<InputNumber/>小时
+                      周期从<InputNumber value={this.state.hourStart_0}
+                                      onChange={this.onValueChange.bind(this, 'hourStart_0')}/>-<InputNumber
+                      value={this.state.hourEnd_0} onChange={this.onValueChange.bind(this, 'hourEnd_0')}/>小时
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      从<InputNumber/>小时开始,每<InputNumber/>小时执行一次
+                      从<InputNumber value={this.state.hourStart_1}
+                                    onChange={this.onValueChange.bind(this, 'hourStart_1')}/>小时开始,每<InputNumber
+                      value={this.state.hourEnd_1} onChange={this.onValueChange.bind(this, 'hourEnd_1')}/>小时执行一次
                     </Radio>
                     <Radio style={radioStyle} value={4}>
                       指定<br/>
-                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}}>
+                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}} value={this.state.hourList}
+                                      onChange={this.onValueChange.bind(this, 'hourList')}>
                         <Col span={24}>
                           AM:
                           <Checkbox value="00">00</Checkbox>
@@ -418,7 +1054,7 @@ class Cron extends React.Component {
                   </Radio.Group>
                 </TabPane>
                 <TabPane tab="日" key="4">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onDayChange} value={this.state.dayValue}>
                     <Radio style={radioStyle} value={1}>
                       日 允许的通配符[, - * / L W]
                     </Radio>
@@ -426,20 +1062,26 @@ class Cron extends React.Component {
                       不指定
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      周期从<InputNumber/>-<InputNumber/>日
+                      周期从<InputNumber value={this.state.dayStart_0}
+                                      onChange={this.onValueChange.bind(this, 'dayStart_0')}/>-<InputNumber
+                      value={this.state.dayEnd_0} onChange={this.onValueChange.bind(this, 'dayEnd_0')}/>日
                     </Radio>
                     <Radio style={radioStyle} value={4}>
-                      从<InputNumber/>日开始,每<InputNumber/>日执行一次
+                      从<InputNumber value={this.state.dayStart_1}
+                                    onChange={this.onValueChange.bind(this, 'dayStart_1')}/>日开始,每<InputNumber
+                      value={this.state.dayEnd_1} onChange={this.onValueChange.bind(this, 'dayEnd_1')}/>日执行一次
                     </Radio>
                     <Radio style={radioStyle} value={5}>
-                      每月<InputNumber/>号最近的那个工作日
+                      每月<InputNumber value={this.state.dayStart_2}
+                                     onChange={this.onValueChange.bind(this, 'dayStart_2')}/>号最近的那个工作日
                     </Radio>
                     <Radio style={radioStyle} value={6}>
                       每月最后一天
                     </Radio>
                     <Radio style={radioStyle} value={5}>
                       指定<br/>
-                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}}>
+                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}} value={this.state.dayList}
+                                      onChange={this.onValueChange.bind(this, 'dayList')}>
                         <Col span={24}>
                           <Checkbox value="01">01</Checkbox>
                           <Checkbox value="02">02</Checkbox>
@@ -480,7 +1122,7 @@ class Cron extends React.Component {
                   </Radio.Group>
                 </TabPane>
                 <TabPane tab="月" key="5">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onMonthChange} value={this.state.monthValue}>
                     <Radio style={radioStyle} value={1}>
                       月 允许的通配符[, - * /]
                     </Radio>
@@ -488,14 +1130,19 @@ class Cron extends React.Component {
                       不指定
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      周期从<InputNumber/>-<InputNumber/>月
+                      周期从<InputNumber value={this.state.monthStart_0}
+                                      onChange={this.onValueChange.bind(this, 'monthStart_0')}/>-<InputNumber
+                      value={this.state.monthEnd_0} onChange={this.onValueChange.bind(this, 'monthEnd_0')}/>月
                     </Radio>
                     <Radio style={radioStyle} value={4}>
-                      从<InputNumber/>月开始,每<InputNumber/>月执行一次
+                      从<InputNumber value={this.state.monthStart_1}
+                                    onChange={this.onValueChange.bind(this, 'monthStart_1')}/>月开始,每<InputNumber
+                      value={this.state.monthEnd_1} onChange={this.onValueChange.bind(this, 'monthEnd_1')}/>月执行一次
                     </Radio>
                     <Radio style={radioStyle} value={5}>
                       指定<br/>
-                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}}>
+                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}} value={this.state.monthList}
+                                      onChange={this.onValueChange.bind(this, 'monthList')}>
                         <Col span={24}>
                           <Checkbox value="00">00</Checkbox>
                           <Checkbox value="01">01</Checkbox>
@@ -516,7 +1163,7 @@ class Cron extends React.Component {
                   </Radio.Group>
                 </TabPane>
                 <TabPane tab="周" key="6">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onWeekChange} value={this.state.weekValue}>
                     <Radio style={radioStyle} value={1}>
                       月 允许的通配符[, - * / L #]
                     </Radio>
@@ -524,17 +1171,27 @@ class Cron extends React.Component {
                       不指定
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      周期从星期<InputNumber min={1} max={7}/>-<InputNumber min={1} max={7}/>
+                      周期从星期<InputNumber min={1} max={7} value={this.state.weekStart_0}
+                                        onChange={this.onValueChange.bind(this, 'weekStart_0')}/>-<InputNumber min={1}
+                                                                                                               max={7}
+                                                                                                               value={this.state.weekEnd_0}
+                                                                                                               onChange={this.onValueChange.bind(this, 'weekEnd_0')}/>
                     </Radio>
                     <Radio style={radioStyle} value={4}>
-                      第<InputNumber min={1} max={4}/>周 的星期<InputNumber min={1} max={7}/>
+                      第<InputNumber min={1} max={4} value={this.state.weekStart_1}
+                                    onChange={this.onValueChange.bind(this, 'weekStart_1')}/>周 的星期<InputNumber min={1}
+                                                                                                               max={7}
+                                                                                                               value={this.state.weekEnd_1}
+                                                                                                               onChange={this.onValueChange.bind(this, 'weekEnd_1')}/>
                     </Radio>
                     <Radio style={radioStyle} value={5}>
-                      本月最后一个星期<InputNumber min={1} max={7}/>
+                      本月最后一个星期<InputNumber min={1} max={7} value={this.state.weekStart_2}
+                                           onChange={this.onValueChange.bind(this, 'weekStart_2')}/>
                     </Radio>
                     <Radio style={radioStyle} value={5}>
                       指定<br/>
-                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}}>
+                      <Checkbox.Group style={{width: '50%', marginLeft: "50px"}} value={this.state.weekList}
+                                      onChange={this.onValueChange.bind(this, 'weekList')}>
                         <Col span={24}>
                           <Checkbox value="00">00</Checkbox>
                           <Checkbox value="01">01</Checkbox>
@@ -550,7 +1207,7 @@ class Cron extends React.Component {
                   </Radio.Group>
                 </TabPane>
                 <TabPane tab="年" key="7">
-                  <Radio.Group onChange={this.onRadioChange} value={this.state.radioValue}>
+                  <Radio.Group onChange={this.onYearChange} value={this.state.yearValue}>
                     <Radio style={radioStyle} value={1}>
                       不指定 允许的通配符[, - * /] 非必填
                     </Radio>
@@ -558,29 +1215,52 @@ class Cron extends React.Component {
                       每年
                     </Radio>
                     <Radio style={radioStyle} value={3}>
-                      周期从<InputNumber />-<InputNumber />
+                      周期从<InputNumber value={this.state.yearStart_0}
+                                      onChange={this.onValueChange.bind(this, 'yearStart_0')}/>-<InputNumber
+                      value={this.state.yearEnd_0} onChange={this.onValueChange.bind(this, 'yearEnd_0')}/>
                     </Radio>
                   </Radio.Group>
                 </TabPane>
               </Tabs>
-              <Card title="表达式" bordered={false} style={{width: "100%"}}>
-                <Table rowKey={"expression"} columns={this.state.tableColumns} dataSource={this.state.tableData}
-                       pagination={false}/>
-              </Card>
-
-              <Row gutter={0}>
-                <Col span={4}><Button>Cron 表达式:</Button></Col>
-                <Col span={16}><Input placeholder=""/></Col>
-                <Col span={4}><Button type="primary">反解析到UI</Button></Col>
+              <Divider>Cron表达式</Divider>
+              <Row gutter={8}>
+                <Col span={3}></Col>
+                <Col span={3}>秒</Col>
+                <Col span={3}>分钟</Col>
+                <Col span={3}>小时</Col>
+                <Col span={3}>日</Col>
+                <Col span={3}>月</Col>
+                <Col span={3}>星期</Col>
+                <Col span={3}>年</Col>
               </Row>
-              <List
-                size="small"
-                header={<div>最近5次运行时间:</div>}
-                footer={null}
-                bordered
-                dataSource={this.state.fiveRecentTimedata}
-                renderItem={item => <List.Item>{item}</List.Item>}
-              />
+              <Row gutter={8}>
+                <Col span={3}>表达式字段:</Col>
+                <Col span={3}>{this.state.v_second}</Col>
+                <Col span={3}>{this.state.v_minute}</Col>
+                <Col span={3}>{this.state.v_hour}</Col>
+                <Col span={3}>{this.state.v_day}</Col>
+                <Col span={3}>{this.state.v_mouth}</Col>
+                <Col span={3}>{this.state.v_week}</Col>
+                <Col span={3}>{this.state.v_year}</Col>
+              </Row>
+              <br/>
+              <Row gutter={8}>
+                <Col span={3}>Cron 表达式:</Col>
+                <Col span={21}><Input placeholder="" value={this.state.cron}
+                                      onChange={this.onCronChange.bind(this, 'cron')}/></Col>
+              </Row>
+              <br/>
+              <Row>
+                <List
+                  size="small"
+                  header={<div>最近5次运行时间:</div>}
+                  footer={null}
+                  bordered
+                  dataSource={this.state.fiveRecentTimedata}
+                  renderItem={item => <List.Item>{item}</List.Item>}
+                />
+              </Row>
+
             </TabPane>
             <TabPane tab="Cron表达式教程" key="2">
               <Collapse defaultActiveKey={['1', '2']}>

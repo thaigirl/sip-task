@@ -1,12 +1,13 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {addExecutor, queryExecutor, removeExecutor, updateExecutor} from './service';
+import {addExecutor, queryExecutor, removeExecutor, updateExecutor, fiveCron} from './service';
 
 import {TableListData} from './data.d';
 
 export interface StateType {
   data: TableListData;
   search: any;
+  cron: any;
 }
 
 export type Effect = (
@@ -23,6 +24,7 @@ export interface ModelType {
     remove: Effect;
     update: Effect;
     reload: Effect;
+    cron: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -37,11 +39,12 @@ const Model: ModelType = {
       list: [],
       pagination: {},
     },
-    search: {}
+    search: {},
+    cron: [],
   },
 
   effects: {
-    * fetch({payload}, {call, put,select}) {
+    * fetch({payload}, {call, put, select}) {
       const response = yield call(queryExecutor, payload);
       yield put({
         type: 'save',
@@ -73,10 +76,19 @@ const Model: ModelType = {
       yield put({type: 'reload'});
       if (callback) callback();
     },
-    * reload({payload, callback},{call, put, select}) {
+    * reload({payload, callback}, {call, put, select}) {
       // @ts-ignore
       const search = yield select(state => state.executor.search);
       yield put({type: 'fetch', payload: {search}});
+    },
+    * cron({payload, callback}, {call, put}) {
+      const response = yield call(fiveCron, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          cron: response,
+        },
+      });
     },
   },
 
