@@ -29,8 +29,7 @@ class ExecutorContext {
         }
 
         fun getCurrentTaskRecordId():Long{
-            val recordId = currentTask.get()?:throw RuntimeException("recordId can not be null")
-            return recordId
+            return currentTask.get()?:throw RuntimeException("recordId can not be null")
         }
     }
 }

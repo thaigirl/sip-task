@@ -9,7 +9,7 @@ class QrtzTriggerRecord {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Int? = null
+    var id: Long? = null
     /**
      * 设置执行器主键ID
      *

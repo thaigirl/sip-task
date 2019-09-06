@@ -9,13 +9,13 @@ import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
 import com.sip.task.admin.mapper.QrtzTriggerJobMapper
 import com.sip.task.admin.mapper.QrtzTriggerRecordLogMapper
 import com.sip.task.admin.mapper.QrtzTriggerRecordMapper
-import com.sip.task.admin.model.po.QrtzTriggerRecord
-import com.sip.task.admin.model.po.QrtzTriggerRecordDto
-import com.sip.task.admin.model.po.QrtzTriggerRecordLog
-import com.sip.task.admin.model.po.QrtzTriggerRecordVo
+import com.sip.task.admin.model.po.*
 import org.apache.commons.lang3.StringUtils
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * @author tianhu
@@ -42,7 +42,7 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
             }
             orderByDesc(QrtzTriggerRecord::createTime)
         })
-        if (page.list.isNotEmpty()){
+        if (page.list.isNotEmpty()) {
             val jobIds = page.list.map { it.jobId }
             val executorIds = page.list.map { it.executorId }
             val jobMap = jobMapper.selectByIds(StringUtils.join(jobIds, ",")).associateBy({ it.id }, { it.name })
@@ -55,7 +55,7 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
         return page
     }
 
-    fun getRecordLog(id: Long):Any{
+    fun getRecordLog(id: Long): Any {
         val logs = logMapper.selectByExample(example<QrtzTriggerRecordLog> {
             andEqualTo {
                 recordId = id
@@ -65,11 +65,11 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
         val groupBy = logs.groupBy { it.type }
         val builder = StringBuilder()
         groupBy.forEach { (k, v) ->
-            when(k){
-                BaseEnum.LogType.INVOKE.name->{
+            when (k) {
+                BaseEnum.LogType.INVOKE.name -> {
                     v.forEach { builder.append(it).append("</br>") }
                 }
-                BaseEnum.LogType.EXECUTE.name->{
+                BaseEnum.LogType.EXECUTE.name -> {
 
                 }
             }
@@ -77,9 +77,36 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
         return Any()
     }
 
-    fun delete(id: Long):Int{
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun insert(job: QrtzTriggerJob, addressList: String):QrtzTriggerRecord {
+        val now = System.currentTimeMillis()
+        val record = QrtzTriggerRecord()
+        BeanUtils.copyProperties(job, record)
+        record.id = null
+        record.jobId = job.id
+        record.executorAddress = addressList
+        record.status = BaseEnum.JobStatus.WAIT_EXEC.name
+        record.startTime = now
+        record.createTime = now
+        record.createUser = 0
+        mapper.insertSelective(record)
+        return record
+    }
+
+
+    fun existRunningJob(jobId: Long): Boolean{
+        return mapper.selectCountByExample(example<QrtzTriggerRecord> {
+            andEqualTo {
+                this.jobId = jobId
+            }
+            andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.RUNNING.name,BaseEnum.JobStatus.WAIT_EXEC.name))
+        }) > 1
+    }
+
+
+    fun delete(id: Long): Int {
         val exist = mapper.selectByPrimaryKey(id)
-        if (exist.status != BaseEnum.StatusEnum.WAIT_EXEC.name) throw CustomException("status error")
+        if (exist.status != BaseEnum.JobStatus.WAIT_EXEC.name) throw CustomException("status error")
         return mapper.deleteByPrimaryKey(id)
     }
 }

@@ -1,14 +1,12 @@
 package com.basicfu.sip.schedule.util
 
-import com.basicfu.sip.core.common.example
-import com.basicfu.sip.core.common.generate
-import com.sip.task.admin.common.cache.ExecutorCache
+import com.basicfu.sip.schedule.common.constants.ScheduleConstants
 import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
-import com.sip.task.admin.mapper.QrtzTriggerJobParamMapper
-import com.sip.task.admin.model.dto.ExecuteInstance
 import com.sip.task.admin.model.po.QrtzTriggerJob
-import com.sip.task.admin.model.po.QrtzTriggerJobParam
+import com.sip.task.admin.service.JobInvokeService
 import org.quartz.DisallowConcurrentExecution
+import org.quartz.JobExecutionContext
+import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -18,28 +16,18 @@ import org.springframework.stereotype.Component
 
 @Component
 @DisallowConcurrentExecution
-class QuartzDisallowConcurrentExecution : AbstractQuartzJob() {
-
+class QuartzDisallowConcurrentExecution : org.quartz.Job{
     @Autowired
     lateinit var executorMapper: QrtzTriggerExecutorMapper
     @Autowired
-    lateinit var paramMapper: QrtzTriggerJobParamMapper
-
-    @Throws(Exception::class)
-    override fun doExecute(recordId:Long,job: QrtzTriggerJob) {
-        val executor = ExecutorCache.get(job.executorId!!)
-        val paramMap = paramMapper.selectByExample(example<QrtzTriggerJobParam> {
-            andEqualTo {
-                jobId = job.id
-            }
-        }).associateBy({it.key!!},{it.value!!})
-        val invokeResult = JobInvokeUtil.invokeMethod(generate {
-            address = executor.addressList?.split(",")
-            this.recordId = recordId
-            param = paramMap
-            failRetryCount = job.failRetryCount
-        })
+    lateinit var jobInvokeService: JobInvokeService
+    override fun execute(context: JobExecutionContext) {
+        val job = QrtzTriggerJob()
+        BeanUtils.copyProperties(context.mergedJobDataMap[ScheduleConstants.TASK_PROPERTIES]!!, job)
+        jobInvokeService.trigger(job)
     }
+
+
 
 }
 

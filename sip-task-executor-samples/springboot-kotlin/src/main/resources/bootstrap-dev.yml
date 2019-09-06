@@ -1,2 +1,5 @@
 server:
   port: ${ENV_SERVER_PORT:8001}
+eureka:
+  client:
+    enabled: false

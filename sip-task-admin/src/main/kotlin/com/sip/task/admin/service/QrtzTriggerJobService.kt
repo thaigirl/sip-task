@@ -125,7 +125,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
             //TODO 这里是否加锁待定
             if (recordMapper.selectCountByExample(example<QrtzTriggerRecord> {
                         andEqualTo { jobId = vo.id!! }
-                        andIn(QrtzTriggerRecord::status, listOf(BaseEnum.StatusEnum.WAIT_EXEC.name,BaseEnum.StatusEnum
+                        andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.WAIT_EXEC.name,BaseEnum.JobStatus
                                 .RUNNING.name))
                     }) > 0) throw CustomException("有未执行完成的任务,不允许修改执行策略")
         }
@@ -152,6 +152,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
             paramMapper.insertList(vo.param!!)
         }
         val rows = mapper.updateByPrimaryKeySelective(po)
+        ScheduleUtil.updateScheduleJob(scheduler,po)
         return rows
     }
 

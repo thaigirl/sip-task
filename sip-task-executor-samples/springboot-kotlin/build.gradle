@@ -34,10 +34,9 @@ jar {enabled = true}
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-web",
 			"com.fasterxml.jackson.module:jackson-module-kotlin",
-			"org.springframework.boot:spring-boot-starter-actuator",
 			"org.jetbrains.kotlin:kotlin-stdlib-jdk8",
 			"org.jetbrains.kotlin:kotlin-reflect",
-			"com.sip:sip-task-core:1.0.0-SNAPSHOT",
+			"com.sip:sip-task-core:1.0.3-SNAPSHOT"
 	)
 	compile group: 'cn.afterturn',name:'easypoi-spring-boot-starter',version:'3.3.0'
 	testCompile('org.springframework.boot:spring-boot-starter-test')

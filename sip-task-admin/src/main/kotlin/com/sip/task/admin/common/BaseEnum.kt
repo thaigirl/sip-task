@@ -3,7 +3,7 @@ package com.sip.task.admin.common
 enum class BaseEnum {
     ;
 
-    enum class StatusEnum {
+    enum class JobStatus {
         WAIT_EXEC,
         RUNNING,
         SUCCESS,

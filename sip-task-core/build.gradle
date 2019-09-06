@@ -5,7 +5,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId 'com.sip'
             artifactId 'sip-task-core'
-            version '1.0.0-SNAPSHOT'
+            version '1.0.3-SNAPSHOT'
 
             from components.java
             // more goes in here

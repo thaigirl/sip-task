@@ -35,7 +35,7 @@ spring:
               password: root
 sip:
   datasource:
-    expression: execution(* com.sip.task.admin.*.service.*Service.*(..))
+    expression: execution(* com.sip.task.admin.*.*Service.*(..))
 
 
 

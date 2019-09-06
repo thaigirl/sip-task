@@ -1,10 +1,9 @@
 spring:
   application:
-    name: admin
+    name: sample
   profiles:
     active: ${ENV:dev}
-
-
-
+  main:
+    allow-bean-definition-overriding: true
 
 
