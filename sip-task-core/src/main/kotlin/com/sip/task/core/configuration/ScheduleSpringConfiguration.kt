@@ -1,5 +1,6 @@
 package com.sip.task.core.configuration
 
+import com.alibaba.fastjson.JSON
 import com.sip.task.core.annotation.ScheduleTask
 import com.sip.task.core.context.ExecutorContext
 import com.sip.task.core.context.ExecutorInstance
@@ -28,6 +29,7 @@ class ScheduleSpringConfiguration : ApplicationContextAware {
                 if (mhd.isAnnotationPresent(ScheduleTask::class.java)) {
                     val code = mhd.getAnnotation(ScheduleTask::class.java).code
                     val instance = ExecutorInstance(code, bean, clazz, mhd, mhd.parameters)
+                    print("发现实例:"+ JSON.toJSONString(instance))
                     ExecutorContext.putExecutor(code, instance)
                 }
             }

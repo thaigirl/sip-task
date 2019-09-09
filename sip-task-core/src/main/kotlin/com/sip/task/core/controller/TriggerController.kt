@@ -23,12 +23,9 @@ class TriggerController {
             recordId == null -> ResponseDto.fail("recordId can not be null")
             else -> {
                 ExecutorContext.setCurrentTaskRecordId(recordId)
-                val executor = ExecutorContext.loadExecutor(execCode!!)
-                if (executor == null){
-                    ResponseDto.fail("instance of $execCode not found")
-                }
-                executor!!.exec(recordId,params)
-                ResponseDto.success()
+                val executor = ExecutorContext.loadExecutor(execCode!!) ?: return ResponseDto.fail("instance of $execCode not found")
+                executor.exec(recordId,params)
+                return ResponseDto.success()
             }
         }
     }

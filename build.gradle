@@ -84,8 +84,8 @@ project(":sip-task-admin") {
 }
 project(":sip-task-core") {
     dependencies {
-        compile("com.alibaba:druid-spring-boot-starter:1.1.10")
         compile("org.springframework.cloud:spring-cloud-starter-netflix-hystrix")
         compile("org.springframework.cloud:spring-cloud-starter-openfeign")
+        compile("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     }
 }
