@@ -1,6 +1,5 @@
 import React from 'react';
 import CopyBlock from '@/components/CopyBlock';
-import CopyBlock from '@/components/CopyBlock';
 
 const Layout: React.FC = ({ children }) => (
   <>

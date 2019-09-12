@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
+// @ts-ignore
 import city from './geographic/city.json';
+// @ts-ignore
 import province from './geographic/province.json';
 
 function getProvince(_: Request, res: Response) {

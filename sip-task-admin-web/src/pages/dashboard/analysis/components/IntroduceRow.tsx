@@ -2,6 +2,7 @@ import { Col, Icon, Row, Tooltip } from 'antd';
 
 import { FormattedMessage } from 'umi-plugin-react/locale';
 import React from 'react';
+// @ts-ignore
 import numeral from 'numeral';
 import { ChartCard, MiniArea, MiniBar, MiniProgress, Field } from './Charts';
 import { VisitDataType } from '../data.d';

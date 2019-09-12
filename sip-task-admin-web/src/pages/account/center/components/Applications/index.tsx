@@ -2,6 +2,7 @@ import { Avatar, Card, Dropdown, Icon, List, Menu, Tooltip } from 'antd';
 import React, { Component } from 'react';
 
 import { connect } from 'dva';
+// @ts-ignore
 import numeral from 'numeral';
 import { ModalState } from '../../model';
 import stylesApplications from './index.less';

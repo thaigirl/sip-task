@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {List, Tabs, Collapse, Row, Col, Button, Input, Modal, Radio, InputNumber, Checkbox, Divider} from 'antd';
 import {connect} from "dva";
-import {ConnectProps} from "@/models/connect";
+import {ConnectProps} from "../../models/connect";
 import {Dispatch} from "redux";
-import {StateType} from "@/pages/task/executor-list/model";
+import {StateType} from "../../pages/task/executor/model";
 
 const {Panel} = Collapse;
 const {TabPane} = Tabs;
@@ -44,11 +44,11 @@ interface CronProps extends ConnectProps {
 
 @connect(
   ({
-     executor,
+     cron,
    }: {
-    executor: StateType;
+    cron: StateType;
   }) => ({
-    fiveRecentTimedata: executor.cron,
+    fiveRecentTimedata: cron.cron,
   }),
 )
 
@@ -154,7 +154,7 @@ class Cron extends Component<CronProps> {
 
   componentWillReceiveProps(nextProps: Readonly<CronProps>, nextContext: any): void {
     this.setState({
-      fiveRecentTimedata: nextProps.fiveRecentTimedata,
+      fiveRecentTimedata: this.props.fiveRecentTimedata,
     })
   }
 
@@ -174,7 +174,7 @@ class Cron extends Component<CronProps> {
   onSecondChange = (e: any) => {
     this.setState({
       secondValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_second');
     });
 
@@ -182,42 +182,42 @@ class Cron extends Component<CronProps> {
   onMinuteChange = (e: any) => {
     this.setState({
       minuteValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_minute');
     });
   };
   onHourChange = (e: any) => {
     this.setState({
       hourValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_hour');
     });
   };
   onDayChange = (e: any) => {
     this.setState({
       dayValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_day');
     });
   };
   onMonthChange = (e: any) => {
     this.setState({
       monthValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_month');
     });
   };
   onWeekChange = (e: any) => {
     this.setState({
       weekValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_week');
     });
   };
   onYearChange = (e: any) => {
     this.setState({
       yearValue: e.target.value,
-    },()=>{
+    }, () => {
       this.everyTime('v_year');
     });
   };
@@ -231,7 +231,7 @@ class Cron extends Component<CronProps> {
 
     this.setState({
       [`${key}`]: value
-    },()=>{
+    }, () => {
       switch (this.state.tabValue) {
         case '1':
           this.everyTime('v_second');
@@ -270,7 +270,7 @@ class Cron extends Component<CronProps> {
   getCronTime = (cron: string) => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'executor/cron',
+      type: 'cron/cron',
       payload: {cron: cron}
     });
   }
@@ -526,72 +526,72 @@ class Cron extends Component<CronProps> {
   }
 
   everyTime = (type: string) => {
-    let data='',stateMap={};
+    let data = '', stateMap = {};
     switch (type) {
       case 'v_second':
-        if (this.state.secondValue==1 ) {
-          stateMap['v_minute']='*';
-          stateMap['v_hour']='*';
-          stateMap['v_day']='*';
-          stateMap['v_month']='*';
-          stateMap['v_week']='?';
-          stateMap['v_year']='*';
+        if (this.state.secondValue == 1) {
+          stateMap['v_minute'] = '*';
+          stateMap['v_hour'] = '*';
+          stateMap['v_day'] = '*';
+          stateMap['v_month'] = '*';
+          stateMap['v_week'] = '?';
+          stateMap['v_year'] = '*';
         }
         switch (this.state.secondValue) {
           case 1:
             data = '*'
             break;
           case 2:
-            data=this.state.secondStart_0+'-'+this.state.secondEnd_0
+            data = this.state.secondStart_0 + '-' + this.state.secondEnd_0
             break;
           case 3:
-            data=this.state.secondStart_1+'/'+this.state.secondEnd_1
+            data = this.state.secondStart_1 + '/' + this.state.secondEnd_1
             break;
           case 4:
-            data=this.state.secondList.join(',');
+            data = this.state.secondList.join(',');
             break;
         }
         break;
       case 'v_minute':
-        if (this.state.minuteValue!=1 ) {
+        if (this.state.minuteValue != 1) {
           if (this.state.v_second == '*') {
-            stateMap['v_second']=0;
+            stateMap['v_second'] = 0;
           }
-        }else{
-          stateMap['v_hour']='*';
-          stateMap['v_day']='*';
-          stateMap['v_month']='*';
-          stateMap['v_week']='?';
-          stateMap['v_year']='*';
+        } else {
+          stateMap['v_hour'] = '*';
+          stateMap['v_day'] = '*';
+          stateMap['v_month'] = '*';
+          stateMap['v_week'] = '?';
+          stateMap['v_year'] = '*';
         }
         switch (this.state.minuteValue) {
           case 1:
             data = '*'
             break;
           case 2:
-            data=this.state.minuteStart_0+'-'+this.state.minuteEnd_0
+            data = this.state.minuteStart_0 + '-' + this.state.minuteEnd_0
             break;
           case 3:
-            data=this.state.minuteStart_1+'/'+this.state.minuteEnd_1
+            data = this.state.minuteStart_1 + '/' + this.state.minuteEnd_1
             break;
           case 4:
-            data=this.state.minuteList.join(',');
+            data = this.state.minuteList.join(',');
             break;
         }
         break;
       case 'v_hour':
         if (this.state.hourValue != 1) {
           if (this.state.v_second == '*') {
-            stateMap['v_second']=0;
+            stateMap['v_second'] = 0;
           }
           if (this.state.v_minute == '*') {
-            stateMap['v_minute']=0;
+            stateMap['v_minute'] = 0;
           }
-        }else{
-          stateMap['v_day']='*';
-          stateMap['v_month']='*';
-          stateMap['v_week']='?';
-          stateMap['v_year']='*';
+        } else {
+          stateMap['v_day'] = '*';
+          stateMap['v_month'] = '*';
+          stateMap['v_week'] = '?';
+          stateMap['v_year'] = '*';
         }
 
         switch (this.state.hourValue) {
@@ -599,31 +599,31 @@ class Cron extends Component<CronProps> {
             data = '*'
             break;
           case 2:
-            data=this.state.hourStart_0+'-'+this.state.hourEnd_0
+            data = this.state.hourStart_0 + '-' + this.state.hourEnd_0
             break;
           case 3:
-            data=this.state.hourStart_1+'/'+this.state.hourEnd_1
+            data = this.state.hourStart_1 + '/' + this.state.hourEnd_1
             break;
           case 4:
-            data=this.state.hourList.join(',');
+            data = this.state.hourList.join(',');
             break;
         }
         break;
       case 'v_day':
         if (this.state.dayValue != 1) {
           if (this.state.v_second == '*') {
-            stateMap['v_second']=0;
+            stateMap['v_second'] = 0;
           }
           if (this.state.v_minute == '*') {
-            stateMap['v_minute']=0;
+            stateMap['v_minute'] = 0;
           }
           if (this.state.v_hour == '*') {
-            stateMap['v_hour']=0;
+            stateMap['v_hour'] = 0;
           }
-        }else{
-          stateMap['v_month']='*';
-          stateMap['v_week']='?';
-          stateMap['v_year']='*';
+        } else {
+          stateMap['v_month'] = '*';
+          stateMap['v_week'] = '?';
+          stateMap['v_year'] = '*';
         }
 
         switch (this.state.dayValue) {
@@ -631,42 +631,42 @@ class Cron extends Component<CronProps> {
             data = '*'
             break;
           case 2:
-            data='?'
+            data = '?'
             break;
           case 3:
-            data=this.state.dayStart_0+'-'+this.state.dayEnd_0
+            data = this.state.dayStart_0 + '-' + this.state.dayEnd_0
             break;
           case 4:
-            data=this.state.dayStart_1+'/'+this.state.dayEnd_1
+            data = this.state.dayStart_1 + '/' + this.state.dayEnd_1
             break;
           case 5:
-            data=this.state.dayStart_2+'W';
+            data = this.state.dayStart_2 + 'W';
             break;
           case 6:
-            data='L';
+            data = 'L';
             break;
           case 7:
-            data=this.state.dayList.join(',');
+            data = this.state.dayList.join(',');
             break;
         }
         break;
       case 'v_month':
         if (this.state.monthValue != 1) {
           if (this.state.v_second == '*') {
-            stateMap['v_second']=0;
+            stateMap['v_second'] = 0;
           }
           if (this.state.v_minute == '*') {
-            stateMap['v_minute']=0;
+            stateMap['v_minute'] = 0;
           }
           if (this.state.v_hour == '*') {
-            stateMap['v_hour']=0;
+            stateMap['v_hour'] = 0;
           }
           if (this.state.v_day == '*') {
-            stateMap['v_day']=0;
+            stateMap['v_day'] = 0;
           }
-        }else{
-          stateMap['v_week']='?';
-          stateMap['v_year']='*';
+        } else {
+          stateMap['v_week'] = '?';
+          stateMap['v_year'] = '*';
         }
 
         switch (this.state.monthValue) {
@@ -674,38 +674,38 @@ class Cron extends Component<CronProps> {
             data = '*'
             break;
           case 2:
-            data='?'
+            data = '?'
             break;
           case 3:
-            data=this.state.monthStart_0+'-'+this.state.monthEnd_0
+            data = this.state.monthStart_0 + '-' + this.state.monthEnd_0
             break;
           case 4:
-            data=this.state.monthStart_1+'/'+this.state.monthEnd_1
+            data = this.state.monthStart_1 + '/' + this.state.monthEnd_1
             break;
           case 5:
-            data=this.state.monthList.join(',');
+            data = this.state.monthList.join(',');
             break;
         }
         break;
       case 'v_week':
         if (this.state.weekValue != 1) {
           if (this.state.v_second == '*') {
-            stateMap['v_second']=0;
+            stateMap['v_second'] = 0;
           }
           if (this.state.v_minute == '*') {
-            stateMap['v_minute']=0;
+            stateMap['v_minute'] = 0;
           }
           if (this.state.v_hour == '*') {
-            stateMap['v_hour']=0;
+            stateMap['v_hour'] = 0;
           }
           if (this.state.v_day == '*') {
-            stateMap['v_day']=0;
+            stateMap['v_day'] = 0;
           }
           if (this.state.v_mouth == '*') {
-            stateMap['v_mouth']=0;
+            stateMap['v_mouth'] = 0;
           }
-        }else{
-          stateMap['v_year']='*';
+        } else {
+          stateMap['v_year'] = '*';
         }
 
         switch (this.state.weekValue) {
@@ -713,44 +713,44 @@ class Cron extends Component<CronProps> {
             data = '*'
             break;
           case 2:
-            data='?'
+            data = '?'
             break;
           case 3:
-            data=this.state.weekStart_0+'-'+this.state.weekEnd_0
+            data = this.state.weekStart_0 + '-' + this.state.weekEnd_0
             break;
           case 4:
-            data=this.state.weekStart_1+'#'+this.state.weekEnd_1
+            data = this.state.weekStart_1 + '#' + this.state.weekEnd_1
             break;
           case 5:
-            data=this.state.weekStart_2+'L';
+            data = this.state.weekStart_2 + 'L';
             break;
           case 6:
-            data='L';
+            data = 'L';
             break;
           case 7:
-            data=this.state.weekList.join(',');
+            data = this.state.weekList.join(',');
             break;
         }
         break;
       case 'v_week':
         if (this.state.weekValue != 1) {
           if (this.state.v_second == '*') {
-            stateMap['v_second']=0;
+            stateMap['v_second'] = 0;
           }
           if (this.state.v_minute == '*') {
-            stateMap['v_minute']=0;
+            stateMap['v_minute'] = 0;
           }
           if (this.state.v_hour == '*') {
-            stateMap['v_hour']=0;
+            stateMap['v_hour'] = 0;
           }
           if (this.state.v_day == '*') {
-            stateMap['v_day']=0;
+            stateMap['v_day'] = 0;
           }
           if (this.state.v_mouth == '*') {
-            stateMap['v_mouth']=0;
+            stateMap['v_mouth'] = 0;
           }
-        }else{
-          stateMap['v_year']='*';
+        } else {
+          stateMap['v_year'] = '*';
         }
 
         switch (this.state.weekValue) {
@@ -758,21 +758,21 @@ class Cron extends Component<CronProps> {
             data = ''
             break;
           case 2:
-            data='*'
+            data = '*'
             break;
           case 3:
-            data=this.state.weekStart_0+'-'+this.state.weekEnd_0
+            data = this.state.weekStart_0 + '-' + this.state.weekEnd_0
             break;
         }
         break;
     }
-    stateMap[`${type}`]=data,
-    this.setState(stateMap, () => {
-      this.resetCronTime()
-    });
+    stateMap[`${type}`] = data,
+      this.setState(stateMap, () => {
+        this.resetCronTime()
+      });
   }
 
-  resetCronTime=()=>{
+  resetCronTime = () => {
     let cron = this.state.v_second + ' ' + this.state.v_minute + ' ' + this.state.v_hour + ' ' + this.state.v_day + ' ' + this.state.v_mouth + ' ' + this.state.v_week;
     if (this.state.v_year != '') {
       cron += ' ' + this.state.v_year;

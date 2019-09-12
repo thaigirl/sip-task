@@ -48,6 +48,6 @@ export default {
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
   'menu.task': '调度系统',
-  'menu.task.executor-list': '执行器',
+  'menu.task.executor': '执行器',
   'menu.task.job': "任务"
 };

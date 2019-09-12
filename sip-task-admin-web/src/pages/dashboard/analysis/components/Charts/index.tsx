@@ -1,3 +1,4 @@
+// @ts-ignore
 import numeral from 'numeral';
 import Bar from './Bar';
 import ChartCard from './ChartCard';

@@ -1,4 +1,4 @@
-import {Form, Input, Modal} from 'antd';
+import {Form, Input, Modal,InputNumber} from 'antd';
 import React, {Component} from 'react';
 
 import {FormComponentProps} from 'antd/es/form';
@@ -66,7 +66,6 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
       </FormItem>,
       <FormItem key="desc" {...this.formLayout} label="描述">
         {form.getFieldDecorator('desc', {
-          rules: [{required: true, message: '请输入至少五个字符的规则描述！', min: 5}],
           initialValue: formVals.desc,
         })(<TextArea rows={4} placeholder="请输入至少五个字符"/>)}
       </FormItem>,
@@ -74,7 +73,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
         {form.getFieldDecorator('order', {
           rules: [{required: true, message: '请输入排序！'}],
           initialValue: formVals.order,
-        })(<Input placeholder="请输入"/>)}
+        })(<InputNumber placeholder="请输入"/>)}
       </FormItem>,
       <FormItem key="addressList" {...this.formLayout} label="执行器地址列表">
         {form.getFieldDecorator('addressList', {

@@ -16,6 +16,7 @@ const renderTotal = (total?: number | totalType | React.ReactNode) => {
       totalDom = null;
       break;
     case 'function':
+      // @ts-ignore
       totalDom = <div className={styles.total}>{total()}</div>;
       break;
     default:

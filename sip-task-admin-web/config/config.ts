@@ -218,9 +218,9 @@ export default {
               name: 'task',
               routes: [
                 {
-                  name: 'executor-list',
-                  path: '/task/executor-list',
-                  component: './task/executor-list',
+                  name: 'executor',
+                  path: '/task/executor',
+                  component: './task/executor',
                 },
                 {
                   name: 'job',

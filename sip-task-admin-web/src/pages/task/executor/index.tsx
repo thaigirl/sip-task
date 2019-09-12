@@ -22,7 +22,7 @@ import {TableListItem, TableListPagination, TableListParams} from './data.d';
 
 import styles from './style.less';
 import {formatDateTime} from "@/utils/utils";
-import Cron from "@/pages/task/executor-list/components/Cron";
+import Cron from "@/components/Cron";
 
 const FormItem = Form.Item;
 const getValue = (obj: { [x: string]: string[] }) =>
@@ -320,7 +320,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
     return (
       <PageHeaderWrapper>
-        <Cron dispatch={this.props.dispatch} fiveRecentTimedata={this.props.executor.cron}/>
+        <Cron dispatch={this.props.dispatch} fiveRecentTimedata={[]}/>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
