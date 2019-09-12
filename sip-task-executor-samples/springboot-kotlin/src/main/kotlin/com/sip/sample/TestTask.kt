@@ -1,4 +1,4 @@
-package com.sip.task
+package com.sip.sample
 
 import com.sip.task.core.annotation.ScheduleTask
 import org.springframework.stereotype.Component

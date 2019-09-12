@@ -27,20 +27,22 @@ class ExecutorInstance {
      * 2.invoke
      * 3.回写反馈
      */
-    fun exec(scheduleLogId: Long?, inputParams: Map<String, Any>) {
+    fun exec(inputParams: Map<String, Any>) {
         ExecutorContext.getExecutorService().submit {
             try {
                 FeignContext.feedBackTaskStatus(StatusEnum.RUNNING)
                 if (this.params.isNullOrEmpty()){
-                    method!!.invoke(beanClass)
+                    method!!.invoke(beanInstance)
                 }else{
                     val parameters = formatParameter(inputParams)
-                    method!!.invoke(beanClass,*parameters)
+                    method!!.invoke(beanInstance, *parameters)
                 }
                 FeignContext.feedBackTaskStatus(StatusEnum.SUCCESS)
             }catch (var1: Exception){
                 TaskLogger.error("an exception occurred during the task",var1)
                 FeignContext.feedBackTaskStatus(StatusEnum.FAILED)
+                print(var1.message)
+                var1.printStackTrace()
             }
         }
     }
@@ -49,7 +51,7 @@ class ExecutorInstance {
     private fun formatParameter(inputParam: Map<String, Any>): Array<Any?> {
         if (this.params.isNullOrEmpty()) return emptyArray()
         val ret = arrayOfNulls<Any>(this.params!!.size)
-        for (i in 0 until this.params!!.size){
+        for (i in this.params!!.indices){
             val param = this.params!![i]
             val type = param.type
             ret[i] = ParamUtils.formateValue(type,inputParam[param.name])

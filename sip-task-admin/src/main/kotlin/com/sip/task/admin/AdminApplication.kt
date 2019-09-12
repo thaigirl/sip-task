@@ -9,7 +9,7 @@ import tk.mybatis.spring.annotation.MapperScan
 @MapperScan(basePackages = ["com.sip.task.admin.mapper"])
 @EnableSipCore
 @SpringCloudApplication
-@SpringBootApplication
+//@SpringBootApplication
 class AdminApplication
 
 fun main(args: Array<String>) {
