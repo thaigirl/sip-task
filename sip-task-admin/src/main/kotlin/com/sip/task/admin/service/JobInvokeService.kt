@@ -3,9 +3,9 @@ package com.sip.task.admin.service
 import com.basicfu.sip.core.common.example
 import com.basicfu.sip.core.common.exception.CustomException
 import com.basicfu.sip.core.common.generate
-import com.basicfu.sip.schedule.util.JobInvokeUtil
 import com.sip.task.admin.common.BaseEnum
 import com.sip.task.admin.common.cache.ExecutorCache
+import com.sip.task.admin.common.util.JobInvokeUtil
 import com.sip.task.admin.mapper.QrtzTriggerJobMapper
 import com.sip.task.admin.mapper.QrtzTriggerJobParamMapper
 import com.sip.task.admin.model.po.QrtzTriggerJob

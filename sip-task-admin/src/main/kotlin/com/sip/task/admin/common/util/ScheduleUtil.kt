@@ -1,8 +1,7 @@
 package com.sip.task.admin.common.util
 
-import com.basicfu.sip.schedule.common.constants.ScheduleConstants
-import com.basicfu.sip.schedule.common.exception.TaskException
-import com.basicfu.sip.schedule.util.QuartzDisallowConcurrentExecution
+import com.sip.task.admin.common.constants.ScheduleConstants
+import com.sip.task.admin.common.exception.TaskException
 import com.sip.task.admin.model.po.QrtzTriggerJob
 import org.quartz.*
 import org.slf4j.LoggerFactory

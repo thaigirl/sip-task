@@ -1,4 +1,4 @@
-package com.basicfu.sip.schedule.common.constants
+package com.sip.task.admin.common.constants
 
 /**
  * 任务调度通用常量

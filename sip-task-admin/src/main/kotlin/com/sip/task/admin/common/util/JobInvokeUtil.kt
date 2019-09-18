@@ -1,4 +1,4 @@
-package com.basicfu.sip.schedule.util
+package com.sip.task.admin.common.util
 
 import cn.hutool.http.HttpRequest
 import com.alibaba.fastjson.JSON

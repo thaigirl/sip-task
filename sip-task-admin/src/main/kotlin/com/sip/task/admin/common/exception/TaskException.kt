@@ -1,4 +1,4 @@
-package com.basicfu.sip.schedule.common.exception
+package com.sip.task.admin.common.exception
 
 /**
  * 计划策略异常

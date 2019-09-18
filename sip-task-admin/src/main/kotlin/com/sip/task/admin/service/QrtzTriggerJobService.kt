@@ -3,7 +3,7 @@ package com.sip.task.admin.service
 import com.basicfu.sip.core.common.example
 import com.basicfu.sip.core.common.exception.CustomException
 import com.basicfu.sip.core.service.BaseService
-import com.basicfu.sip.schedule.common.exception.TaskException
+import com.sip.task.admin.common.exception.TaskException
 import com.github.pagehelper.PageInfo
 import com.sip.task.admin.common.BaseEnum
 import com.sip.task.admin.common.util.ScheduleUtil

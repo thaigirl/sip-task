@@ -1,6 +1,6 @@
-package com.basicfu.sip.schedule.util
+package com.sip.task.admin.common.util
 
-import com.basicfu.sip.schedule.common.constants.ScheduleConstants
+import com.sip.task.admin.common.constants.ScheduleConstants
 import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
 import com.sip.task.admin.model.po.QrtzTriggerJob
 import com.sip.task.admin.service.JobInvokeService
