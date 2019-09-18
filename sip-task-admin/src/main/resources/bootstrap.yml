@@ -1,6 +1,6 @@
 spring:
   application:
-    name: admin
+    name: SIP-TASK-SERVER
   profiles:
     active: ${ENV:dev}
   quartz:
@@ -37,6 +37,18 @@ sip:
   datasource:
     expression: execution(* com.sip.task.admin.*.*Service.*(..))
 
+hystrix:
+  command.default.execution.timeout.enabled: false
+
+feign.hystrix.enabled: true
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+eureka:
+  instance:
+    hostname: ${spring.cloud.client.ip-address}
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
 
 
 

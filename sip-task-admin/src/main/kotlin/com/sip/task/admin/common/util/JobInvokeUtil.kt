@@ -30,7 +30,7 @@ object JobInvokeUtil {
             }
             try {
                 index++
-                var url = ele.plus("/${instance.recordId}")
+                var url = ele.plus("/schedule/${instance.recordId}")
                 log.info("发送http请求,地址:{},参数:{}", url, instance.param)
                 var response = HttpRequest.post(url).body(JSON.toJSONString(instance.param)).execute()
                 log.info("http请求响应,状态码:{},内容:{}", response.status, response.body())

@@ -2,9 +2,8 @@ package com.sip.task.admin.service
 
 import com.basicfu.sip.core.common.example
 import com.basicfu.sip.core.common.exception.CustomException
-import com.basicfu.sip.core.util.RedisUtil
+import com.basicfu.sip.core.common.generate
 import com.sip.task.admin.common.BaseEnum
-import com.sip.task.admin.common.constants.Config
 import com.sip.task.admin.mapper.QrtzTriggerRecordLogMapper
 import com.sip.task.admin.mapper.QrtzTriggerRecordMapper
 import com.sip.task.admin.model.po.QrtzTriggerRecord
@@ -16,14 +15,18 @@ import org.springframework.stereotype.Service
 @Service
 class FeedBackService {
 
-    @Autowired
-    lateinit var recordLogMapper: QrtzTriggerRecordLogMapper
 
     @Autowired
     lateinit var recordMapper: QrtzTriggerRecordMapper
 
     @Autowired
     lateinit var jobInvokeService: JobInvokeService
+
+//    @Autowired
+//    lateinit var redisTemplate: ReactiveRedisTemplate<String,Any>
+
+    @Autowired
+    lateinit var logMapper: QrtzTriggerRecordLogMapper
 
 
     /**
@@ -56,7 +59,17 @@ class FeedBackService {
      *
      */
     fun insertLogger(vo: LoggerVo){
-        RedisUtil.rpush(Config.LOG_KEY,vo)
+        //TODO 补充记录日志策略
+//        val serialize = SerializationUtil.serialize(vo)
+//        redisTemplate.opsForList().rightPush(Config.LOG_KEY, serialize!!)
+//        RedisUtil.rpush(Config.LOG_KEY,vo)
+        logMapper.insertSelective(generate {
+            recordId = vo.recordId
+            type = BaseEnum.LogType.EXECUTE.name
+            value = vo.msg
+            createTime = System.currentTimeMillis()
+        })
+
     }
 
 }

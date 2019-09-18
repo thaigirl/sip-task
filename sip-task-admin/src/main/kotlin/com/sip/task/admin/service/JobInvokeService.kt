@@ -38,7 +38,8 @@ class JobInvokeService{
             andEqualTo {
                 jobId = job.id
             }
-        }).associateBy({it.key!!},{it.value!!})
+        }).associateBy({it.key!!},{it.value!!}).toMutableMap()
+        paramMap["code"] = job.code!!
         //如果运行策略是阻塞且有未完成的任务则不发起调度
         if (job.strategy == BaseEnum.Strategy.BLOCKING.name && recordService.existRunningJob(job.id!!)) return
         val invokeResult = JobInvokeUtil.invokeMethod(generate {
@@ -58,7 +59,8 @@ class JobInvokeService{
             andEqualTo {
                 jobId = job.id
             }
-        }).associateBy({it.key!!},{it.value!!})
+        }).associateBy({it.key!!},{it.value!!}).toMutableMap()
+        paramMap["code"] = job.code!!
         val invokeResult = JobInvokeUtil.invokeMethod(generate {
             address = executor.addressList?.split(",")
             this.recordId = recordId

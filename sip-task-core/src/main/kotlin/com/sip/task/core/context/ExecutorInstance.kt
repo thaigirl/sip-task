@@ -27,9 +27,10 @@ class ExecutorInstance {
      * 2.invoke
      * 3.回写反馈
      */
-    fun exec(inputParams: Map<String, Any>) {
+    fun exec(recordId:Long,inputParams: Map<String, Any>) {
         ExecutorContext.getExecutorService().submit {
             try {
+                ExecutorContext.setCurrentTaskRecordId(recordId)
                 FeignContext.feedBackTaskStatus(StatusEnum.RUNNING)
                 if (this.params.isNullOrEmpty()){
                     method!!.invoke(beanInstance)
@@ -39,10 +40,9 @@ class ExecutorInstance {
                 }
                 FeignContext.feedBackTaskStatus(StatusEnum.SUCCESS)
             }catch (var1: Exception){
-                TaskLogger.error("an exception occurred during the task",var1)
-                FeignContext.feedBackTaskStatus(StatusEnum.FAILED)
-                print(var1.message)
                 var1.printStackTrace()
+                TaskLogger.getLogger(this.javaClass).error("an exception occurred during the task",var1)
+                FeignContext.feedBackTaskStatus(StatusEnum.FAILED)
             }
         }
     }

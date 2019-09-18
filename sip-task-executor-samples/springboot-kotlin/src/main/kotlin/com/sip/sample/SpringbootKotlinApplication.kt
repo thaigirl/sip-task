@@ -1,13 +1,13 @@
-package com.sip.springbootkotlin
+package com.sip.sample
 
 import com.sip.task.core.annotation.EnableSipTask
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.ComponentScan
+import org.springframework.cloud.openfeign.EnableFeignClients
 
 @EnableSipTask
 @SpringBootApplication
-@ComponentScan("com.sip.sample")
+@EnableFeignClients
 class SpringbootKotlinApplication
 
 fun main(args: Array<String>) {
