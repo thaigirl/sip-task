@@ -28,7 +28,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        form.resetFields();
+        // form.resetFields();
         handleAdd(fieldsValue);
       });
     };
@@ -104,8 +104,8 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           <Col md={12} sm={24}>
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="超时时间(s)">
               {form.getFieldDecorator('timeout', {
-                rules: [{required: true, message: '请输入数字 ', min: 1}],
-              })(<Input placeholder="请输入"/>)}
+                rules: [{required: true, message: '请输入数字 '}],
+              })(<InputNumber style={{width: "100%" }} placeholder="请输入"/>)}
             </FormItem>
           </Col>
         </Row>
@@ -129,7 +129,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           <Col md={12} sm={24}>
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="描述">
               {form.getFieldDecorator('desc', {
-                rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
+                rules: [{required: false, message: '请输入至少五个字符！', min: 5}],
               })(<TextArea placeholder="请输入"/>)}
             </FormItem>
           </Col>

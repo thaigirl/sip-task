@@ -207,7 +207,7 @@ CREATE TABLE `QRTZ_TRIGGER_JOB` (
   `executor_id` BIGINT NOT NULL COMMENT '执行器主键ID',
   `cron` VARCHAR(128) NOT NULL COMMENT '任务执行CRON',
   `name` VARCHAR(64) NOT NULL COMMENT '任务名称',
-  `desc` VARCHAR(255) NOT NULL COMMENT '任务描述',
+  `desc` VARCHAR(255) NOT NULL DEFAULT '' COMMENT '任务描述',
   `alarm_email` VARCHAR(255) DEFAULT NULL COMMENT '报警邮件,多个用逗号分隔',
   `strategy` VARCHAR(50) DEFAULT NULL COMMENT '执行器路由策略,阻塞/并发',
   `code` VARCHAR(255) DEFAULT NULL COMMENT '执行器任务编码',

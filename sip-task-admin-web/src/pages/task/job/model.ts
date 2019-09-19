@@ -3,11 +3,12 @@ import {EffectsCommandMap} from 'dva';
 import {addJob, queryJob, removeJob, updateJob, executorAll} from './service';
 
 import {TableListData,executor} from './data.d';
+import {message} from "antd";
 
 export interface StateType {
   data: TableListData;
   executors: Array<executor>;
-  modalVisible: boolean;
+  updateModalVisible: boolean;
 }
 
 export type Effect = (
@@ -25,6 +26,7 @@ export interface ModelType {
     update: Effect;
     executorAll: Effect;
     reload: Effect;
+    updateModalVisible: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -39,7 +41,7 @@ const Model: ModelType = {
       pagination: {},
     },
     executors: [],
-    modalVisible: false
+    updateModalVisible: false
   },
 
   effects: {
@@ -56,11 +58,25 @@ const Model: ModelType = {
       });
     },
     * add({payload, callback}, {call, put}) {
-      yield call(addJob, payload);
-      yield put({
-        type: 'reload'
-      });
-      if (callback) callback();
+      let response = yield call(addJob, payload);
+      if (response && response.code != 0) {
+        console.log(response);
+        yield put({
+          type: 'save',
+          payload: {
+            updateModalVisible: true
+          },
+        });
+      }else {
+        yield put({
+          type: 'reload',
+          payload: {
+            updateModalVisible: false
+          },
+        });
+        message.success('添加成功');
+        if (callback) callback();
+      }
     },
     * remove({payload, callback}, {call, put}) {
       yield call(removeJob, payload);
@@ -75,20 +91,27 @@ const Model: ModelType = {
         yield put({
           type: 'save',
           payload: {
-            modalVisible: true
+            updateModalVisible: true
           },
         });
       }else {
         yield put({
-          type: 'reload'
+          type: 'reload',
+          payload: {
+            updateModalVisible: false
+          },
         });
+        message.success('修改成功');
         if (callback) callback();
       }
     },
     * executorAll({payload, callback}, {call, put}) {
-      yield call(executorAll, payload);
+      let response = yield call(executorAll, payload);
       yield put({
-        type: 'reload'
+        type: 'save',
+        payload: {
+          executors: response.data
+        },
       });
       if (callback) callback();
     },
@@ -96,6 +119,15 @@ const Model: ModelType = {
       const search = yield select(state => state);
       yield put({type: 'fetch', payload: {search}});
     },
+    * updateModalVisible({payload}, {call, put}) {
+      yield put({
+        type: 'save',
+        payload: {
+          ...payload
+        },
+      });
+    },
+
   },
 
   reducers: {

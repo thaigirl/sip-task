@@ -59,7 +59,7 @@ request.interceptors.response.use(async (response) => {
   const data = await response.clone().json();
   if(data && data.code!=0) {
     notification.error({
-      message: '响应异常',
+      message: 'error',
       description: data.msg,
     });
   }

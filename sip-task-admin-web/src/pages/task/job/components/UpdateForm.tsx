@@ -77,8 +77,8 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
-        form.resetFields();
-        fieldsValue.id=formVals.id
+        // form.resetFields();
+        fieldsValue.id=formVals.id;
         handleUpdate(fieldsValue);
       });
     };
