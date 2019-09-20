@@ -227,6 +227,11 @@ export default {
                   path: '/task/job',
                   component: './task/job',
                 },
+                {
+                  name: 'record',
+                  path: '/task/record',
+                  component: './task/record',
+                },
               ],
             },
             {

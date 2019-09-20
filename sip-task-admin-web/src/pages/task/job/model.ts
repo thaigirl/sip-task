@@ -1,14 +1,15 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {addJob, queryJob, removeJob, updateJob, executorAll} from './service';
+import {addJob, executorAll, queryJob, removeJob, updateJob} from './service';
 
-import {TableListData,executor} from './data.d';
+import {executor, TableListData} from './data.d';
 import {message} from "antd";
 
 export interface StateType {
   data: TableListData;
   executors: Array<executor>;
   updateModalVisible: boolean;
+  search: any;
 }
 
 export type Effect = (
@@ -41,11 +42,17 @@ const Model: ModelType = {
       pagination: {},
     },
     executors: [],
+    search: {},
     updateModalVisible: false
   },
 
   effects: {
     * fetch({payload}, {call, put}) {
+      console.log(payload);
+      let flag = false;
+      if (payload && payload.updateModalVisible){
+        flag = payload.updateModalVisible;
+      }
       const response = yield call(queryJob, payload);
       yield put({
         type: 'save',
@@ -53,7 +60,9 @@ const Model: ModelType = {
           data:{
             list: response.data.list,
             pagination: response.data.page,
-          }
+          },
+          updateModalVisible: flag,
+          search: payload
         },
       });
     },
@@ -116,8 +125,8 @@ const Model: ModelType = {
       if (callback) callback();
     },
     * reload({payload, callback},{call, put, select}) {
-      const search = yield select(state => state);
-      yield put({type: 'fetch', payload: {search}});
+      const search = yield select(state => state.executeJob.search);
+      yield put({type: 'fetch', payload: search});
     },
     * updateModalVisible({payload}, {call, put}) {
       yield put({

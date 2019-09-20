@@ -49,5 +49,6 @@ export default {
   'menu.editor.koni': '拓扑编辑器',
   'menu.task': '调度系统',
   'menu.task.executor': '执行器',
-  'menu.task.job': "任务"
+  'menu.task.job': "任务",
+  'menu.task.record': "执行记录"
 };

@@ -9,6 +9,7 @@ import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
 import com.sip.task.admin.mapper.QrtzTriggerJobMapper
 import com.sip.task.admin.mapper.QrtzTriggerRecordLogMapper
 import com.sip.task.admin.mapper.QrtzTriggerRecordMapper
+import com.sip.task.admin.model.dto.QrtzTriggerRecordDto
 import com.sip.task.admin.model.po.*
 import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.BeanUtils

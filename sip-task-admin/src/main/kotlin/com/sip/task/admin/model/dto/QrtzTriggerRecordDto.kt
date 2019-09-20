@@ -1,7 +1,7 @@
-package com.sip.task.admin.model.po
+package com.sip.task.admin.model.dto
 
 class QrtzTriggerRecordDto {
-    var id: Int? = null
+    var id: Long? = null
     var executorId: Long? = null
     var executorName: String? = null
     var jobId: Long? = null

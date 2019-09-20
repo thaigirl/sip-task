@@ -77,7 +77,6 @@ const Model: ModelType = {
       if (callback) callback();
     },
     * reload({payload, callback}, {call, put, select}) {
-      // @ts-ignore
       const search = yield select(state => state.executor.search);
       yield put({type: 'fetch', payload: {search}});
     },
