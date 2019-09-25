@@ -1,7 +1,7 @@
 export interface BasePagination {
   total: number;
   pageSize: number;
-  pageNum: number;
+  current: number;
 }
 export interface BaseItem {
   id: number

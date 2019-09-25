@@ -1,25 +1,9 @@
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Dropdown,
-  Form,
-  Icon,
-  Input,
-  InputNumber,
-  Menu,
-  message,
-  Row,
-  Select,
-} from 'antd';
+import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, message, Row, Select, AutoComplete} from 'antd';
 import React, {Component, Fragment} from 'react';
 
 import {Dispatch} from 'redux';
 import {FormComponentProps} from 'antd/es/form';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {SorterResult} from 'antd/es/table';
 import {connect} from 'dva';
 import moment from 'moment';
 import {StateType} from './model';
@@ -29,9 +13,10 @@ import UpdateForm, {FormValsType} from './components/UpdateForm';
 import {queryParam, TableListItem, TableListPagination} from './data.d';
 
 import styles from './style.less';
+import {DataSourceItemObject} from "antd/es/auto-complete";
 
 const FormItem = Form.Item;
-const { Option } = Select;
+const {Option} = Select;
 const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
     .map(key => obj[key])
@@ -46,18 +31,18 @@ interface TableListProps extends FormComponentProps {
 interface TableListState {
   modalVisible: boolean;
   updateModalVisible: boolean;
-  expandForm: boolean;
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
+  jobSelectValue: any;
 }
 
 /* eslint react/no-multi-comp:0 */
 @connect(
   ({
      record,
-    loading,
-  }: {
+     loading,
+   }: {
     record: StateType;
     loading: {
       models: {
@@ -73,10 +58,10 @@ class TableList extends Component<TableListProps, TableListState> {
   state: TableListState = {
     modalVisible: false,
     updateModalVisible: false,
-    expandForm: false,
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    jobSelectValue: '',
   };
 
   columns: StandardTableColumnProps[] = [
@@ -95,11 +80,29 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '状态',
       dataIndex: 'status',
+      render: (val: string) => {
+        let value = "";
+        switch (val) {
+          case "WAIT_EXEC":
+            value = "待执行";
+            break;
+          case "RUNNING":
+            value = "运行中";
+            break;
+          case "SUCCESS":
+            value = "执行成功";
+            break;
+          case "FAIL":
+            value = "执行失败";
+            break;
+        }
+        return value
+      }
     },
     {
-      title: '超时时间',
+      title: '超时时间(s)',
       dataIndex: 'timeout',
-    },{
+    }, {
       title: '失败重试次数',
       dataIndex: 'failRetryCount',
     },
@@ -113,14 +116,14 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '结束时间',
       dataIndex: 'endTime',
       sorter: true,
-      render: (val: string) => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: (val: string) => <span>{val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ""}</span>,
     },
     {
       title: '操作',
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>配置</a>
-          <Divider type="vertical" />
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>日志详情</a>
+          <Divider type="vertical"/>
           <a href="">订阅警报</a>
         </Fragment>
       ),
@@ -128,27 +131,30 @@ class TableList extends Component<TableListProps, TableListState> {
   ];
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'record/fetch',
     });
+    dispatch({
+      type: 'record/suggest',
+    });
+    this.initExecutorData()
   }
 
   handleStandardTableChange = (
     pagination: Partial<TableListPagination>,
     filtersArg: Record<keyof TableListItem, string[]>,
-    sorter: SorterResult<TableListItem>,
   ) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const {dispatch} = this.props;
+    const {formValues} = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
+      const newObj = {...obj};
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
     const params: Partial<queryParam> = {
-      pageNum: pagination.pageNum,
+      pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
@@ -160,7 +166,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const {form, dispatch} = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
@@ -171,16 +177,10 @@ class TableList extends Component<TableListProps, TableListState> {
     });
   };
 
-  toggleForm = () => {
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
 
   handleMenuClick = (e: { key: string }) => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
+    const {dispatch} = this.props;
+    const {selectedRows} = this.state;
 
     if (!selectedRows) return;
     switch (e.key) {
@@ -211,7 +211,7 @@ class TableList extends Component<TableListProps, TableListState> {
   handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { dispatch, form } = this.props;
+    const {dispatch, form} = this.props;
 
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -220,11 +220,9 @@ class TableList extends Component<TableListProps, TableListState> {
         ...fieldsValue,
         updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
       };
-
       this.setState({
         formValues: values,
       });
-
       dispatch({
         type: 'record/fetch',
         payload: values,
@@ -246,7 +244,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleAdd = (fields: { desc: any }) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'record/add',
       payload: {
@@ -259,26 +257,96 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
 
+  // 初始化执行器下拉框值
+  initExecutorData = () => {
+    const {form, dispatch} = this.props;
+    form.resetFields();
+    this.setState({
+      formValues: {},
+    });
+    dispatch({
+      type: 'record/executorAll',
+      payload: {},
+    });
+  };
+
+
+  initExcutorOption = () => {
+    const {
+      record: {executors},
+    } = this.props;
+    const arr: any[] = [];
+    for (let i = 0; i < executors.length; i++) {
+      const exec = executors[i];
+      arr.push(<Option key={exec.id} value={exec.id}>{exec.name}</Option>)
+    }
+    return arr;
+  };
+
+  onSearch = (searchText: any) => {
+    const {dispatch} = this.props;
+    console.log(searchText);
+    dispatch({
+      type: 'record/suggest',
+      payload: searchText,
+    });
+  };
+
+
+  onSelect = (value: any) => {
+    const {form} = this.props;
+    form.setFieldsValue({jobId: value})
+  };
+
 
   renderSimpleForm() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
+    const {form, record: {jobs}} = this.props;
+    const {getFieldDecorator} = form;
+    const {jobSelectValue} = this.state;
+    const dataSource: DataSourceItemObject[] = [];
+    jobs.map((obj) => {
+      dataSource.push({
+        value: obj.id.toString(),
+        text: obj.name
+      })
+    });
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+          <Col md={5} sm={24}>
+            <FormItem label="执行器">
+              {getFieldDecorator('executorId', {
+                initialValue: '',
+                rules: [{required: false, message: '请选择执行器'}],
+              })(
+                <Select style={{width: '100%'}} placeholder="请选择">
+                  <Option value="">请选择</Option>
+                  {this.initExcutorOption()}
                 </Select>,
               )}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem label="任务">
+              {getFieldDecorator('jobId', {
+                initialValue: '',
+                rules: [{required: false, message: '请选择任务'}],
+              })(
+                <AutoComplete
+                  // value={jobSelectValue}
+                  dataSource={dataSource}
+                  style={{width: 200}}
+                  onSelect={this.onSelect}
+                  onSearch={this.onSearch}
+                  // onChange={this.onChange}
+                  placeholder="job"
+                />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={5} sm={24}>
+            <FormItem label="CODE">
+              {getFieldDecorator('code')(<Input placeholder="请输入"/>)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -286,12 +354,9 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+              <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
                 重置
               </Button>
-              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-                展开 <Icon type="down" />
-              </a>
             </span>
           </Col>
         </Row>
@@ -299,83 +364,9 @@ class TableList extends Component<TableListProps, TableListState> {
     );
   }
 
-  renderAdvancedForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="规则名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="调用次数">
-              {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-          <Col md={8} sm={24}>
-            <FormItem label="更新日期">
-              {getFieldDecorator('date')(
-                <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status3')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="使用状态">
-              {getFieldDecorator('status4')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <div style={{ overflow: 'hidden' }}>
-          <div style={{ float: 'right', marginBottom: 24 }}>
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-              重置
-            </Button>
-            <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
-              收起 <Icon type="up" />
-            </a>
-          </div>
-        </div>
-      </Form>
-    );
-  }
 
   renderForm() {
-    const { expandForm } = this.state;
-    return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
+    return this.renderSimpleForm();
   }
 
   render() {
@@ -383,8 +374,7 @@ class TableList extends Component<TableListProps, TableListState> {
       record: {data},
       loading,
     } = this.props;
-    console.log(data);
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -413,7 +403,7 @@ class TableList extends Component<TableListProps, TableListState> {
                   <Button>批量操作</Button>
                   <Dropdown overlay={menu}>
                     <Button>
-                      更多操作 <Icon type="down" />
+                      更多操作 <Icon type="down"/>
                     </Button>
                   </Dropdown>
                 </span>
@@ -430,7 +420,7 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
+        <CreateForm {...parentMethods} modalVisible={modalVisible}/>
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
             {...updateMethods}

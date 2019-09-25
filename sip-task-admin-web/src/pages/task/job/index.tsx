@@ -84,7 +84,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   removeIndex = (key: any) => {
-    this.state.rowIndexArr.delete(key)
+    this.state.rowIndexArr.delete(key);
     this.setState({
       rowIndexArr: this.state.rowIndexArr,
     });
@@ -146,7 +146,6 @@ class TableList extends Component<TableListProps, TableListState> {
   handleStandardTableChange = (
     pagination: Partial<TableListPagination>,
     filtersArg: Record<keyof TableListItem, string[]>,
-    sorter: SorterResult<TableListItem>,
   ) => {
     const { dispatch } = this.props;
     const { formValues } = this.state;
@@ -157,7 +156,7 @@ class TableList extends Component<TableListProps, TableListState> {
       return newObj;
     }, {});
     const params: Partial<queryParam> = {
-      pageNum: pagination.pageNum,
+      pageNum: pagination.current,
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
@@ -191,7 +190,6 @@ class TableList extends Component<TableListProps, TableListState> {
     const {
       executeJob: { executors },
     } = this.props;
-    console.log(executors);
     const arr : any[] = [];
     for (let i = 0; i < executors.length; i++) {
       const exec = executors[i];

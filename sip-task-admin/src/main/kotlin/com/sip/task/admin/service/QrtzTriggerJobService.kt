@@ -41,7 +41,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
     @Autowired
     lateinit var executorMapper: QrtzTriggerExecutorMapper
     @Autowired
-    lateinit var recordMapper : QrtzTriggerRecordMapper
+    lateinit var recordMapper: QrtzTriggerRecordMapper
 
 
     /**
@@ -68,7 +68,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
             andRightLike { name = vo.name }
             orderByDesc(QrtzTriggerJob::createTime)
         })
-        if (page.list.isNotEmpty()){
+        if (page.list.isNotEmpty()) {
             val executorIds = page.list.map { it.executorId }
             val jobIds = page.list.map { it.id }
             val excutorMap = executorMapper.selectByIds(StringUtils.join(executorIds, ",")).associateBy({ it.id }, { it.name })
@@ -83,8 +83,10 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
         return page
     }
 
-    fun all(): List<QrtzTriggerExecutorDto> {
-        return to(mapper.selectAll())
+    fun suggest(q: String?) :Any{
+        return mapper.selectByExample(example<QrtzTriggerJob> {
+            andRightLike{ name = q }
+        })
     }
 
     @Transactional
@@ -121,21 +123,21 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
         po.updateUser = 1
         val exist = mapper.selectByPrimaryKey(vo.id)
         //修改执行策略的前置条件是没有未完成的任务
-        if (po.strategy != exist.strategy){
+        if (po.strategy != exist.strategy) {
             //TODO 这里是否加锁待定
             if (recordMapper.selectCountByExample(example<QrtzTriggerRecord> {
                         andEqualTo { jobId = vo.id!! }
-                        andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.WAIT_EXEC.name,BaseEnum.JobStatus
+                        andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.WAIT_EXEC.name, BaseEnum.JobStatus
                                 .RUNNING.name))
                     }) > 0) throw CustomException("有未执行完成的任务,不允许修改执行策略")
         }
         //TODO 校验最低运行间隔时间
 
-        if (CollectionUtils.isEmpty(vo.param)){
+        if (CollectionUtils.isEmpty(vo.param)) {
             paramMapper.deleteByExample(example<QrtzTriggerJobParam> {
                 andEqualTo { jobId = vo.id }
             })
-        }else{
+        } else {
             val existCount = paramMapper.selectCountByExample(example<QrtzTriggerJobParam> {
                 andEqualTo { jobId = vo.id }
             })
@@ -143,7 +145,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
             checkParam(param)
             param.forEach { it.jobId = vo.id }
             //如果之前未配置过参数则直接新增
-            if (existCount > 0){
+            if (existCount > 0) {
                 //TODO 是否要考虑增量新增？
                 paramMapper.deleteByExample(example<QrtzTriggerJobParam> {
                     andEqualTo { jobId = vo.id }
@@ -152,7 +154,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
             paramMapper.insertList(vo.param!!)
         }
         val rows = mapper.updateByPrimaryKeySelective(po)
-        ScheduleUtil.updateScheduleJob(scheduler,po)
+        ScheduleUtil.updateScheduleJob(scheduler, po)
         return rows
     }
 
@@ -208,7 +210,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
     }
 
 
-    private fun checkParam(param: List<QrtzTriggerJobParam>){
+    private fun checkParam(param: List<QrtzTriggerJobParam>) {
         param.groupBy { it.key }.forEach { (k, v) -> if (v.size > 1) throw CustomException("repeat key:$k") }
         //校验日期格式
         param.forEach {

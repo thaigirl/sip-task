@@ -40,3 +40,7 @@ export interface queryParam {
 export interface executor extends BaseItem {
   name: string;
 }
+
+export interface job extends BaseItem {
+  name: string;
+}

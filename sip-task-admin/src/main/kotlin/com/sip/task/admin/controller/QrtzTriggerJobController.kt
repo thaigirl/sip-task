@@ -27,10 +27,11 @@ class QrtzTriggerJobController {
         return Result.success(qrtzTriggerJobService.list(vo))
     }
 
-    @GetMapping("/all")
-    fun all(): Result<Any> {
-        return Result.success(qrtzTriggerJobService.all())
+    @GetMapping("/suggest")
+    fun suggest(q: String?): Result<Any> {
+        return Result.success(qrtzTriggerJobService.suggest(q))
     }
+
 
     @PostMapping("/insert")
     fun insert(@Validated(Insert::class) @RequestBody vo: QrtzTriggerJobVo): Result<Any> {

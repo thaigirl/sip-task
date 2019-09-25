@@ -6,6 +6,14 @@ export async function queryRecord(params: queryParam) {
     params,
   });
 }
+export async function suggest(params: any) {
+  if (params){
+    return request('/api/job/suggest?q='+params);
+  }else {
+    return request('/api/job/suggest');
+  }
+
+}
 
 export async function removeRule(params: queryParam) {
   return request('/api/record/list', {
