@@ -90,7 +90,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
       });
       return arr
     };
-
+    console.log(formVals.enable);
     return (
       <Modal
         width={"800px"}
@@ -198,7 +198,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
               {form.getFieldDecorator('enable',{
                 initialValue: formVals.enable,
               } )
-              (<Switch defaultChecked={true} />)}
+              (<Switch />)}
             </FormItem>
           </Col>
         </Row>

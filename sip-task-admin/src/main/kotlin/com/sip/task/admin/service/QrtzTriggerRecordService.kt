@@ -64,18 +64,20 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
             orderByAsc(QrtzTriggerRecordLog::createTime)
         })
         val groupBy = logs.groupBy { it.type }
+        val map = mutableMapOf<String, String>()
         val builder = StringBuilder()
         groupBy.forEach { (k, v) ->
             when (k) {
                 BaseEnum.LogType.INVOKE.name -> {
-                    v.forEach { builder.append(it).append("</br>") }
+                    map["INVOKE"] = v[0].value!!
                 }
                 BaseEnum.LogType.EXECUTE.name -> {
-
+                    v.forEach { builder.append(it.value).append("</br>") }
                 }
             }
         }
-        return Any()
+        map["EXECUTE"] = builder.toString()
+        return map
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

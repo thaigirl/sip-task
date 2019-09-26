@@ -81,7 +81,7 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '状态',
       dataIndex: 'status',
       render: (val: string) => {
-        let value = "";
+        let value:any;
         switch (val) {
           case "WAIT_EXEC":
             value = "待执行";
@@ -92,8 +92,8 @@ class TableList extends Component<TableListProps, TableListState> {
           case "SUCCESS":
             value = "执行成功";
             break;
-          case "FAIL":
-            value = "执行失败";
+          case "FAILED":
+            value = <p style={{color:"red",margin:"auto"}} >执行失败</p>;
             break;
         }
         return value
@@ -371,8 +371,9 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      record: {data},
+      record: {data,logInfo},
       loading,
+      dispatch
     } = this.props;
     const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
     const menu = (
@@ -425,7 +426,9 @@ class TableList extends Component<TableListProps, TableListState> {
           <UpdateForm
             {...updateMethods}
             updateModalVisible={updateModalVisible}
+            dispatch={dispatch}
             values={stepFormValues}
+            logInfo={logInfo}
           />
         ) : null}
       </PageHeaderWrapper>

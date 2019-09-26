@@ -128,7 +128,7 @@ class TableList extends Component<TableListProps, TableListState> {
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical"/>
-          <a href="">订阅警报</a>
+          <a href="">执行记录</a>
         </Fragment>
       ),
     },

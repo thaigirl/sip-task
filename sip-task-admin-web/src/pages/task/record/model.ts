@@ -1,6 +1,6 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {queryRecord, removeRule, suggest} from './service';
+import {log, queryRecord, removeRule, suggest} from './service';
 
 import {TableListData} from './data.d';
 import {executor, job} from "@/pages/task/job/data";
@@ -11,6 +11,7 @@ export interface StateType {
   executors: Array<executor>;
   jobs: Array<job>;
   updateModalVisible: boolean;
+  logInfo: any;
 }
 
 export type Effect = (
@@ -26,6 +27,7 @@ export interface ModelType {
     remove: Effect;
     executorAll: Effect;
     suggest: Effect;
+    log: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -41,7 +43,8 @@ const Model: ModelType = {
     },
     executors: [],
     jobs: [],
-    updateModalVisible: false
+    updateModalVisible: false,
+    logInfo:{}
   },
 
   effects: {
@@ -81,6 +84,16 @@ const Model: ModelType = {
         type: 'save',
         payload: {
           jobs: response.data
+        },
+      });
+      if (callback) callback();
+    },
+    * log({payload, callback}, {call, put}) {
+      let response = yield call(log, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          logInfo: response.data
         },
       });
       if (callback) callback();

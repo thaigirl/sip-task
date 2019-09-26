@@ -6,6 +6,7 @@ import com.sip.task.admin.model.po.QrtzTriggerRecordVo
 import com.sip.task.admin.service.QrtzTriggerRecordService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -23,5 +24,9 @@ class QrtzTriggerRecordController{
     @GetMapping("/list")
     fun list(vo: QrtzTriggerRecordVo): Result<Any> {
         return Result.success(qrtzTriggerRecordService.list(vo))
+    }
+    @GetMapping("/log/{id}")
+    fun log(@PathVariable("id")id: Long): Result<Any> {
+        return Result.success(qrtzTriggerRecordService.getRecordLog(id))
     }
 }

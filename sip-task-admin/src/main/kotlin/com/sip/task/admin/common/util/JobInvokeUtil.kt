@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON
 import com.sip.task.admin.model.dto.ExecuteInstance
 import com.sip.task.admin.model.dto.JobInvokeResult
 import org.slf4j.LoggerFactory
+import java.lang.StringBuilder
 
 /**
  * 任务执行工具
@@ -23,26 +24,32 @@ object JobInvokeUtil {
         var jobInvokeResult = JobInvokeResult()
         // 遍历instance的address,code不等于200或者响应的status字段不等于success,则重试下一个地址
         var index = 0
+        val logInfo = StringBuilder()
         instance.address?.forEach { ele ->
             // 超过重试次数,终止重试
             if (instance.failRetryCount != null && index > instance.failRetryCount!!) {
                 return jobInvokeResult
             }
             try {
+                if (index > 0){
+                    logInfo.append("<hr size=1 />")
+                }
                 index++
                 var url = ele.plus("/schedule/${instance.recordId}")
-                log.info("发送http请求,地址:{},参数:{}", url, instance.param)
-                var response = HttpRequest.post(url).body(JSON.toJSONString(instance.param)).execute()
+                val param = JSON.toJSONString(instance.param)
+                log.info("发送http请求,地址:{},参数:{}", url, param)
+                logInfo.append("请求地址:").append(url).append("<br/>")
+                        .append("请求参数:").append(param).append("<br/>")
+                var response = HttpRequest.post(url).body(param).execute()
+                logInfo.append("响应码:").append(response.status).append("<br/>")
+                        .append("响应内容:").append(response.body()).append("<br/>")
                 log.info("http请求响应,状态码:{},内容:{}", response.status, response.body())
-                jobInvokeResult.log="请求地址:".plus(url).plus("<br/>")
-                        .plus("响应码:").plus(response.status).plus("<br/>")
-                        .plus("响应内容:").plus(response.body()).plus("<br/>")
                 // 响应为空,重试
                 if (response.body().isNullOrBlank()) {
                     return@forEach
                 }
                 if (response.status != 200) {
-                    jobInvokeResult.status = response.status.toString()
+                    jobInvokeResult.status = "fail"
                     jobInvokeResult.msg = response.body()
                     return@forEach
                 }
@@ -56,10 +63,13 @@ object JobInvokeUtil {
                 return jobInvokeResult
             } catch (e: Exception) {
                 log.info("http请求异常,重试下一个地址")
-                jobInvokeResult.status = "-1"
-                jobInvokeResult.msg = "http请求异常,重试下一个地址"
+                logInfo.append("响应码:").append("fail").append("<br/>")
+                        .append("响应内容:").append(e.message).append("<br/>")
+                jobInvokeResult.status = "fail"
+                jobInvokeResult.msg = e.message
             }
         }
+        jobInvokeResult.log = logInfo.toString()
         return jobInvokeResult
     }
 

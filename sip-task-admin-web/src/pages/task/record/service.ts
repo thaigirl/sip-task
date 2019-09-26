@@ -14,6 +14,9 @@ export async function suggest(params: any) {
   }
 
 }
+export async function log(params: any) {
+  return request('/api/record/log/' + params);
+}
 
 export async function removeRule(params: queryParam) {
   return request('/api/record/list', {
