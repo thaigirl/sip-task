@@ -18,5 +18,6 @@ module.exports = {
     "react/sort-comp":"off",
     "object-curly-newline": "off",
     "no-param-reassign": "off",
+    "react/prop-types": "off",
   }
 };
