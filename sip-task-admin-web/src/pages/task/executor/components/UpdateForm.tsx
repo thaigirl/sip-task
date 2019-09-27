@@ -1,4 +1,4 @@
-import {Form, Input, Modal,InputNumber} from 'antd';
+import {Form, Input, Modal, InputNumber} from 'antd';
 import React, {Component} from 'react';
 
 import {FormComponentProps} from 'antd/es/form';
@@ -60,14 +60,14 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     return [
       <FormItem key="name" {...this.formLayout} label="执行器名称">
         {form.getFieldDecorator('name', {
-          rules: [{required: true, message: '请输入执行器名称！'}],
+          rules: [{required: true, message: '请输入至少1个字符！', min: 1}],
           initialValue: formVals.name,
         })(<Input placeholder="请输入"/>)}
       </FormItem>,
       <FormItem key="desc" {...this.formLayout} label="描述">
         {form.getFieldDecorator('desc', {
           initialValue: formVals.desc,
-        })(<TextArea rows={4} placeholder="请输入至少五个字符"/>)}
+        })(<TextArea rows={4} placeholder="请输入"/>)}
       </FormItem>,
       <FormItem key="order" {...this.formLayout} label="排序">
         {form.getFieldDecorator('order', {
@@ -77,12 +77,11 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
       </FormItem>,
       <FormItem key="addressList" {...this.formLayout} label="执行器地址列表">
         {form.getFieldDecorator('addressList', {
-          rules: [{required: true, message: '请输入执行器地址列表！', min: 5}],
+          rules: [{required: true, message: '请输入至少1个字符', min: 1}],
           initialValue: formVals.addressList,
-        })(<TextArea rows={4} placeholder="请输入至少五个字符"/>)}
+        })(<TextArea rows={4} placeholder="请输入执行器地址列表！"/>)}
       </FormItem>,
     ];
-
   };
 
   render() {
@@ -92,7 +91,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         form.resetFields();
-        fieldsValue.id=formVals.id
+        fieldsValue.id = formVals.id
         handleUpdate(fieldsValue);
       });
     };

@@ -25,10 +25,9 @@ import {formatDateTime} from "@/utils/utils";
 import Cron from "@/components/Cron";
 
 const FormItem = Form.Item;
-const getValue = (obj: { [x: string]: string[] }) =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
+const getValue = (obj: { [x: string]: string[] }) => Object.keys(obj)
+  .map(key => obj[key])
+  .join(',');
 
 
 interface TableListProps extends FormComponentProps {
@@ -91,7 +90,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '更新时间',
       dataIndex: 'updateTime',
-      render: (text) => text ? formatDateTime(text) : ''
+      render: text => (text ? formatDateTime(text) : ''),
     },
     {
       title: '更新人',
@@ -126,7 +125,6 @@ class TableList extends Component<TableListProps, TableListState> {
   ) => {
     const {dispatch} = this.props;
     const {formValues} = this.state;
-
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = {...obj};
       newObj[key] = getValue(filtersArg[key]);
@@ -307,7 +305,9 @@ class TableList extends Component<TableListProps, TableListState> {
       executor: {data},
       loading,
     } = this.props;
-    const {selectedRows, modalVisible, updateModalVisible, stepFormValues} = this.state;
+    const {
+      selectedRows, modalVisible, updateModalVisible, stepFormValues,
+    } = this.state;
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -335,7 +335,7 @@ class TableList extends Component<TableListProps, TableListState> {
               )}
             </div>
             <StandardTable
-              rowKey={"id"}
+              rowKey="id"
               selectedRows={selectedRows}
               loading={loading}
               data={data}

@@ -31,7 +31,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     >
       <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行器名称">
         {form.getFieldDecorator('name', {
-          rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
+          rules: [{required: true, message: '请输入至少1个字符！', min: 1}],
         })(<Input placeholder="请输入"/>)}
       </FormItem>
       <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="描述">
@@ -44,7 +44,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       </FormItem>
       <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行器地址列表">
         {form.getFieldDecorator('addressList', {
-          rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
+          rules: [{required: true, message: '请输入至少1个字符！', min: 1}],
         })(<TextArea rows={4} placeholder="请输入"/>)}
       </FormItem>
     </Modal>

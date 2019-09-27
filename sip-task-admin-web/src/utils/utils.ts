@@ -23,10 +23,10 @@ export {isAntDesignProOrDev, isAntDesignPro, isUrl};
 
 export function formatDateTime(data: number) {
   if (data === undefined || data === null) {
-    return "";
+    return '';
   }
   const date = new Date(data);
-  const format = "yyyy-MM-dd hh:mm:ss";
+  const format = 'yyyy-MM-dd hh:mm:ss';
   const paddNum = function (num: number) {
     return num.toString().replace(/^(\d)$/, "0$1");
   };
