@@ -69,6 +69,15 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     };
   }
 
+  changeStatus = ()=>{
+    this.setState({
+      formVals:{
+        ...this.state.formVals,
+        enable: !this.state.formVals.enable
+      }
+    })
+  };
+
 
 
   render() {
@@ -198,7 +207,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
               {form.getFieldDecorator('enable',{
                 initialValue: formVals.enable,
               } )
-              (<Switch />)}
+              (<Switch onChange={this.changeStatus} checked={formVals.enable} />)}
             </FormItem>
           </Col>
         </Row>

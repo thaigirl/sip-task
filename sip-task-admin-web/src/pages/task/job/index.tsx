@@ -1,10 +1,9 @@
-import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, Row, Select} from 'antd';
+import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, Row, Select,Modal} from 'antd';
 import React, {Component, Fragment} from 'react';
 
 import {Dispatch} from 'redux';
 import {FormComponentProps} from 'antd/es/form';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
-import {SorterResult} from 'antd/es/table';
 import {connect} from 'dva';
 import uuid from 'uuid'
 import {StateType} from './model';
@@ -14,9 +13,11 @@ import UpdateForm, {FormValsType} from './components/UpdateForm';
 import {executor, Param, queryParam, TableListItem, TableListPagination} from './data.d';
 
 import styles from './style.less';
+import {Link} from "umi";
 
 const FormItem = Form.Item;
 const { Option } = Select;
+const { confirm } = Modal;
 
 const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
@@ -128,11 +129,27 @@ class TableList extends Component<TableListProps, TableListState> {
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical"/>
-          <a href="">执行记录</a>
+          <a onClick={() => this.confirmDelete(record.id)}>删除</a>
+          <Divider type="vertical"/>
+          <Link to={'record/?jobId='+record.id+'&executorId='+record.executorId}>执行记录</Link>
         </Fragment>
       ),
     },
   ];
+
+
+  confirmDelete =(id:number) =>{
+    confirm({
+      title: '是否删除？',
+      content: 'When clicked the OK button, this dialog will be closed after 1 second',
+      onOk() {
+        return new Promise((resolve, reject) => {
+          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+        }).catch(() => console.log('Oops errors!'));
+      },
+      onCancel() {},
+    })
+  };
 
 
   componentDidMount() {
@@ -319,6 +336,13 @@ class TableList extends Component<TableListProps, TableListState> {
       payload: { updateModalVisible: flag! },
     });
   };
+  handleCreateModalVisible = (flag?: boolean) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'executeJob/updateModalVisible',
+      payload: { createModalVisible: flag! },
+    });
+  };
 
   handleAdd = (fields: FormValsType) => {
     const { dispatch } = this.props;
@@ -454,10 +478,10 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      executeJob: { data, executors, updateModalVisible },
+      executeJob: { data, executors, updateModalVisible,createModalVisible },
       loading,
     } = this.props;
-    const { selectedRows, modalVisible, stepFormValues, rowIndexArr } = this.state;
+    const { selectedRows, stepFormValues, rowIndexArr } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -469,7 +493,7 @@ class TableList extends Component<TableListProps, TableListState> {
       changeRowIndex: this.changeRowIndex,
       removeIndex: this.removeIndex,
       handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
+      handleModalVisible: this.handleCreateModalVisible,
       handleParamChange: this.handleParamChange,
       initExcutorOption: this.initExcutorOption,
     };
@@ -488,7 +512,7 @@ class TableList extends Component<TableListProps, TableListState> {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={() => this.handleCreateModalVisible(true)}>
                 新建
               </Button>
               {selectedRows.length > 0 && (
@@ -513,7 +537,7 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} executors={executors} rowIndexArr={rowIndexArr}/>
+        <CreateForm {...parentMethods} createModalVisible={createModalVisible} executors={executors} rowIndexArr={rowIndexArr}/>
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
             {...updateMethods}

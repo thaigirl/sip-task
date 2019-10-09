@@ -7,12 +7,10 @@ import com.sip.task.admin.common.exception.TaskException
 import com.github.pagehelper.PageInfo
 import com.sip.task.admin.common.BaseEnum
 import com.sip.task.admin.common.util.ScheduleUtil
-import com.sip.task.admin.mapper.QrtzTriggerExecutorMapper
-import com.sip.task.admin.mapper.QrtzTriggerJobMapper
-import com.sip.task.admin.mapper.QrtzTriggerJobParamMapper
-import com.sip.task.admin.mapper.QrtzTriggerRecordMapper
+import com.sip.task.admin.mapper.*
 import com.sip.task.admin.model.dto.QrtzTriggerExecutorDto
 import com.sip.task.admin.model.po.*
+import com.sip.task.admin.model.vo.JobSuggestVo
 import org.apache.commons.lang3.StringUtils
 import org.quartz.Scheduler
 import org.quartz.SchedulerException
@@ -42,6 +40,8 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
     lateinit var executorMapper: QrtzTriggerExecutorMapper
     @Autowired
     lateinit var recordMapper: QrtzTriggerRecordMapper
+    @Autowired
+    lateinit var recordLogMapper: QrtzTriggerRecordLogMapper
 
 
     /**
@@ -83,9 +83,11 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
         return page
     }
 
-    fun suggest(q: String?) :Any{
+    fun suggest(vo: JobSuggestVo): Any {
+        startPage()
         return mapper.selectByExample(example<QrtzTriggerJob> {
-            andRightLike{ name = q }
+            andEqualTo { executorId = vo.executorId }
+            andRightLike { name = vo.q }
         })
     }
 
@@ -158,12 +160,27 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
         return rows
     }
 
-    fun delete(ids: List<Long>?): Int {
-        mapper.deleteByIds(ids?.joinToString(","))
-        ids?.forEach { it ->
-            ScheduleUtil.deleteScheduleJob(scheduler, it)
+    fun delete(ids: List<Long>): Int {
+        //如果有未完成的任务不允许删除
+        val records = recordMapper.selectByExample(example<QrtzTriggerRecord> {
+            andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.WAIT_EXEC.name, BaseEnum.JobStatus.RUNNING.name))
+            andIn(QrtzTriggerRecord::jobId, ids)
+        })
+        if (records.size > 0) {
+            throw CustomException("有未执行完成的任务，不允许删除")
         }
-        return deleteByIds(ids)
+        //删除任务、参数、执行记录、日志
+        mapper.deleteByIds(ids.joinToString(","))
+        recordMapper.selectByExample(example<QrtzTriggerRecord> {
+            andIn(QrtzTriggerRecord::jobId, ids)
+        })
+        paramMapper.deleteByExample(example<QrtzTriggerJobParam> {
+            andIn(QrtzTriggerJobParam::jobId, ids)
+        })
+        recordLogMapper.deleteByExample(example<QrtzTriggerRecordLog> {
+            andIn(QrtzTriggerRecordLog::recordId, records.mapNotNull { e -> e.id })
+        })
+        return ids.size
     }
 
     fun get(id: Long): QrtzTriggerJob? {
@@ -208,6 +225,7 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
         }
         return rows
     }
+
 
 
     private fun checkParam(param: List<QrtzTriggerJobParam>) {

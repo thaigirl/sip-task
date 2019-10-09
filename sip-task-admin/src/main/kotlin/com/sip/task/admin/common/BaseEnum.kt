@@ -7,7 +7,8 @@ enum class BaseEnum {
         WAIT_EXEC,
         RUNNING,
         SUCCESS,
-        FAILED;
+        FAILED,
+        TIMEOUT;
     }
 
     enum class Strategy {

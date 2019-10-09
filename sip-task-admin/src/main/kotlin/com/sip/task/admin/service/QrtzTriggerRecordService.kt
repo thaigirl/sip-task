@@ -36,7 +36,7 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
         val page = selectPage<QrtzTriggerRecordDto>(example<QrtzTriggerRecord> {
             andEqualTo {
                 executorId = vo.executorId
-                jobId = jobId
+                jobId = vo.jobId
             }
             andRightLike {
                 code = vo.code
@@ -89,7 +89,6 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
         record.jobId = job.id
         record.executorAddress = addressList
         record.status = BaseEnum.JobStatus.WAIT_EXEC.name
-        record.startTime = now
         record.createTime = now
         record.createUser = 0
         mapper.insertSelective(record)
@@ -104,6 +103,27 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
             }
             andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.RUNNING.name,BaseEnum.JobStatus.WAIT_EXEC.name))
         }) > 1
+    }
+
+
+    /**
+     * 处理超时任务
+     */
+    fun handleTimeOutRecord(){
+        val runingList = mapper.selectByExample(example<QrtzTriggerRecord> {
+            andEqualTo { status = BaseEnum.JobStatus.RUNNING.name }
+        })
+        val ids = mutableListOf<Long>()
+        val now = System.currentTimeMillis()
+        runingList.forEach {
+            val diff = now - it.startTime!!
+            if (diff > it.timeout!!){
+                ids.add(it.id!!)
+            }
+        }
+        if (ids.isNotEmpty()){
+            mapper.updateBySql("set endTime = ${now},status = ${BaseEnum.JobStatus.TIMEOUT.name} where id in (${ids})")
+        }
     }
 
 

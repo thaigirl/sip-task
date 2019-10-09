@@ -1,5 +1,6 @@
 import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, message, Row, Select, AutoComplete} from 'antd';
 import React, {Component, Fragment} from 'react';
+import {getParam} from '@/utils/UrlParam'
 
 import {Dispatch} from 'redux';
 import {FormComponentProps} from 'antd/es/form';
@@ -34,7 +35,8 @@ interface TableListState {
   selectedRows: TableListItem[];
   formValues: { [key: string]: string };
   stepFormValues: Partial<TableListItem>;
-  jobSelectValue: any;
+  jobId: any;
+  executorId: any;
 }
 
 /* eslint react/no-multi-comp:0 */
@@ -61,7 +63,8 @@ class TableList extends Component<TableListProps, TableListState> {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    jobSelectValue: '',
+    jobId: '',
+    executorId: ''
   };
 
   columns: StandardTableColumnProps[] = [
@@ -81,7 +84,7 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '状态',
       dataIndex: 'status',
       render: (val: string) => {
-        let value:any;
+        let value: any;
         switch (val) {
           case "WAIT_EXEC":
             value = "待执行";
@@ -93,7 +96,10 @@ class TableList extends Component<TableListProps, TableListState> {
             value = "执行成功";
             break;
           case "FAILED":
-            value = <p style={{color:"red",margin:"auto"}} >执行失败</p>;
+            value = <p style={{color: "red", margin: "auto"}}>执行失败</p>;
+            break;
+          case "TIMEOUT":
+            value = <p style={{color: "red", margin: "auto"}}>已超时</p>;
             break;
         }
         return value
@@ -120,25 +126,50 @@ class TableList extends Component<TableListProps, TableListState> {
     },
     {
       title: '操作',
-      render: (text, record) => (
-        <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>日志详情</a>
-          <Divider type="vertical"/>
-          <a href="">订阅警报</a>
-        </Fragment>
-      ),
+      render: (text, record) => {
+        const log = <a onClick={() => this.handleUpdateModalVisible(true, record)}>日志详情</a>;
+        const del = <a href="">删除</a>;
+        let menu=null;
+        if (record.status == 'WAIT_EXEC') {
+          menu = <Fragment>
+            {del}
+          </Fragment>
+        } else {
+          menu = <Fragment>
+            {log}
+          </Fragment>
+        }
+        console.log(record.status);
+        return menu
+      },
     },
   ];
 
+
   componentDidMount() {
-    const {dispatch} = this.props;
+    let url = location.href, arr = url.split("?"), param = arr[1], jobId = "", executorId = "";
+    if (param) {
+      let str = param.split("&");
+      jobId = getParam(str[0]);
+      executorId = getParam(str[1])
+    }
+    const {dispatch, form} = this.props;
     dispatch({
       type: 'record/fetch',
+      payload: {jobId: jobId},
     });
-    dispatch({
-      type: 'record/suggest',
-    });
-    this.initExecutorData()
+    this.initExecutorData();
+    this.onSearchSuggest('');
+    if (param) {
+      this.setState({
+        jobId: jobId,
+        executorId: executorId
+      }, () => {
+        this.onSelect(jobId);
+        form.setFieldsValue({executorId: Number(executorId)});
+      });
+
+    }
   }
 
   handleStandardTableChange = (
@@ -146,7 +177,7 @@ class TableList extends Component<TableListProps, TableListState> {
     filtersArg: Record<keyof TableListItem, string[]>,
   ) => {
     const {dispatch} = this.props;
-    const {formValues} = this.state;
+    const {formValues, jobId} = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = {...obj};
@@ -158,6 +189,7 @@ class TableList extends Component<TableListProps, TableListState> {
       pageSize: pagination.pageSize,
       ...formValues,
       ...filters,
+      jobId: jobId
     };
     dispatch({
       type: 'record/fetch',
@@ -260,13 +292,14 @@ class TableList extends Component<TableListProps, TableListState> {
   // 初始化执行器下拉框值
   initExecutorData = () => {
     const {form, dispatch} = this.props;
+    const {executorId} = this.state;
     form.resetFields();
     this.setState({
       formValues: {},
     });
     dispatch({
       type: 'record/executorAll',
-      payload: {},
+      payload: {executorId: executorId}
     });
   };
 
@@ -283,12 +316,24 @@ class TableList extends Component<TableListProps, TableListState> {
     return arr;
   };
 
-  onSearch = (searchText: any) => {
+  optionOnChange = (val: any) => {
+    this.setState({
+      executorId: val
+    }, () => {
+      this.onSearchSuggest('')
+    });
+  };
+
+
+  onSearchSuggest = (searchText: any) => {
     const {dispatch} = this.props;
-    console.log(searchText);
+    const {executorId} = this.state;
     dispatch({
       type: 'record/suggest',
-      payload: searchText,
+      payload: {
+        q: searchText,
+        executorId: executorId
+      },
     });
   };
 
@@ -302,7 +347,6 @@ class TableList extends Component<TableListProps, TableListState> {
   renderSimpleForm() {
     const {form, record: {jobs}} = this.props;
     const {getFieldDecorator} = form;
-    const {jobSelectValue} = this.state;
     const dataSource: DataSourceItemObject[] = [];
     jobs.map((obj) => {
       dataSource.push({
@@ -319,7 +363,7 @@ class TableList extends Component<TableListProps, TableListState> {
                 initialValue: '',
                 rules: [{required: false, message: '请选择执行器'}],
               })(
-                <Select style={{width: '100%'}} placeholder="请选择">
+                <Select onChange={this.optionOnChange} style={{width: '100%'}} placeholder="请选择">
                   <Option value="">请选择</Option>
                   {this.initExcutorOption()}
                 </Select>,
@@ -337,7 +381,7 @@ class TableList extends Component<TableListProps, TableListState> {
                   dataSource={dataSource}
                   style={{width: 200}}
                   onSelect={this.onSelect}
-                  onSearch={this.onSearch}
+                  onSearch={this.onSearchSuggest}
                   // onChange={this.onChange}
                   placeholder="job"
                 />
@@ -371,7 +415,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   render() {
     const {
-      record: {data,logInfo},
+      record: {data, logInfo},
       loading,
       dispatch
     } = this.props;

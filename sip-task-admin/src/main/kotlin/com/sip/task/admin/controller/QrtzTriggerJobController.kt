@@ -4,6 +4,7 @@ import com.basicfu.sip.core.annotation.Insert
 import com.basicfu.sip.core.annotation.Update
 import com.basicfu.sip.core.model.Result
 import com.sip.task.admin.model.po.QrtzTriggerJobVo
+import com.sip.task.admin.model.vo.JobSuggestVo
 import com.sip.task.admin.service.QrtzTriggerJobService
 import org.quartz.SchedulerException
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,8 +29,8 @@ class QrtzTriggerJobController {
     }
 
     @GetMapping("/suggest")
-    fun suggest(q: String?): Result<Any> {
-        return Result.success(qrtzTriggerJobService.suggest(q))
+    fun suggest(vo: JobSuggestVo): Result<Any> {
+        return Result.success(qrtzTriggerJobService.suggest(vo))
     }
 
 

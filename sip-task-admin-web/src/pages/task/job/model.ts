@@ -9,6 +9,7 @@ export interface StateType {
   data: TableListData;
   executors: Array<executor>;
   updateModalVisible: boolean;
+  createModalVisible: boolean;
   search: any;
 }
 
@@ -43,15 +44,20 @@ const Model: ModelType = {
     },
     executors: [],
     search: {},
-    updateModalVisible: false
+    updateModalVisible: false,
+    createModalVisible: false
   },
 
   effects: {
     * fetch({payload}, {call, put}) {
       console.log(payload);
       let flag = false;
+      let createFlag = false;
       if (payload && payload.updateModalVisible){
         flag = payload.updateModalVisible;
+      }
+      if (payload && payload.createModalVisible){
+        createFlag = payload.createModalVisible;
       }
       const response = yield call(queryJob, payload);
       yield put({
@@ -62,6 +68,7 @@ const Model: ModelType = {
             pagination: response.data.page,
           },
           updateModalVisible: flag,
+          createModalVisible: createFlag,
           search: payload
         },
       });
@@ -73,14 +80,14 @@ const Model: ModelType = {
         yield put({
           type: 'save',
           payload: {
-            updateModalVisible: true
+            createModalVisible: true
           },
         });
       }else {
         yield put({
           type: 'reload',
           payload: {
-            updateModalVisible: false
+            createModalVisible: false
           },
         });
         message.success('添加成功');

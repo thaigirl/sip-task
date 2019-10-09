@@ -11,7 +11,7 @@ const FormItem = Form.Item;
 const {Option} = Select;
 
 interface CreateFormProps extends FormComponentProps {
-  modalVisible: boolean;
+  createModalVisible: boolean;
   handleAdd: (fieldsValue: { desc: string }) => void;
   handleModalVisible: () => void;
   changeRowIndex: (bl: boolean,index:string) => void;
@@ -24,7 +24,7 @@ interface CreateFormProps extends FormComponentProps {
 
 
 const CreateForm: React.FC<CreateFormProps> = props => {
-    const {modalVisible, form, handleAdd, handleModalVisible, changeRowIndex, rowIndexArr,removeIndex,executors,handleParamChange,initExcutorOption} = props;
+    const {createModalVisible, form, handleAdd, handleModalVisible, changeRowIndex, rowIndexArr,removeIndex,executors,handleParamChange,initExcutorOption} = props;
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
@@ -44,7 +44,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <Modal
         destroyOnClose
         title="新建任务"
-        visible={modalVisible}
+        visible={createModalVisible}
         onOk={okHandle}
         onCancel={() => handleModalVisible()}
         width={"800px"}
@@ -129,7 +129,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           <Col md={12} sm={24}>
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="描述">
               {form.getFieldDecorator('desc', {
-                rules: [{required: false, message: '请输入至少五个字符！', min: 5}],
+                rules: [{required: false, message: '请输入至少五个字符！'}],
               })(<TextArea placeholder="请输入"/>)}
             </FormItem>
           </Col>

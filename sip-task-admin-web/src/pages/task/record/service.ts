@@ -7,11 +7,9 @@ export async function queryRecord(params: queryParam) {
   });
 }
 export async function suggest(params: any) {
-  if (params){
-    return request('/api/job/suggest?q='+params);
-  }else {
-    return request('/api/job/suggest');
-  }
+  return request('/api/job/suggest',{
+    params
+  });
 
 }
 export async function log(params: any) {

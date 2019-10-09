@@ -49,13 +49,14 @@ class JobInvokeService{
         paramMap["code"] = job.code!!
         //如果运行策略是阻塞且有未完成的任务则不发起调度
         if (job.strategy == BaseEnum.Strategy.BLOCKING.name && recordService.existRunningJob(job.id!!)) return
+        record.startTime = System.currentTimeMillis()
         val invokeResult = JobInvokeUtil.invokeMethod(generate {
             address = executor.addressList?.split("，")
             this.recordId = record.id
             param = paramMap
             failRetryCount = job.failRetryCount
         })
-        dealResponse(record,invokeResult)
+        handleResponse(record,invokeResult)
 
     }
 
@@ -69,17 +70,18 @@ class JobInvokeService{
             }
         }).associateBy({it.key!!},{it.value!!}).toMutableMap()
         paramMap["code"] = job.code!!
+        record.startTime = System.currentTimeMillis()
         val invokeResult = JobInvokeUtil.invokeMethod(generate {
             address = executor.addressList?.split("，")
             this.recordId = recordId
             param = paramMap
             failRetryCount = job.failRetryCount
         })
-        dealResponse(record,invokeResult)
+        handleResponse(record,invokeResult)
     }
 
 
-    fun dealResponse(record:QrtzTriggerRecord,result:JobInvokeResult){
+    fun handleResponse(record:QrtzTriggerRecord, result:JobInvokeResult){
         if (result.status == "fail"){
             record.status = BaseEnum.JobStatus.FAILED.name
             record.endTime = System.currentTimeMillis()
