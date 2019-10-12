@@ -4,6 +4,7 @@ export interface TableListItem {
   desc: string;
   order: number;
   addressList: string;
+  addressMap: Map<string, string>;// 辅助map
   createTime: number;
   createUser: string;
   updateTime: number;
@@ -13,7 +14,7 @@ export interface TableListItem {
 export interface TableListPagination {
   total: number;
   pageSize: number;
-  current:number;
+  current: number;
 }
 
 export interface TableListData {

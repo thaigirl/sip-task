@@ -1,19 +1,12 @@
-import {
-  Button,
-  Card,
-  Col,
-  Divider,
-  Form,
-  Input,
-  Row,
-  message, Modal,
-} from 'antd';
+import {Button, Card, Col, Divider, Form, Input, message, Modal, Row, Tooltip} from 'antd';
 import React, {Component, Fragment} from 'react';
 
 import {Dispatch} from 'redux';
 import {FormComponentProps} from 'antd/es/form';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {connect} from 'dva';
+// @ts-ignore
+import uuid from 'uuid'
 import {StateType} from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, {StandardTableColumnProps} from './components/StandardTable';
@@ -22,7 +15,6 @@ import {TableListItem, TableListPagination, TableListParams} from './data.d';
 
 import styles from './style.less';
 import {formatDateTime} from "@/utils/utils";
-import Cron from "@/components/Cron";
 
 const FormItem = Form.Item;
 const getValue = (obj: { [x: string]: string[] }) => Object.keys(obj)
@@ -73,34 +65,56 @@ class TableList extends Component<TableListProps, TableListState> {
   columns: StandardTableColumnProps[] = [
     {
       title: '执行器名称',
+      className: styles.tdNowarp,
+      width: 120,
       dataIndex: 'name',
     },
     {
       title: '描述',
+      className: styles.tdNowarp,
+      width: 150,
       dataIndex: 'desc',
     },
     {
       title: '排序',
+      width: 100,
       dataIndex: 'order',
     },
     {
       title: '执行器地址列表',
+      width: 200,
       dataIndex: 'addressList',
+      render(t) {
+        const urlItem = t.split(',').map((item: any) => (
+          <p key={uuid()} className={styles.tdNowarp}>
+            <Tooltip placement="topLeft" title={item}>
+              <a href={item} target="_blank">{item}</a>
+            </Tooltip>
+          </p>
+        ));
+        return (
+          <div>{urlItem}</div>
+        )
+      }
     },
     {
       title: '更新时间',
+      width: 200,
       dataIndex: 'updateTime',
       render: text => (text ? formatDateTime(text) : ''),
     },
     {
       title: '更新人',
+      width: 120,
       dataIndex: 'updateUser',
     },
     {
       title: '操作',
+      fixed: "right",
+      width: 150,
       render: (text, record) => (
         <Fragment>
-          <a onClick={() => this.handleUpdateModalVisible(true, record)}>更新</a>
+          <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical"/>
           <a onClick={() => this.handleDelete(record)}>删除</a>
         </Fragment>
@@ -205,6 +219,14 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
+    if (record && record.addressList) {
+      record.addressMap = new Map<string, string>();
+      record.addressList.split(",").forEach(ele => {
+        if (record.addressMap) {
+          record.addressMap.set(uuid(), ele);
+        }
+      })
+    }
     this.setState({
       updateModalVisible: !!flag,
       stepFormValues: record || {},
@@ -219,7 +241,7 @@ class TableList extends Component<TableListProps, TableListState> {
         name: fields.name,
         desc: fields.desc,
         order: fields.order,
-        addressList: fields.addressList,
+        addressList: fields.addressMap == undefined ? '' : Array.from(fields.addressMap.values()).toString(),
       },
     });
 
@@ -236,7 +258,7 @@ class TableList extends Component<TableListProps, TableListState> {
         name: fields.name,
         desc: fields.desc,
         order: fields.order,
-        addressList: fields.addressList,
+        addressList: fields.addressMap == undefined ? '' : Array.from(fields.addressMap.values()).toString(),
       },
     });
 
@@ -320,7 +342,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
     return (
       <PageHeaderWrapper>
-        <Cron dispatch={this.props.dispatch} fiveRecentTimedata={[]}/>
+        {/* <Cron dispatch={this.props.dispatch} fiveRecentTimedata={[]}/> */}
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
@@ -340,6 +362,7 @@ class TableList extends Component<TableListProps, TableListState> {
               loading={loading}
               data={data}
               columns={this.columns}
+              scroll={{x: 1500}}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />

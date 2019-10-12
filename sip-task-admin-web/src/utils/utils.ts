@@ -1,4 +1,5 @@
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
+
 const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
 
 const isUrl = (path: string): boolean => reg.test(path);
@@ -39,9 +40,17 @@ export function formatDateTime(data: number) {
     dd: paddNum(date.getDate()), // 日 : 如果1位的时候补0
     hh: paddNum(date.getHours()), // 时
     mm: paddNum(date.getMinutes()), // 分
-    ss: paddNum(date.getSeconds()) // 秒
+    ss: paddNum(date.getSeconds()), // 秒
   };
-  return format.replace(/([a-z])(\1)*/ig, (m) => {
-    return cfg[m];
-  });
+  return format.replace(/([a-z])(\1)*/ig, m => cfg[m]);
+}
+
+export function getQueryString(name: string) {
+  const regExp = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i');
+
+  const r = window.location.search.substr(1).match(regExp);
+  if (r != null) {
+    return unescape(r[2]);
+  }
+  return null;
 }

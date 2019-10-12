@@ -124,6 +124,7 @@ export default {
               path: '/dashboard',
               name: 'dashboard',
               icon: 'dashboard',
+              hideInMenu: true,
               routes: [
                 {
                   name: 'analysis',
@@ -146,6 +147,7 @@ export default {
               path: '/form',
               icon: 'form',
               name: 'form',
+              hideInMenu: true,
               routes: [
                 {
                   name: 'basic-form',
@@ -168,6 +170,7 @@ export default {
               path: '/list',
               icon: 'table',
               name: 'list',
+              hideInMenu: true,
               routes: [
                 {
                   path: '/list/search',
@@ -238,6 +241,7 @@ export default {
               path: '/profile',
               name: 'profile',
               icon: 'profile',
+              hideInMenu: true,
               routes: [
                 {
                   name: 'basic',
@@ -255,6 +259,7 @@ export default {
               name: 'result',
               icon: 'check-circle-o',
               path: '/result',
+              hideInMenu: true,
               routes: [
                 {
                   name: 'success',
@@ -272,6 +277,7 @@ export default {
               name: 'exception',
               icon: 'warning',
               path: '/exception',
+              hideInMenu: true,
               routes: [
                 {
                   name: '403',
@@ -311,6 +317,7 @@ export default {
               name: 'editor',
               icon: 'highlight',
               path: '/editor',
+              hideInMenu: true,
               routes: [
                 {
                   name: 'flow',
