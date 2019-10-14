@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import { TableListParams } from './data.d';
+import {TableListParams} from './data.d';
 
 export async function queryExecutor(params: TableListParams) {
   return request('/api/executor/list', {
@@ -10,7 +10,7 @@ export async function queryExecutor(params: TableListParams) {
 export async function removeExecutor(params: TableListParams) {
   return request('/api/executor/delete', {
     method: 'DELETE',
-    data:  params
+    data: params
   });
 }
 
@@ -34,7 +34,7 @@ export async function updateExecutor(params: TableListParams) {
 }
 
 export async function fiveCron(params: any) {
-  return request('/api/cron?cron='+params.cron, {
+  return request(`/api/cron?cron=${params.cron}`, {
     method: 'GET',
     data: {
       ...params,

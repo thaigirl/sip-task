@@ -1,8 +1,8 @@
-import { Alert, Table } from 'antd';
-import { ColumnProps, TableRowSelection, TableProps } from 'antd/es/table';
-import React, { Component, Fragment } from 'react';
+import {Table} from 'antd';
+import {ColumnProps, TableProps, TableRowSelection} from 'antd/es/table';
+import React, {Component} from 'react';
 
-import { TableListItem } from '../../data.d';
+import {TableListItem} from '../../data.d';
 import styles from './index.less';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -29,7 +29,7 @@ function initTotalList(columns: StandardTableColumnProps[]) {
   const totalList: StandardTableColumnProps[] = [];
   columns.forEach(column => {
     if (column.needTotal) {
-      totalList.push({ ...column, total: 0 });
+      totalList.push({...column, total: 0});
     }
   });
   return totalList;
@@ -55,7 +55,7 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
 
   constructor(props: StandardTableProps<TableListItem>) {
     super(props);
-    const { columns } = props;
+    const {columns} = props;
     const needTotalList = initTotalList(columns);
 
     this.state = {
@@ -69,17 +69,17 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
     selectedRows: TableListItem[],
   ) => {
     const currySelectedRowKeys = selectedRowKeys as string[];
-    let { needTotalList } = this.state;
+    let {needTotalList} = this.state;
     needTotalList = needTotalList.map(item => ({
       ...item,
       total: selectedRows.reduce((sum, val) => sum + parseFloat(val[item.dataIndex || 0]), 0),
     }));
-    const { onSelectRow } = this.props;
+    const {onSelectRow} = this.props;
     if (onSelectRow) {
       onSelectRow(selectedRows);
     }
 
-    this.setState({ selectedRowKeys: currySelectedRowKeys, needTotalList });
+    this.setState({selectedRowKeys: currySelectedRowKeys, needTotalList});
   };
 
   handleTableChange: TableProps<TableListItem>['onChange'] = (
@@ -88,7 +88,7 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
     sorter,
     ...rest
   ) => {
-    const { onChange } = this.props;
+    const {onChange} = this.props;
     if (onChange) {
       onChange(pagination, filters, sorter, ...rest);
     }
@@ -101,16 +101,16 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
   };
 
   render() {
-    const { selectedRowKeys, needTotalList } = this.state;
-    const { data, rowKey, ...rest } = this.props;
-    const { list = [], pagination = false } = data || {};
+    const {selectedRowKeys} = this.state;
+    const {data, rowKey, ...rest} = this.props;
+    const {list = [], pagination = false} = data || {};
 
     const paginationProps = pagination
       ? {
-          showSizeChanger: true,
-          showQuickJumper: true,
-          ...pagination,
-        }
+        showSizeChanger: true,
+        showQuickJumper: true,
+        ...pagination,
+      }
       : false;
 
     const rowSelection: TableRowSelection<TableListItem> = {
@@ -124,31 +124,6 @@ class StandardTable extends Component<StandardTableProps<TableListItem>, Standar
 
     return (
       <div className={styles.standardTable}>
-        <div className={styles.tableAlert}>
-          <Alert
-            message={
-              <Fragment>
-                已选择 <a style={{ fontWeight: 600 }}>{selectedRowKeys.length}</a> 项&nbsp;&nbsp;
-                {needTotalList.map((item, index) => (
-                  <span style={{ marginLeft: 8 }} key={item.dataIndex}>
-                    {item.title}
-                    总计&nbsp;
-                    <span style={{ fontWeight: 600 }}>
-                      {item.render
-                        ? item.render(item.total, item as TableListItem, index)
-                        : item.total}
-                    </span>
-                  </span>
-                ))}
-                <a onClick={this.cleanSelectedKeys} style={{ marginLeft: 24 }}>
-                  清空
-                </a>
-              </Fragment>
-            }
-            type="info"
-            showIcon
-          />
-        </div>
         <Table
           rowKey={rowKey || 'key'}
           rowSelection={rowSelection}

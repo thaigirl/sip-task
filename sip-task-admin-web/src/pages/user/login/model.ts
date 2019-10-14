@@ -1,8 +1,8 @@
-import { AnyAction, Reducer } from 'redux';
-import { EffectsCommandMap } from 'dva';
-import { routerRedux } from 'dva/router';
-import { fakeAccountLogin, getFakeCaptcha } from './service';
-import { getPageQuery, setAuthority } from './utils/utils';
+import {AnyAction, Reducer} from 'redux';
+import {EffectsCommandMap} from 'dva';
+import {routerRedux} from 'dva/router';
+import {login} from './service';
+import {getPageQuery, setAuthority} from './utils/utils';
 
 export interface StateType {
   status?: 'ok' | 'error';
@@ -20,7 +20,6 @@ export interface ModelType {
   state: StateType;
   effects: {
     login: Effect;
-    getCaptcha: Effect;
   };
   reducers: {
     changeLoginStatus: Reducer<StateType>;
@@ -35,17 +34,19 @@ const Model: ModelType = {
   },
 
   effects: {
-    *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      });
+    * login({payload}, {call, put}) {
+      const response = yield call(login, payload);
+
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.success) {
+        window.localStorage.setItem("auth", JSON.stringify(response.data));
+        yield put({
+          type: 'changeLoginStatus',
+          payload: response,
+        });
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
-        let { redirect } = params as { redirect: string };
+        let {redirect} = params as { redirect: string };
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
           if (redirectUrlParams.origin === urlParams.origin) {
@@ -58,22 +59,19 @@ const Model: ModelType = {
             return;
           }
         }
-        yield put(routerRedux.replace(redirect || '/'));
+        yield put(routerRedux.replace({pathname: '/'}));
       }
     },
 
-    *getCaptcha({ payload }, { call }) {
-      yield call(getFakeCaptcha, payload);
-    },
   },
 
   reducers: {
-    changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+    changeLoginStatus(state, {payload}) {
+      setAuthority('admin');
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        status: "ok",
+        type: "account",
       };
     },
   },

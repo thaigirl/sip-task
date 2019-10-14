@@ -73,6 +73,7 @@ class TableList extends Component<TableListProps, TableListState> {
       title: '描述',
       className: styles.tdNowarp,
       width: 150,
+      align: "center",
       dataIndex: 'desc',
     },
     {
@@ -363,6 +364,7 @@ class TableList extends Component<TableListProps, TableListState> {
               data={data}
               columns={this.columns}
               scroll={{x: 1500}}
+              rowSelection={undefined}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />

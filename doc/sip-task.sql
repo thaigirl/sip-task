@@ -272,4 +272,18 @@ CREATE TABLE `QRTZ_TRIGGER_EXECUTOR` (
   `update_user` BIGINT NOT NULL COMMENT  '更新人'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT '执行器(应用)';
 
+DROP TABLE IF EXISTS `QRTZ_USER`;
+CREATE TABLE `QRTZ_USER` (
+ `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+ `name` varchar(40) NOT NULL DEFAULT '' COMMENT '姓名',
+ `nickname` varchar(40) NOT NULL DEFAULT '' COMMENT '昵称',
+ `password` varchar(100) NOT NULL DEFAULT '' COMMENT '密码',
+ `create_time` bigint(20) NOT NULL COMMENT '创建时间',
+ `create_user` bigint(20) DEFAULT NULL COMMENT '创建人',
+ `update_time` bigint(20) NOT NULL COMMENT '更新时间',
+ `update_user` bigint(20) DEFAULT NULL COMMENT '更新人',
+ PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+
 commit;

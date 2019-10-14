@@ -1,7 +1,7 @@
-import { AnyAction, Reducer } from 'redux';
+import {AnyAction, Reducer} from 'redux';
 
-import { EffectsCommandMap } from 'dva';
-import { fakeRegister } from './service';
+import {EffectsCommandMap} from 'dva';
+import {fakeRegister} from './service';
 
 export interface StateType {
   status?: 'ok' | 'error';
@@ -32,7 +32,7 @@ const Model: ModelType = {
   },
 
   effects: {
-    *submit({ payload }, { call, put }) {
+    * submit({payload}, {call, put}) {
       const response = yield call(fakeRegister, payload);
       yield put({
         type: 'registerHandle',
@@ -42,7 +42,7 @@ const Model: ModelType = {
   },
 
   reducers: {
-    registerHandle(state, { payload }) {
+    registerHandle(state, {payload}) {
       return {
         ...state,
         status: payload.status,

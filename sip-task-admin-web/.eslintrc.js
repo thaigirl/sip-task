@@ -33,5 +33,9 @@ module.exports = {
     "react/jsx-no-bind": "off",
     "no-debugger": "off",
     "react/jsx-no-target-blank": "off",
+    "import/no-cycle": "off",
+    "import/prefer-default-export": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "no-restricted-globals": "off",
   }
 };

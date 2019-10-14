@@ -1,33 +1,31 @@
-import { Button, Col, Form, Input, Popover, Progress, Row, Select, message } from 'antd';
-import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
-import React, { Component } from 'react';
-import { Dispatch } from 'redux';
-import { FormComponentProps } from 'antd/es/form';
+import {Button, Form, Input, message, Popover, Progress, } from 'antd';
+import {formatMessage, FormattedMessage} from 'umi-plugin-react/locale';
+import React, {Component} from 'react';
+import {Dispatch} from 'redux';
+import {FormComponentProps} from 'antd/es/form';
 import Link from 'umi/link';
-import { connect } from 'dva';
+import {connect} from 'dva';
 import router from 'umi/router';
 
-import { StateType } from './model';
+import {StateType} from './model';
 import styles from './style.less';
 
 const FormItem = Form.Item;
-const { Option } = Select;
-const InputGroup = Input.Group;
 
 const passwordStatusMap = {
   ok: (
     <div className={styles.success}>
-      <FormattedMessage id="user-register.strength.strong" />
+      <FormattedMessage id="user-register.strength.strong"/>
     </div>
   ),
   pass: (
     <div className={styles.warning}>
-      <FormattedMessage id="user-register.strength.medium" />
+      <FormattedMessage id="user-register.strength.medium"/>
     </div>
   ),
   poor: (
     <div className={styles.error}>
-      <FormattedMessage id="user-register.strength.short" />
+      <FormattedMessage id="user-register.strength.short"/>
     </div>
   ),
 };
@@ -47,28 +45,25 @@ interface RegisterProps extends FormComponentProps {
   userRegister: StateType;
   submitting: boolean;
 }
+
 interface RegisterState {
   count: number;
   confirmDirty: boolean;
   visible: boolean;
   help: string;
-  prefix: string;
 }
 
 export interface UserRegisterParams {
-  mail: string;
+  name: string;
   password: string;
   confirm: string;
-  mobile: string;
-  captcha: string;
-  prefix: string;
 }
 
 @connect(
   ({
-    userRegister,
-    loading,
-  }: {
+     userRegister,
+     loading,
+   }: {
     userRegister: StateType;
     loading: {
       effects: {
@@ -80,22 +75,19 @@ export interface UserRegisterParams {
     submitting: loading.effects['userRegister/submit'],
   }),
 )
-class Register extends Component<
-  RegisterProps,
-  RegisterState
-> {
+class Register extends Component<RegisterProps,
+  RegisterState> {
   state: RegisterState = {
     count: 0,
     confirmDirty: false,
     visible: false,
     help: '',
-    prefix: '86',
   };
 
   interval: number | undefined = undefined;
 
   componentDidUpdate() {
-    const { userRegister, form } = this.props;
+    const {userRegister, form} = this.props;
     const account = form.getFieldValue('mail');
     if (userRegister.status === 'ok') {
       message.success('注册成功！');
@@ -112,20 +104,9 @@ class Register extends Component<
     clearInterval(this.interval);
   }
 
-  onGetCaptcha = () => {
-    let count = 59;
-    this.setState({ count });
-    this.interval = window.setInterval(() => {
-      count -= 1;
-      this.setState({ count });
-      if (count === 0) {
-        clearInterval(this.interval);
-      }
-    }, 1000);
-  };
 
   getPasswordStatus = () => {
-    const { form } = this.props;
+    const {form} = this.props;
     const value = form.getFieldValue('password');
     if (value && value.length > 9) {
       return 'ok';
@@ -138,15 +119,13 @@ class Register extends Component<
 
   handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const { form, dispatch } = this.props;
-    form.validateFields({ force: true }, (err, values) => {
+    const {form, dispatch} = this.props;
+    form.validateFields({force: true}, (err, values) => {
       if (!err) {
-        const { prefix } = this.state;
         dispatch({
           type: 'userRegister/submit',
           payload: {
             ...values,
-            prefix,
           },
         });
       }
@@ -154,19 +133,19 @@ class Register extends Component<
   };
 
   checkConfirm = (rule: any, value: string, callback: (messgae?: string) => void) => {
-    const { form } = this.props;
+    const {form} = this.props;
     if (value && value !== form.getFieldValue('password')) {
-      callback(formatMessage({ id: 'user-register.password.twice' }));
+      callback(formatMessage({id: 'user-register.password.twice'}));
     } else {
       callback();
     }
   };
 
   checkPassword = (rule: any, value: string, callback: (messgae?: string) => void) => {
-    const { visible, confirmDirty } = this.state;
+    const {visible, confirmDirty} = this.state;
     if (!value) {
       this.setState({
-        help: formatMessage({ id: 'user-register.password.required' }),
+        help: formatMessage({id: 'user-register.password.required'}),
         visible: !!value,
       });
       callback('error');
@@ -182,23 +161,17 @@ class Register extends Component<
       if (value.length < 6) {
         callback('error');
       } else {
-        const { form } = this.props;
+        const {form} = this.props;
         if (value && confirmDirty) {
-          form.validateFields(['confirm'], { force: true });
+          form.validateFields(['confirm'], {force: true});
         }
         callback();
       }
     }
   };
 
-  changePrefix = (value: string) => {
-    this.setState({
-      prefix: value,
-    });
-  };
-
   renderPasswordProgress = () => {
-    const { form } = this.props;
+    const {form} = this.props;
     const value = form.getFieldValue('password');
     const passwordStatus = this.getPasswordStatus();
     return value && value.length ? (
@@ -215,31 +188,27 @@ class Register extends Component<
   };
 
   render() {
-    const { form, submitting } = this.props;
-    const { getFieldDecorator } = form;
-    const { count, prefix, help, visible } = this.state;
+    const {form, submitting} = this.props;
+    const {getFieldDecorator} = form;
+    const {help, visible} = this.state;
     return (
       <div className={styles.main}>
         <h3>
-          <FormattedMessage id="user-register.register.register" />
+          <FormattedMessage id="user-register.register.register"/>
         </h3>
         <Form onSubmit={this.handleSubmit}>
           <FormItem>
-            {getFieldDecorator('mail', {
+            {getFieldDecorator('name', {
               rules: [
                 {
                   required: true,
-                  message: formatMessage({ id: 'user-register.email.required' }),
-                },
-                {
-                  type: 'email',
-                  message: formatMessage({ id: 'user-register.email.wrong-format' }),
+                  message: formatMessage({id: 'user-register.userName.required'}),
                 },
               ],
             })(
               <Input
                 size="large"
-                placeholder={formatMessage({ id: 'user-register.email.placeholder' })}
+                placeholder={formatMessage({id: 'user-register.login.userName'})}
               />,
             )}
           </FormItem>
@@ -252,15 +221,15 @@ class Register extends Component<
                 return node;
               }}
               content={
-                <div style={{ padding: '4px 0' }}>
+                <div style={{padding: '4px 0'}}>
                   {passwordStatusMap[this.getPasswordStatus()]}
                   {this.renderPasswordProgress()}
-                  <div style={{ marginTop: 10 }}>
-                    <FormattedMessage id="user-register.strength.msg" />
+                  <div style={{marginTop: 10}}>
+                    <FormattedMessage id="user-register.strength.msg"/>
                   </div>
                 </div>
               }
-              overlayStyle={{ width: 240 }}
+              overlayStyle={{width: 240}}
               placement="right"
               visible={visible}
             >
@@ -274,7 +243,7 @@ class Register extends Component<
                 <Input
                   size="large"
                   type="password"
-                  placeholder={formatMessage({ id: 'user-register.password.placeholder' })}
+                  placeholder={formatMessage({id: 'user-register.password.placeholder'})}
                 />,
               )}
             </Popover>
@@ -284,7 +253,7 @@ class Register extends Component<
               rules: [
                 {
                   required: true,
-                  message: formatMessage({ id: 'user-register.confirm-password.required' }),
+                  message: formatMessage({id: 'user-register.confirm-password.required'}),
                 },
                 {
                   validator: this.checkConfirm,
@@ -294,71 +263,9 @@ class Register extends Component<
               <Input
                 size="large"
                 type="password"
-                placeholder={formatMessage({ id: 'user-register.confirm-password.placeholder' })}
+                placeholder={formatMessage({id: 'user-register.confirm-password.placeholder'})}
               />,
             )}
-          </FormItem>
-          <FormItem>
-            <InputGroup compact>
-              <Select
-                size="large"
-                value={prefix}
-                onChange={this.changePrefix}
-                style={{ width: '20%' }}
-              >
-                <Option value="86">+86</Option>
-                <Option value="87">+87</Option>
-              </Select>
-              {getFieldDecorator('mobile', {
-                rules: [
-                  {
-                    required: true,
-                    message: formatMessage({ id: 'user-register.phone-number.required' }),
-                  },
-                  {
-                    pattern: /^\d{11}$/,
-                    message: formatMessage({ id: 'user-register.phone-number.wrong-format' }),
-                  },
-                ],
-              })(
-                <Input
-                  size="large"
-                  style={{ width: '80%' }}
-                  placeholder={formatMessage({ id: 'user-register.phone-number.placeholder' })}
-                />,
-              )}
-            </InputGroup>
-          </FormItem>
-          <FormItem>
-            <Row gutter={8}>
-              <Col span={16}>
-                {getFieldDecorator('captcha', {
-                  rules: [
-                    {
-                      required: true,
-                      message: formatMessage({ id: 'user-register.verification-code.required' }),
-                    },
-                  ],
-                })(
-                  <Input
-                    size="large"
-                    placeholder={formatMessage({ id: 'user-register.verification-code.placeholder' })}
-                  />,
-                )}
-              </Col>
-              <Col span={8}>
-                <Button
-                  size="large"
-                  disabled={!!count}
-                  className={styles.getCaptcha}
-                  onClick={this.onGetCaptcha}
-                >
-                  {count
-                    ? `${count} s`
-                    : formatMessage({ id: 'user-register.register.get-verification-code' })}
-                </Button>
-              </Col>
-            </Row>
           </FormItem>
           <FormItem>
             <Button
@@ -368,10 +275,10 @@ class Register extends Component<
               type="primary"
               htmlType="submit"
             >
-              <FormattedMessage id="user-register.register.register" />
+              <FormattedMessage id="user-register.register.register"/>
             </Button>
             <Link className={styles.login} to="/user/login">
-              <FormattedMessage id="user-register.register.sign-in" />
+              <FormattedMessage id="user-register.register.sign-in"/>
             </Link>
           </FormItem>
         </Form>

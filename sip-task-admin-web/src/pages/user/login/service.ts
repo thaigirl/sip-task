@@ -1,13 +1,15 @@
 import request from '@/utils/request';
-import { FormDataType } from './index';
+import {FormDataType} from './index';
 
-export async function fakeAccountLogin(params: FormDataType) {
-  return request('/api/login/account', {
+export async function login(params: FormDataType) {
+  return request('/api/user/login', {
     method: 'POST',
     data: params,
   });
 }
 
-export async function getFakeCaptcha(mobile: string) {
-  return request(`/api/login/captcha?mobile=${mobile}`);
+export async function logout() {
+  return request('/api/user/logout', {
+    method: 'GET',
+  });
 }

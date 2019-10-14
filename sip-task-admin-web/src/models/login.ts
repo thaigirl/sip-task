@@ -1,8 +1,9 @@
-import { AnyAction, Reducer } from 'redux';
-import { parse, stringify } from 'qs';
+import {AnyAction, Reducer} from 'redux';
+import {parse, stringify} from 'qs';
 
-import { EffectsCommandMap } from 'dva';
-import { routerRedux } from 'dva/router';
+import {EffectsCommandMap} from 'dva';
+import {routerRedux} from 'dva/router';
+import {logout} from "@/pages/user/login/service";
 
 export function getPageQuery(): {
   [key: string]: string;
@@ -34,8 +35,19 @@ const Model: ModelType = {
   },
 
   effects: {
-    *logout(_, { put }) {
-      const { redirect } = getPageQuery();
+    * logout(_, {call, put}) {
+      const {redirect} = getPageQuery();
+      const response = yield call(logout);
+      // Login successfully
+      if (response.success) {
+        localStorage.removeItem('auth');
+        localStorage.removeItem('antd-pro-authority');
+        yield put({
+          type: 'changeLoginStatus',
+          payload: response,
+        });
+        yield put(routerRedux.replace({pathname: '/user/login'}));
+      }
       // redirect
       if (window.location.pathname !== '/user/login' && !redirect) {
         yield put(
@@ -51,10 +63,10 @@ const Model: ModelType = {
   },
 
   reducers: {
-    changeLoginStatus(state, { payload }) {
+    changeLoginStatus(state, {payload}) {
       return {
         ...state,
-        status: payload.status,
+        status: "false",
         type: payload.type,
       };
     },
