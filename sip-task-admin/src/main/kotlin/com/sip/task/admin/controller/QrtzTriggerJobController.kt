@@ -54,10 +54,10 @@ class QrtzTriggerJobController {
     /**
      * 任务调度立即执行一次
      **/
-    @PostMapping("/run")
+    @PostMapping("/run/{id}")
     @Throws(SchedulerException::class)
-    fun run(job: QrtzTriggerJobVo): Result<Any> {
-        return Result.success(qrtzTriggerJobService.run(job))
+    fun run(@PathVariable("id") id: Long): Result<Any> {
+        return Result.success(qrtzTriggerJobService.run(id))
     }
 
     /**

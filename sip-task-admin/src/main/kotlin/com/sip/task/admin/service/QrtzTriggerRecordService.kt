@@ -129,7 +129,7 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
 
     fun delete(id: Long): Int {
         val exist = mapper.selectByPrimaryKey(id)
-        if (exist.status != BaseEnum.JobStatus.WAIT_EXEC.name) throw CustomException("status error")
+        if (exist.status != BaseEnum.JobStatus.WAIT_EXEC.name) throw CustomException("status error,can not delete")
         return mapper.deleteByPrimaryKey(id)
     }
 }

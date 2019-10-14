@@ -163,23 +163,25 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
     fun delete(ids: List<Long>): Int {
         //如果有未完成的任务不允许删除
         val records = recordMapper.selectByExample(example<QrtzTriggerRecord> {
-            andIn(QrtzTriggerRecord::status, listOf(BaseEnum.JobStatus.WAIT_EXEC.name, BaseEnum.JobStatus.RUNNING.name))
             andIn(QrtzTriggerRecord::jobId, ids)
         })
-        if (records.size > 0) {
+        val filter = records.filter { it.status.equals(BaseEnum.JobStatus.WAIT_EXEC.name) || it.status.equals(BaseEnum.JobStatus.RUNNING.name) }
+        if (filter.isNotEmpty()) {
             throw CustomException("有未执行完成的任务，不允许删除")
         }
         //删除任务、参数、执行记录、日志
         mapper.deleteByIds(ids.joinToString(","))
-        recordMapper.selectByExample(example<QrtzTriggerRecord> {
-            andIn(QrtzTriggerRecord::jobId, ids)
-        })
         paramMapper.deleteByExample(example<QrtzTriggerJobParam> {
             andIn(QrtzTriggerJobParam::jobId, ids)
         })
-        recordLogMapper.deleteByExample(example<QrtzTriggerRecordLog> {
-            andIn(QrtzTriggerRecordLog::recordId, records.mapNotNull { e -> e.id })
-        })
+        if (records.isNotEmpty()) {
+            recordMapper.selectByExample(example<QrtzTriggerRecord> {
+                andIn(QrtzTriggerRecord::jobId, ids)
+            })
+            recordLogMapper.deleteByExample(example<QrtzTriggerRecordLog> {
+                andIn(QrtzTriggerRecordLog::recordId, records.mapNotNull { it.id })
+            })
+        }
         return ids.size
     }
 
@@ -192,8 +194,8 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
      */
     @Transactional
     @Throws(SchedulerException::class)
-    fun run(vo: QrtzTriggerJobVo) {
-        ScheduleUtil.run(scheduler, mapper.selectByPrimaryKey(vo.id))
+    fun run(id: Long) {
+        ScheduleUtil.run(scheduler, mapper.selectByPrimaryKey(id))
     }
 
     /**
@@ -225,7 +227,6 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
         }
         return rows
     }
-
 
 
     private fun checkParam(param: List<QrtzTriggerJobParam>) {

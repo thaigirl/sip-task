@@ -24,4 +24,9 @@ class FeedBackController {
     fun logger(vo: LoggerVo) {
         feedBackService.insertLogger(vo)
     }
+
+    @PostMapping("/logger/deal")
+    fun deal() {
+        feedBackService.handleLog()
+    }
 }

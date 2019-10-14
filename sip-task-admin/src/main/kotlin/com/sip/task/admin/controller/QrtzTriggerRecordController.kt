@@ -5,10 +5,7 @@ import com.sip.task.admin.model.po.QrtzTriggerJobVo
 import com.sip.task.admin.model.po.QrtzTriggerRecordVo
 import com.sip.task.admin.service.QrtzTriggerRecordService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 /**
  * @author tianhu
@@ -28,5 +25,9 @@ class QrtzTriggerRecordController{
     @GetMapping("/log/{id}")
     fun log(@PathVariable("id")id: Long): Result<Any> {
         return Result.success(qrtzTriggerRecordService.getRecordLog(id))
+    }
+    @PostMapping("/delete/{id}")
+    fun delete(@PathVariable("id")id: Long): Result<Any> {
+        return Result.success(qrtzTriggerRecordService.delete(id))
     }
 }

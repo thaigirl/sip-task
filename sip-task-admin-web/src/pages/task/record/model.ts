@@ -1,10 +1,11 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {log, queryRecord, removeRule, suggest} from './service';
+import {log, queryRecord, remove, suggest} from './service';
 
 import {TableListData} from './data.d';
 import {executor, job} from "@/pages/task/job/data";
 import {executorAll} from "@/pages/task/job/service";
+import {message} from "antd";
 
 export interface StateType {
   data: TableListData;
@@ -12,6 +13,7 @@ export interface StateType {
   jobs: Array<job>;
   updateModalVisible: boolean;
   logInfo: any;
+  search: any;
 }
 
 export type Effect = (
@@ -28,6 +30,7 @@ export interface ModelType {
     executorAll: Effect;
     suggest: Effect;
     log: Effect;
+    reload: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -44,7 +47,8 @@ const Model: ModelType = {
     executors: [],
     jobs: [],
     updateModalVisible: false,
-    logInfo:{}
+    logInfo:{},
+    search:{}
   },
 
   effects: {
@@ -57,16 +61,23 @@ const Model: ModelType = {
             list: response.data.list,
             pagination: response.data.page,
           },
+          search: payload
         },
       });
     },
     * remove({payload, callback}, {call, put}) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+      const response = yield call(remove, payload);
+      if (response && response.code != 0) {
+        yield put({
+          type: 'save'
+        });
+      }else {
+        yield put({
+          type: 'reload'
+        });
+        message.success('删除成功');
+        if (callback) callback();
+      }
     },
     * executorAll({payload, callback}, {call, put}) {
       let response = yield call(executorAll, payload);
@@ -97,6 +108,11 @@ const Model: ModelType = {
         },
       });
       if (callback) callback();
+    },
+    * reload({payload, callback},{put, select}) {
+      const search = yield select(state => state.record.search);
+      console.log(search);
+      yield put({type: 'fetch', payload: search});
     },
   },
 

@@ -1,4 +1,4 @@
-import {Col, Divider, Form, Input, Modal, Row, Select,InputNumber,Switch} from 'antd';
+import {Col, Divider, Form, Input, Modal, Row, Select, InputNumber, Switch, Icon} from 'antd';
 
 import {FormComponentProps} from 'antd/es/form';
 import React from 'react';
@@ -141,9 +141,11 @@ const CreateForm: React.FC<CreateFormProps> = props => {
           </Col>
         </Row>
         <Divider>参数</Divider>
+
+
+        {content()}
         <Button icon="plus" type="primary" onClick={() => changeRowIndex(true,"")}>
         </Button>
-        {content()}
       </Modal>
     );
   }

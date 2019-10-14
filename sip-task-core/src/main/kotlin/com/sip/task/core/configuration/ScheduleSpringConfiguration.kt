@@ -29,7 +29,6 @@ class ScheduleSpringConfiguration : ApplicationContextAware {
                 if (mhd.isAnnotationPresent(ScheduleTask::class.java)) {
                     val code = mhd.getAnnotation(ScheduleTask::class.java).code
                     val instance = ExecutorInstance(code, bean, clazz, mhd, mhd.parameters)
-                    print("发现实例:"+ JSON.toJSONString(instance))
                     ExecutorContext.putExecutor(code, instance)
                 }
             }

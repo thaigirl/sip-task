@@ -94,7 +94,6 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     const content = (): any => {
       let arr :any[]=[];
       rowIndexArr.forEach((value,key)=>{
-        console.log(rowIndexArr);
         arr.push(<ParamRow param = {value}  handleParamChange = {handleParamChange} removeIndex = {removeIndex} unk={key} key={key}/>);
       });
       return arr
@@ -212,9 +211,9 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
           </Col>
         </Row>
         <Divider>参数</Divider>
+        {content()}
         <Button icon="plus" type="primary" onClick={() => changeRowIndex(true,"")}>
         </Button>
-        {content()}
       </Modal>
     );
   }

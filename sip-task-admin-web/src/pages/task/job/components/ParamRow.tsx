@@ -5,8 +5,6 @@ import React from 'react';
 import Button from "antd/lib/button/button";
 import {Param} from "../data"
 
-
-
 const {Option} = Select;
 const FormItem = Form.Item;
 interface ParamProps extends FormComponentProps{

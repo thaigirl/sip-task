@@ -1,6 +1,6 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {addJob, executorAll, queryJob, removeJob, updateJob} from './service';
+import {addJob, executorAll, queryJob, removeJob, updateJob,run} from './service';
 
 import {executor, TableListData} from './data.d';
 import {message} from "antd";
@@ -29,6 +29,7 @@ export interface ModelType {
     executorAll: Effect;
     reload: Effect;
     updateModalVisible: Effect;
+    run: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -76,7 +77,6 @@ const Model: ModelType = {
     * add({payload, callback}, {call, put}) {
       let response = yield call(addJob, payload);
       if (response && response.code != 0) {
-        console.log(response);
         yield put({
           type: 'save',
           payload: {
@@ -95,11 +95,18 @@ const Model: ModelType = {
       }
     },
     * remove({payload, callback}, {call, put}) {
-      yield call(removeJob, payload);
-      yield put({
-        type: 'reload'
-      });
-      if (callback) callback();
+      let response = yield call(removeJob, payload);
+      if (response && response.code != 0) {
+        yield put({
+          type: 'save'
+        });
+      }else {
+        yield put({
+          type: 'reload'
+        });
+        message.success('删除成功');
+        if (callback) callback();
+      }
     },
     * update({payload, callback}, {call, put}) {
       let response = yield call(updateJob, payload);
@@ -142,6 +149,9 @@ const Model: ModelType = {
           ...payload
         },
       });
+    },
+    * run({payload}, {call, put}) {
+      yield call(run, payload);
     },
 
   },

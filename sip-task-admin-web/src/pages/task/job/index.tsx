@@ -1,4 +1,4 @@
-import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, Row, Select,Modal} from 'antd';
+import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, Row, Select, Modal, message} from 'antd';
 import React, {Component, Fragment} from 'react';
 
 import {Dispatch} from 'redux';
@@ -16,8 +16,8 @@ import styles from './style.less';
 import {Link} from "umi";
 
 const FormItem = Form.Item;
-const { Option } = Select;
-const { confirm } = Modal;
+const {Option} = Select;
+const {confirm} = Modal;
 
 const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
@@ -72,7 +72,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   changeRowIndex = (bl: boolean, key: string) => {
     if (bl) {
-      this.state.rowIndexArr.set(uuid(), { type: 'STRING', key: '', value: '' });
+      this.state.rowIndexArr.set(uuid(), {type: 'STRING', key: '', value: ''});
       this.setState({
         rowIndexArr: this.state.rowIndexArr,
       });
@@ -89,7 +89,6 @@ class TableList extends Component<TableListProps, TableListState> {
     this.setState({
       rowIndexArr: this.state.rowIndexArr,
     });
-    console.log(this.state.rowIndexArr.size);
   };
 
   columns: StandardTableColumnProps[] = [
@@ -108,6 +107,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '执行策略',
       dataIndex: 'strategy',
+      align:"center",
       render: strategy => (
         strategy == 'BLOCKING' ? '阻塞' : '并行'
       ),
@@ -115,6 +115,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '状态',
       dataIndex: 'enable',
+      align:"center",
       render: enable => (
         enable == 0 ? '未启用' : '已启用'
       ),
@@ -129,31 +130,46 @@ class TableList extends Component<TableListProps, TableListState> {
         <Fragment>
           <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
           <Divider type="vertical"/>
+          <a onClick={() => this.run(record.id)}>立即执行</a>
+          <Divider type="vertical"/>
           <a onClick={() => this.confirmDelete(record.id)}>删除</a>
           <Divider type="vertical"/>
-          <Link to={'record/?jobId='+record.id+'&executorId='+record.executorId}>执行记录</Link>
+          <Link to={'record/?jobId=' + record.id + '&executorId=' + record.executorId}>执行记录</Link>
         </Fragment>
       ),
     },
   ];
 
 
-  confirmDelete =(id:number) =>{
+  run = (id: number) => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'executeJob/run',
+      payload: id
+    });
+    message.success("执行成功")
+  };
+
+
+  confirmDelete = (id: number) => {
+    const {dispatch} = this.props;
     confirm({
       title: '是否删除？',
-      content: 'When clicked the OK button, this dialog will be closed after 1 second',
+      content: '前置条件:删除所有未完成(执行中、待执行)的执行记录',
       onOk() {
-        return new Promise((resolve, reject) => {
-          setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-        }).catch(() => console.log('Oops errors!'));
+        dispatch({
+          type: 'executeJob/remove',
+          payload: [id],
+        });
       },
-      onCancel() {},
+      onCancel() {
+      },
     })
   };
 
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'executeJob/fetch',
     });
@@ -164,11 +180,11 @@ class TableList extends Component<TableListProps, TableListState> {
     pagination: Partial<TableListPagination>,
     filtersArg: Record<keyof TableListItem, string[]>,
   ) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const {dispatch} = this.props;
+    const {formValues} = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
+      const newObj = {...obj};
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
@@ -186,13 +202,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   // 初始化执行器下拉框值
   initExecutorData = () => {
-    // const {
-    //   executeJob: { executors },
-    // } = this.props;
-    // if (executors.length > 0) {
-    //   return
-    // }
-    const { form, dispatch } = this.props;
+    const {form, dispatch} = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
@@ -205,12 +215,12 @@ class TableList extends Component<TableListProps, TableListState> {
 
   initExcutorOption = () => {
     const {
-      executeJob: { executors },
+      executeJob: {executors},
     } = this.props;
-    const arr : any[] = [];
+    const arr: any[] = [];
     for (let i = 0; i < executors.length; i++) {
       const exec = executors[i];
-      arr.push(<Option key = {exec.id} value={exec.id}>{exec.name}</Option>)
+      arr.push(<Option key={exec.id} value={exec.id}>{exec.name}</Option>)
     }
     return arr;
   };
@@ -239,7 +249,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
 
   handleFormReset = () => {
-    const { form, dispatch } = this.props;
+    const {form, dispatch} = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
@@ -251,15 +261,15 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   toggleForm = () => {
-    const { expandForm } = this.state;
+    const {expandForm} = this.state;
     this.setState({
       expandForm: !expandForm,
     });
   };
 
   handleMenuClick = (e: { key: string }) => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
+    const {dispatch} = this.props;
+    const {selectedRows} = this.state;
 
     if (!selectedRows) return;
     switch (e.key) {
@@ -289,7 +299,7 @@ class TableList extends Component<TableListProps, TableListState> {
 
   handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const { dispatch, form } = this.props;
+    const {dispatch, form} = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       const values = {
@@ -307,6 +317,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleModalVisible = (flag?: boolean) => {
+    console.log("去潇洒");
     if (flag) {
       this.initExecutorData();
     } else {
@@ -320,7 +331,7 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleUpdateModalVisible = (flag?: boolean, record?: FormValsType) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     const map = new Map();
     if (record && record.param) {
       for (const i in record.param) {
@@ -333,20 +344,25 @@ class TableList extends Component<TableListProps, TableListState> {
     });
     dispatch({
       type: 'executeJob/updateModalVisible',
-      payload: { updateModalVisible: flag! },
+      payload: {updateModalVisible: flag!},
     });
   };
   handleCreateModalVisible = (flag?: boolean) => {
-    const { dispatch } = this.props;
+    if (!flag) {
+      this.setState({
+        rowIndexArr: new Map(),
+      })
+    }
+    const {dispatch} = this.props;
     dispatch({
       type: 'executeJob/updateModalVisible',
-      payload: { createModalVisible: flag! },
+      payload: {createModalVisible: flag!},
     });
   };
 
   handleAdd = (fields: FormValsType) => {
-    const { dispatch } = this.props;
-    const param : Param[] = [];
+    const {dispatch} = this.props;
+    const param: Param[] = [];
     for (const i of this.state.rowIndexArr.values()) {
       param.push(i)
     }
@@ -370,8 +386,8 @@ class TableList extends Component<TableListProps, TableListState> {
 
 
   handleUpdate = (fields: FormValsType) => {
-    const { dispatch } = this.props;
-    const param : Param[] = [];
+    const {dispatch} = this.props;
+    const param: Param[] = [];
     for (const i of this.state.rowIndexArr.values()) {
       param.push(i)
     }
@@ -395,11 +411,11 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   renderSimpleForm() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
+    const {form} = this.props;
+    const {getFieldDecorator} = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col md={8} sm={24}>
             <FormItem label="规则名称">
               {getFieldDecorator('name')(<Input placeholder="请输入"/>)}
@@ -408,7 +424,7 @@ class TableList extends Component<TableListProps, TableListState> {
           <Col md={8} sm={24}>
             <FormItem label="使用状态">
               {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
+                <Select placeholder="请选择" style={{width: '100%'}}>
                   <Option value="0">关闭</Option>
                   <Option value="1">运行中</Option>
                 </Select>,
@@ -420,10 +436,10 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+              <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
                 重置
               </Button>
-              <a style={{ marginLeft: 8 }} onClick={this.toggleForm}>
+              <a style={{marginLeft: 8}} onClick={this.toggleForm}>
                 展开 <Icon type="down"/>
               </a>
             </span>
@@ -435,18 +451,18 @@ class TableList extends Component<TableListProps, TableListState> {
 
   renderAdvancedForm() {
     const {
-      form: { getFieldDecorator },
+      form: {getFieldDecorator},
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+        <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col md={5} sm={24}>
             <FormItem label="执行器">
               {getFieldDecorator('executorId', {
                 initialValue: '',
-                rules: [{ required: false, message: '请选择执行器' }],
+                rules: [{required: false, message: '请选择执行器'}],
               })(
-                <Select style={{ width: '100%' }} placeholder="请选择">
+                <Select style={{width: '100%'}} placeholder="请选择">
                   <Option value="">请选择</Option>
                   {this.initExcutorOption()}
                 </Select>,
@@ -462,7 +478,7 @@ class TableList extends Component<TableListProps, TableListState> {
             <Button type="primary" htmlType="submit">
               查询
             </Button>
-            <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
+            <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
               重置
             </Button>
           </Col>
@@ -472,16 +488,16 @@ class TableList extends Component<TableListProps, TableListState> {
   }
 
   renderForm() {
-    const { expandForm } = this.state;
+    const {expandForm} = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
 
   render() {
     const {
-      executeJob: { data, executors, updateModalVisible,createModalVisible },
+      executeJob: {data, executors, updateModalVisible, createModalVisible},
       loading,
     } = this.props;
-    const { selectedRows, stepFormValues, rowIndexArr } = this.state;
+    const {selectedRows, stepFormValues, rowIndexArr} = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
@@ -515,16 +531,6 @@ class TableList extends Component<TableListProps, TableListState> {
               <Button icon="plus" type="primary" onClick={() => this.handleCreateModalVisible(true)}>
                 新建
               </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down"/>
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
             </div>
             <StandardTable
               rowKey="id"
@@ -537,7 +543,8 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} createModalVisible={createModalVisible} executors={executors} rowIndexArr={rowIndexArr}/>
+        <CreateForm {...parentMethods} createModalVisible={createModalVisible} executors={executors}
+                    rowIndexArr={rowIndexArr}/>
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
             {...updateMethods}

@@ -1,4 +1,19 @@
-import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, message, Row, Select, AutoComplete} from 'antd';
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Dropdown,
+  Form,
+  Icon,
+  Input,
+  Menu,
+  message,
+  Row,
+  Select,
+  AutoComplete,
+  Modal
+} from 'antd';
 import React, {Component, Fragment} from 'react';
 import {getParam} from '@/utils/UrlParam'
 
@@ -18,6 +33,7 @@ import {DataSourceItemObject} from "antd/es/auto-complete";
 
 const FormItem = Form.Item;
 const {Option} = Select;
+const { confirm } = Modal;
 const getValue = (obj: { [x: string]: string[] }) =>
   Object.keys(obj)
     .map(key => obj[key])
@@ -75,14 +91,17 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '任务名称',
       dataIndex: 'jobName',
+      align:"center"
     },
     {
       title: '调度CODE',
       dataIndex: 'code',
+      align:"center"
     },
     {
       title: '状态',
       dataIndex: 'status',
+      align:"center",
       render: (val: string) => {
         let value: any;
         switch (val) {
@@ -108,27 +127,32 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '超时时间(s)',
       dataIndex: 'timeout',
+      align:"center"
     }, {
       title: '失败重试次数',
       dataIndex: 'failRetryCount',
+      align:"center"
     },
     {
       title: '开始时间',
       dataIndex: 'startTime',
+      align:"center",
       sorter: true,
       render: (val: string) => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
     },
     {
       title: '结束时间',
       dataIndex: 'endTime',
+      align:"center",
       sorter: true,
       render: (val: string) => <span>{val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ""}</span>,
     },
     {
       title: '操作',
+      align:"center",
       render: (text, record) => {
         const log = <a onClick={() => this.handleUpdateModalVisible(true, record)}>日志详情</a>;
-        const del = <a href="">删除</a>;
+        const del = <a onClick={() => this.delete(record.id)}>删除</a>;
         let menu=null;
         if (record.status == 'WAIT_EXEC') {
           menu = <Fragment>
@@ -139,11 +163,26 @@ class TableList extends Component<TableListProps, TableListState> {
             {log}
           </Fragment>
         }
-        console.log(record.status);
         return menu
       },
     },
   ];
+
+
+  delete = (id:number)=>{
+    const {dispatch} = this.props;
+    confirm({
+      title: '是否删除？',
+      content: '删除后将不再执行',
+      onOk() {
+        dispatch({
+          type: 'record/remove',
+          payload: id,
+        });
+      },
+      onCancel() {},
+    })
+  };
 
 
   componentDidMount() {
@@ -439,21 +478,21 @@ class TableList extends Component<TableListProps, TableListState> {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                新建
-              </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down"/>
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
-            </div>
+            {/*<div className={styles.tableListOperator}>*/}
+            {/*  <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>*/}
+            {/*    新建*/}
+            {/*  </Button>*/}
+            {/*  {selectedRows.length > 0 && (*/}
+            {/*    <span>*/}
+            {/*      <Button>批量操作</Button>*/}
+            {/*      <Dropdown overlay={menu}>*/}
+            {/*        <Button>*/}
+            {/*          更多操作 <Icon type="down"/>*/}
+            {/*        </Button>*/}
+            {/*      </Dropdown>*/}
+            {/*    </span>*/}
+            {/*  )}*/}
+            {/*</div>*/}
             <StandardTable
               rowKey="id"
               selectedRows={selectedRows}

@@ -7,13 +7,10 @@ export async function queryJob(params: queryParam) {
   });
 }
 
-export async function removeJob(params: queryParam) {
+export async function removeJob(params: any) {
   return request('/api/job/delete', {
     method: 'DELETE',
-    data: {
-      ...params,
-      method: 'delete',
-    },
+    data: params
   });
 }
 
@@ -40,5 +37,11 @@ export async function updateJob(params: queryParam) {
 export async function executorAll(params: queryParam) {
   return request('/api/executor/all', {
     params,
+  });
+}
+
+export async function run(id: number) {
+  return request('/api/job/run/'+id, {
+    method: 'POST',
   });
 }
