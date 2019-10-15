@@ -39,7 +39,7 @@ const Model: ModelType = {
 
       // Login successfully
       if (response.success) {
-        window.localStorage.setItem("auth", JSON.stringify(response.data));
+        localStorage.setItem("auth", JSON.stringify(response.data));
         yield put({
           type: 'changeLoginStatus',
           payload: response,

@@ -9,7 +9,7 @@ import tk.mybatis.spring.annotation.MapperScan
 @MapperScan(basePackages = ["com.sip.task.admin.mapper"])
 @EnableSipCore
 @SpringCloudApplication
-@EnableFeignClients
+//@EnableFeignClients
 class AdminApplication
 
 fun main(args: Array<String>) {

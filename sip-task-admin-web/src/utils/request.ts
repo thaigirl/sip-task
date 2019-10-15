@@ -44,19 +44,15 @@ const errorHandler = (error: { response: Response }): Response => {
   return response;
 };
 
-// @ts-ignore
 /**
  * 配置request请求时的默认参数
  */
-
 const request = extend({
+  cache: "no-cache",
   errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
-  headers: {
-    Authorization: (localStorage.getItem("auth") && localStorage.getItem("auth") !== "undefined") ? JSON.parse(localStorage.getItem("auth")!.toString()).token : "",
-  },
+  // @ts-ignore
 });
-
 /**
  * 对于状态码实际是 200 的错误
  */
@@ -76,11 +72,21 @@ request.interceptors.response.use(async response => {
   return response;
 });
 
-request.interceptors.request.use((url, options) => (
-  {
-    url: `${url}`,
-    options: {...options, interceptors: true},
-  }
-));
+// @ts-ignore
+request.interceptors.request.use((url, options) => {
+  const auth = window.localStorage.getItem("auth");
+  return (
+    {
+      url: `${url}`,
+      options: {
+        ...options,
+        interceptors: true,
+        headers: {
+          Authorization: auth ? JSON.parse(auth).token : "",
+        },
+      },
+    }
+  )
+});
 
 export default request;

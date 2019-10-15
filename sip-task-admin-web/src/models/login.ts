@@ -42,11 +42,6 @@ const Model: ModelType = {
       if (response.success) {
         localStorage.removeItem('auth');
         localStorage.removeItem('antd-pro-authority');
-        yield put({
-          type: 'changeLoginStatus',
-          payload: response,
-        });
-        yield put(routerRedux.replace({pathname: '/user/login'}));
       }
       // redirect
       if (window.location.pathname !== '/user/login' && !redirect) {
@@ -66,7 +61,7 @@ const Model: ModelType = {
     changeLoginStatus(state, {payload}) {
       return {
         ...state,
-        status: "false",
+        status: payload.status,
         type: payload.type,
       };
     },
