@@ -38,5 +38,7 @@ module.exports = {
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-restricted-globals": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
+    "no-restricted-syntax": "off",
+    "guard-for-in": "off",
   }
 };

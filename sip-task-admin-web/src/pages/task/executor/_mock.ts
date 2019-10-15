@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { parse } from 'url';
-import { TableListItem, TableListParams } from './data.d';
+import {Request, Response} from 'express';
+import {parse} from 'url';
+import {TableListItem, TableListParams} from './data.d';
 
 // mock tableListDataSource
 let tableListDataSource: TableListItem[] = [];
@@ -92,7 +92,7 @@ function postRule(req: Request, res: Response, u: string, b: Request) {
   }
 
   const body = (b && b.body) || req.body;
-  const { method, name, desc, key } = body;
+  const {method, name, desc, key} = body;
 
   switch (method) {
     /* eslint no-case-declarations:0 */
@@ -122,7 +122,7 @@ function postRule(req: Request, res: Response, u: string, b: Request) {
     case 'update':
       tableListDataSource = tableListDataSource.map(item => {
         if (item.key === key) {
-          return { ...item, desc, name };
+          return {...item, desc, name};
         }
         return item;
       });

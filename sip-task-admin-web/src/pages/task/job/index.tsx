@@ -1,28 +1,27 @@
-import {Button, Card, Col, Divider, Dropdown, Form, Icon, Input, Menu, Row, Select, Modal, message} from 'antd';
+import {Button, Card, Col, Divider, Form, Icon, Input, message, Modal, Row, Select} from 'antd';
 import React, {Component, Fragment} from 'react';
 
 import {Dispatch} from 'redux';
 import {FormComponentProps} from 'antd/es/form';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {connect} from 'dva';
+// @ts-ignore
 import uuid from 'uuid'
+import {Link} from "umi";
 import {StateType} from './model';
 import CreateForm from './components/CreateForm';
 import StandardTable, {StandardTableColumnProps} from './components/StandardTable';
 import UpdateForm, {FormValsType} from './components/UpdateForm';
 import {executor, Param, queryParam, TableListItem, TableListPagination} from './data.d';
-
 import styles from './style.less';
-import {Link} from "umi";
 
 const FormItem = Form.Item;
 const {Option} = Select;
 const {confirm} = Modal;
 
-const getValue = (obj: { [x: string]: string[] }) =>
-  Object.keys(obj)
-    .map(key => obj[key])
-    .join(',');
+const getValue = (obj: { [x: string]: string[] }) => Object.keys(obj)
+  .map(key => obj[key])
+  .join(',');
 
 
 interface TableListProps extends FormComponentProps {
@@ -107,7 +106,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '执行策略',
       dataIndex: 'strategy',
-      align:"center",
+      align: "center",
       render: strategy => (
         strategy == 'BLOCKING' ? '阻塞' : '并行'
       ),
@@ -115,7 +114,7 @@ class TableList extends Component<TableListProps, TableListState> {
     {
       title: '状态',
       dataIndex: 'enable',
-      align:"center",
+      align: "center",
       render: enable => (
         enable == 0 ? '未启用' : '已启用'
       ),
@@ -134,7 +133,7 @@ class TableList extends Component<TableListProps, TableListState> {
           <Divider type="vertical"/>
           <a onClick={() => this.confirmDelete(record.id)}>删除</a>
           <Divider type="vertical"/>
-          <Link to={'record/?jobId=' + record.id + '&executorId=' + record.executorId}>执行记录</Link>
+          <Link to={`record/?jobId=${record.id}&executorId=${record.executorId}`}>执行记录</Link>
         </Fragment>
       ),
     },
@@ -244,7 +243,6 @@ class TableList extends Component<TableListProps, TableListState> {
     this.setState({
       rowIndexArr: this.state.rowIndexArr,
     });
-    console.log(this.state.rowIndexArr)
   };
 
 
@@ -347,6 +345,7 @@ class TableList extends Component<TableListProps, TableListState> {
       payload: {updateModalVisible: flag!},
     });
   };
+
   handleCreateModalVisible = (flag?: boolean) => {
     if (!flag) {
       this.setState({
@@ -498,12 +497,6 @@ class TableList extends Component<TableListProps, TableListState> {
       loading,
     } = this.props;
     const {selectedRows, stepFormValues, rowIndexArr} = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
-      </Menu>
-    );
 
     const parentMethods = {
       changeRowIndex: this.changeRowIndex,
@@ -543,10 +536,12 @@ class TableList extends Component<TableListProps, TableListState> {
             />
           </div>
         </Card>
-        <CreateForm {...parentMethods} createModalVisible={createModalVisible} executors={executors}
+        <CreateForm {...parentMethods} dispatch={this.props.dispatch} createModalVisible={createModalVisible}
+                    executors={executors}
                     rowIndexArr={rowIndexArr}/>
         {stepFormValues && Object.keys(stepFormValues).length ? (
           <UpdateForm
+            dispatch={this.props.dispatch}
             {...updateMethods}
             updateModalVisible={updateModalVisible}
             rowIndexArr={rowIndexArr}

@@ -2,10 +2,12 @@ import {Col, Divider, Form, Input, InputNumber, Modal, Row, Select, Switch} from
 import React, {Component} from 'react';
 
 import {FormComponentProps} from 'antd/es/form';
-import {TableListItem} from '../data.d';
 import TextArea from "antd/es/input/TextArea";
 import Button from "antd/lib/button/button";
+import {Dispatch} from "redux";
+import {TableListItem} from '../data.d';
 import ParamRow from "@/pages/task/job/components/ParamRow";
+import Cron from "@/components/Cron";
 
 const {Option} = Select;
 const FormItem = Form.Item;
@@ -19,15 +21,16 @@ export interface FormValsType extends Partial<TableListItem> {
 }
 
 export interface UpdateFormProps extends FormComponentProps {
+  dispatch: Dispatch<any>;
   handleUpdateModalVisible: (flag?: boolean, formVals?: FormValsType) => void;
   handleUpdate: (values: FormValsType) => void;
   updateModalVisible: boolean;
   values: Partial<TableListItem>;
-  removeIndex: (key:string)=>void;
-  changeRowIndex: (bl: boolean,index:string) => void;
-  handleParamChange: (key:any,e:any,type:any)=>void;
+  removeIndex: (key: string) => void;
+  changeRowIndex: (bl: boolean, index: string) => void;
+  handleParamChange: (key: any, e: any, type: any) => void;
   initExcutorOption: () => any;
-  rowIndexArr: Map<string,any>;
+  rowIndexArr: Map<string, any>;
 }
 
 
@@ -69,39 +72,48 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     };
   }
 
-  changeStatus = ()=>{
+  changeStatus = () => {
     this.setState({
-      formVals:{
+      formVals: {
         ...this.state.formVals,
         enable: !this.state.formVals.enable
       }
     })
   };
 
+  handleCron = (cron: string): void => {
+    this.setState({
+      formVals: {
+        ...this.state.formVals,
+        cron
+      }
+    })
+  };
 
 
   render() {
-    const {updateModalVisible, handleUpdateModalVisible, form, handleUpdate, values,rowIndexArr,handleParamChange,removeIndex,initExcutorOption,changeRowIndex} = this.props;
+    const {updateModalVisible, handleUpdateModalVisible, form, handleUpdate, values, rowIndexArr, handleParamChange, removeIndex, initExcutorOption, changeRowIndex} = this.props;
     const {formVals} = this.state;
     const okHandle = () => {
       form.validateFields((err, fieldsValue) => {
         if (err) return;
         // form.resetFields();
-        fieldsValue.id=formVals.id;
+        fieldsValue.id = formVals.id;
         handleUpdate(fieldsValue);
       });
     };
     const content = (): any => {
-      let arr :any[]=[];
-      rowIndexArr.forEach((value,key)=>{
-        arr.push(<ParamRow param = {value}  handleParamChange = {handleParamChange} removeIndex = {removeIndex} unk={key} key={key}/>);
+      const arr: any[] = [];
+      rowIndexArr.forEach((value, key) => {
+        arr.push(<ParamRow param={value} handleParamChange={handleParamChange} removeIndex={removeIndex} unk={key}
+                           key={key}/>);
       });
       return arr
     };
     console.log(formVals.enable);
     return (
       <Modal
-        width={"800px"}
+        width="800px"
         bodyStyle={{padding: '32px 40px 48px'}}
         destroyOnClose
         title="编辑任务"
@@ -116,9 +128,9 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行器">
               {form.getFieldDecorator('executorId', {
                 initialValue: formVals.executorId,
-                rules: [{ required: true, message: '请选择执行器' }],
+                rules: [{required: true, message: '请选择执行器'}],
               })(
-                <Select style={{width: "100%" }} placeholder={'请选择'}>
+                <Select style={{width: "100%"}} placeholder="请选择">
                   {initExcutorOption()}
                 </Select>
               )}
@@ -147,7 +159,10 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
               {form.getFieldDecorator('cron', {
                 initialValue: formVals.cron,
                 rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
-              })(<Input placeholder="请输入"/>)}
+              })(<Input placeholder="请输入" style={{width: '80%', marginRight: 8}}/>)}
+              <div style={{display: "inline-block"}}>
+                <Cron dispatch={this.props.dispatch} fiveRecentTimedata={[]} handleCron={this.handleCron}/>
+              </div>
             </FormItem>
           </Col>
         </Row>
@@ -156,9 +171,9 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="执行策略">
               {form.getFieldDecorator(`strategy`, {
                 initialValue: formVals.strategy,
-                rules: [{ required: true, message: '请选择执行策略' }],
+                rules: [{required: true, message: '请选择执行策略'}],
               })(
-                <Select  style={{width: "100%"}}>
+                <Select style={{width: "100%"}}>
                   <Option value="BLOCKING">阻塞</Option>
                   <Option value="CONCURRENT">并行</Option>
                 </Select>
@@ -170,7 +185,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
               {form.getFieldDecorator('timeout', {
                 initialValue: formVals.timeout,
                 rules: [{required: true, message: '请输入数字 '}],
-              })(<InputNumber style={{width: "100%" }} placeholder="请输入"/>)}
+              })(<InputNumber style={{width: "100%"}} placeholder="请输入"/>)}
             </FormItem>
           </Col>
         </Row>
@@ -180,7 +195,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
               {form.getFieldDecorator('failRetryCount', {
                 initialValue: formVals.failRetryCount,
                 rules: [{required: true, message: '请输入数字！'}],
-              })(<InputNumber style={{width: "100%" }} placeholder="请输入"/>)}
+              })(<InputNumber style={{width: "100%"}} placeholder="请输入"/>)}
             </FormItem>
           </Col>
           <Col md={12} sm={24}>
@@ -203,16 +218,15 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
           </Col>
           <Col md={12} sm={24}>
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="是否启用">
-              {form.getFieldDecorator('enable',{
+              {form.getFieldDecorator('enable', {
                 initialValue: formVals.enable,
-              } )
-              (<Switch onChange={this.changeStatus} checked={formVals.enable} />)}
+              })(<Switch onChange={this.changeStatus} checked={formVals.enable}/>)}
             </FormItem>
           </Col>
         </Row>
         <Divider>参数</Divider>
         {content()}
-        <Button icon="plus" type="primary" onClick={() => changeRowIndex(true,"")}>
+        <Button icon="plus" type="primary" onClick={() => changeRowIndex(true, "")}>
         </Button>
       </Modal>
     );

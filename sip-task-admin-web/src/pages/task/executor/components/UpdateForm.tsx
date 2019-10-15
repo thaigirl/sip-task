@@ -207,7 +207,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
     };
     return (
       <Modal
-        width={640}
+        width={800}
         bodyStyle={{padding: '32px 40px 48px'}}
         destroyOnClose
         title="更新执行器"

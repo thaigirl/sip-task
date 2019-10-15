@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import {Button, Checkbox, Col, Collapse, Divider, Input, InputNumber, List, Modal, Radio, Row, Tabs} from 'antd';
+import {Checkbox, Col, Collapse, Divider, Icon, Input, InputNumber, List, Modal, Radio, Row, Tabs} from 'antd';
 import {connect} from "dva";
 import {Dispatch} from "redux";
-import {string} from "prop-types";
 import {ConnectProps} from "../../models/connect";
 import {StateType} from "../../pages/task/executor/model";
 
@@ -19,7 +18,6 @@ function CronExpression() {
       <p>4. Day-of-Month</p>
       <p>5. Month</p>
       <p>6. Day-of-Week</p>
-      <p>7. Year (可选字段)</p>
       <p>例 "0 0 12 ? * WED" 在每星期三下午12:00 执行,</p> 个别子表达式可以包含范围, 例如，在前面的例子里("WED")可以替换成 "MON-FRI", "MON, WED,
       FRI"甚至"MON-WED,SAT". “*” 代表整个时间段. <p></p>
       <p>每一个字段都有一套可以指定有效值，如</p>
@@ -40,7 +38,60 @@ function CronExpression() {
 
 interface CronProps extends ConnectProps {
   dispatch: Dispatch<any>;
-  fiveRecentTimedata: [];
+  fiveRecentTimedata: any[];
+  handleCron: (cron: string) => void;
+}
+
+interface CronState {
+  visible: boolean,
+  cron: string,
+  tabValue: string,
+  secondValue: any,
+  secondStart_0: any,
+  secondEnd_0: any,
+  secondStart_1: any,
+  secondEnd_1: any,
+  secondList: any[],
+  minuteValue: any,
+  minuteStart_0: any,
+  minuteEnd_0: any,
+  minuteStart_1: any,
+  minuteEnd_1: any,
+  minuteList: any[],
+  hourValue: any,
+  hourStart_0: any,
+  hourEnd_0: any,
+  hourStart_1: any,
+  hourEnd_1: any,
+  hourList: any[],
+  dayValue: any,
+  dayStart_0: any,
+  dayEnd_0: any,
+  dayStart_1: any,
+  dayEnd_1: any,
+  dayStart_2: any,
+  dayList: any[],
+  monthValue: any,
+  monthStart_0: any,
+  monthEnd_0: any,
+  monthStart_1: any,
+  monthEnd_1: any,
+  monthList: any[],
+  weekValue: any,
+  weekStart_0: any,
+  weekEnd_0: any,
+  weekStart_1: any,
+  weekEnd_1: any,
+  weekStart_2: any,
+  weekList: any[],
+  v_second: string,
+  v_minute: string,
+  v_hour: string,
+  v_day: string,
+  v_month: string,
+  v_week: string,
+  text: any[],
+  data: any[],
 }
 
 @connect(
@@ -53,110 +104,107 @@ interface CronProps extends ConnectProps {
   }),
 )
 
-class Cron extends Component<CronProps> {
-  state = {
-    visible: false,
-    cron: '* * * * * ?',
-    tabValue: "1",
-    fiveRecentTimedata: [],
-    secondValue: 1,
-    secondStart_0: 1,
-    secondEnd_0: 1,
-    secondStart_1: 1,
-    secondEnd_1: 1,
-    secondList: [],
-    minuteValue: 1,
-    minuteStart_0: 1,
-    minuteEnd_0: 1,
-    minuteStart_1: 1,
-    minuteEnd_1: 1,
-    minuteList: [],
-    hourValue: 1,
-    hourStart_0: 1,
-    hourEnd_0: 1,
-    hourStart_1: 1,
-    hourEnd_1: 1,
-    hourList: [],
-    dayValue: 1,
-    dayStart_0: 1,
-    dayEnd_0: 1,
-    dayStart_1: 1,
-    dayEnd_1: 1,
-    dayStart_2: 1,
-    dayList: [],
-    monthValue: 1,
-    monthStart_0: 1,
-    monthEnd_0: 1,
-    monthStart_1: 1,
-    monthEnd_1: 1,
-    monthList: [],
-    weekValue: 1,
-    weekStart_0: 1,
-    weekEnd_0: 1,
-    weekStart_1: 1,
-    weekEnd_1: 1,
-    weekStart_2: 1,
-    weekList: [],
-    yearValue: 1,
-    yearStart_0: 2000,
-    yearEnd_0: 2001,
-    v_second: '*',
-    v_minute: '*',
-    v_hour: '*',
-    v_day: '*',
-    v_month: '*',
-    v_week: '?',
-    v_year: '',
-    text: [
-      {
-        title: 'CronTrigger',
-        desc: `CronTriggers往往比SimpleTrigger更有用，如果您需要基于日历的概念，而非SimpleTrigger完全指定的时间间隔，复发的发射工作的时间表。 CronTrigger，你可以指定触发的时间表如“每星期五中午”，或“每个工作日9:30时”，甚至“每5分钟一班9:00和10:00逢星期一上午，星期三星期五“。 即便如此，SimpleTrigger一样，CronTrigger拥有的startTime指定的时间表时生效，指定的时间表时，应停止（可选）结束时间。`
-      },
-      {
-        title: 'Cron表达式',
-        desc: CronExpression()
-      },
-    ],
-    data: [
-      {
-        title: '0 15 10 * * ? *',
-        desc: '每天10点15分触发'
-      },
-      {
-        title: '0 15 10 * * ? 2017',
-        desc: '2017年每天10点15分触发'
-      },
-      {
-        title: '0 * 14 * * ?',
-        desc: '每天下午的 2点到2点59分每分触发'
-      },
-      {
-        title: '0 0/5 14 * * ?',
-        desc: '每天下午的 2点到2点59分(整点开始，每隔5分触发)'
-      },
-      {
-        title: '0 0/5 14,18 * * ?',
-        desc: '每天下午的 2点到2点59分、18点到18点59分(整点开始，每隔5分触发)'
-      },
-      {
-        title: '0 0-5 14 * * ?',
-        desc: '每天下午的 2点到2点05分每分触发'
-      },
-      {
-        title: '0 15 10 ? * 6L',
-        desc: '每月最后一周的星期五的10点15分触发'
-      },
-      {
-        title: '0 15 10 ? * 6#3',
-        desc: '每月的第三周的星期五开始触发'
-      },
-    ],
+class Cron extends Component<CronProps, CronState> {
+  static defaultProps = {
+    handleCron: () => {
+    },
   };
 
-  componentWillReceiveProps(nextProps: Readonly<CronProps>, nextContext: any): void {
-    this.setState({
-      fiveRecentTimedata: this.props.fiveRecentTimedata,
-    })
+  constructor(props: CronProps) {
+    super(props);
+    this.state = {
+      visible: false,
+      cron: '* * * * * ?',
+      tabValue: "1",
+      secondValue: 1,
+      secondStart_0: 1,
+      secondEnd_0: 1,
+      secondStart_1: 1,
+      secondEnd_1: 1,
+      secondList: [],
+      minuteValue: 1,
+      minuteStart_0: 1,
+      minuteEnd_0: 1,
+      minuteStart_1: 1,
+      minuteEnd_1: 1,
+      minuteList: [],
+      hourValue: 1,
+      hourStart_0: 1,
+      hourEnd_0: 1,
+      hourStart_1: 1,
+      hourEnd_1: 1,
+      hourList: [],
+      dayValue: 1,
+      dayStart_0: 1,
+      dayEnd_0: 1,
+      dayStart_1: 1,
+      dayEnd_1: 1,
+      dayStart_2: 1,
+      dayList: [],
+      monthValue: 1,
+      monthStart_0: 1,
+      monthEnd_0: 1,
+      monthStart_1: 1,
+      monthEnd_1: 1,
+      monthList: [],
+      weekValue: 1,
+      weekStart_0: 1,
+      weekEnd_0: 1,
+      weekStart_1: 1,
+      weekEnd_1: 1,
+      weekStart_2: 1,
+      weekList: [],
+      v_second: '*',
+      v_minute: '*',
+      v_hour: '*',
+      v_day: '*',
+      v_month: '*',
+      v_week: '?',
+      text: [
+        {
+          title: 'CronTrigger',
+          desc: `CronTriggers往往比SimpleTrigger更有用，如果您需要基于日历的概念，而非SimpleTrigger完全指定的时间间隔，复发的发射工作的时间表。 CronTrigger，你可以指定触发的时间表如“每星期五中午”，或“每个工作日9:30时”，甚至“每5分钟一班9:00和10:00逢星期一上午，星期三星期五“。 即便如此，SimpleTrigger一样，CronTrigger拥有的startTime指定的时间表时生效，指定的时间表时，应停止（可选）结束时间。`
+        },
+        {
+          title: 'Cron表达式',
+          desc: CronExpression()
+        },
+      ],
+      data: [
+        {
+          title: '0 15 10 * * ? *',
+          desc: '每天10点15分触发'
+        },
+        {
+          title: '0 * 14 * * ?',
+          desc: '每天下午的 2点到2点59分每分触发'
+        },
+        {
+          title: '0 0/5 14 * * ?',
+          desc: '每天下午的 2点到2点59分(整点开始，每隔5分触发)'
+        },
+        {
+          title: '0 0/5 14,18 * * ?',
+          desc: '每天下午的 2点到2点59分、18点到18点59分(整点开始，每隔5分触发)'
+        },
+        {
+          title: '0 0-5 14 * * ?',
+          desc: '每天下午的 2点到2点05分每分触发'
+        },
+        {
+          title: '0 15 10 ? * 6L',
+          desc: '每月最后一周的星期五的10点15分触发'
+        },
+        {
+          title: '0 15 10 ? * 6#3',
+          desc: '每月的第三周的星期五开始触发'
+        },
+      ],
+    };
+  }
+
+  componentDidMount(): void {
+    this.getCronTime(this.state.cron);
   }
 
   showModal = () => {
@@ -167,6 +215,13 @@ class Cron extends Component<CronProps> {
 
 
   handleCancel = () => {
+    this.setState({
+      visible: false,
+    });
+  };
+
+  ok = () => {
+    this.props.handleCron(this.state.cron);
     this.setState({
       visible: false,
     });
@@ -220,13 +275,6 @@ class Cron extends Component<CronProps> {
     });
   };
 
-  onYearChange = (e: any) => {
-    this.setState({
-      yearValue: e.target.value,
-    }, () => {
-      this.everyTime('v_year');
-    });
-  };
 
   onTabsChange = (e: string) => {
     this.setState({
@@ -235,6 +283,7 @@ class Cron extends Component<CronProps> {
   };
 
   onValueChange = (key: string, value: any) => {
+    // @ts-ignore
     this.setState({
       [`${key}`]: value
     }, () => {
@@ -256,9 +305,6 @@ class Cron extends Component<CronProps> {
           break;
         case '6':
           this.everyTime('v_week');
-          break;
-        case '7':
-          this.everyTime('v_year');
           break;
       }
     });
@@ -299,12 +345,6 @@ class Cron extends Component<CronProps> {
       this.initDay(regs[3]);
       this.initMonth(regs[4]);
       this.initWeek(regs[5]);
-      if (regs.length > 6) {
-        this.setState({
-          v_year: regs[6],
-        })
-        this.initYear(regs[6]);
-      }
     }
   }
 
@@ -452,21 +492,21 @@ class Cron extends Component<CronProps> {
       arr = strVal.split('-');
       this.setState({
         monthValue: 3,
-        mouthStart_0: arr[0],
-        mouthEnd_0: arr[1],
+        monthStart_0: arr[0],
+        monthEnd_0: arr[1],
       })
     } else if (strVal.split('/').length > 1) {
       arr = strVal.split('/');
       this.setState({
         monthValue: 3,
-        mouthStart_1: arr[0],
-        mouthEnd_1: arr[1],
+        monthStart_1: arr[0],
+        monthEnd_1: arr[1],
       })
     } else {
       arr = strVal.split(",");
       this.setState({
         monthValue: 3,
-        mouthList: arr,
+        monthList: arr,
       })
     }
   }
@@ -510,31 +550,15 @@ class Cron extends Component<CronProps> {
     }
   }
 
-  initYear = (strVal: string) => {
-    if (strVal == "*") {
-      this.setState({
-        yearValue: 2
-      })
-    } else if (strVal.split('-').length > 1) {
-      const ary = strVal.split('-');
-      this.setState({
-        yearValue: 3,
-        yearStart_0: ary[0],
-        yearEnd_0: ary[1],
-      })
-    }
-  }
-
   everyTime = (type: string) => {
     let data = '';
     const stateMap = {
-      v_second: string,
-      v_minute: string,
-      v_hour: string,
-      v_day: string,
-      v_month: string,
-      v_week: string,
-      v_year: string,
+      v_second: this.state.v_second,
+      v_minute: this.state.v_minute,
+      v_hour: this.state.v_hour,
+      v_day: this.state.v_day,
+      v_month: this.state.v_month,
+      v_week: this.state.v_week,
     };
     switch (type) {
       case 'v_second':
@@ -544,7 +568,6 @@ class Cron extends Component<CronProps> {
           stateMap.v_day = '*';
           stateMap.v_month = '*';
           stateMap.v_week = '?';
-          stateMap.v_year = '*';
         }
         switch (this.state.secondValue) {
           case 1:
@@ -571,7 +594,6 @@ class Cron extends Component<CronProps> {
           stateMap.v_day = '*';
           stateMap.v_month = '*';
           stateMap.v_week = '?';
-          stateMap.v_year = '*';
         }
         switch (this.state.minuteValue) {
           case 1:
@@ -600,7 +622,6 @@ class Cron extends Component<CronProps> {
           stateMap.v_day = '*';
           stateMap.v_month = '*';
           stateMap.v_week = '?';
-          stateMap.v_year = '*';
         }
 
         switch (this.state.hourValue) {
@@ -632,7 +653,6 @@ class Cron extends Component<CronProps> {
         } else {
           stateMap.v_month = '*';
           stateMap.v_week = '?';
-          stateMap.v_year = '*';
         }
 
         switch (this.state.dayValue) {
@@ -675,7 +695,6 @@ class Cron extends Component<CronProps> {
           }
         } else {
           stateMap.v_week = '?';
-          stateMap.v_year = '*';
         }
 
         switch (this.state.monthValue) {
@@ -713,8 +732,6 @@ class Cron extends Component<CronProps> {
           if (this.state.v_month == '*') {
             stateMap.v_month = '0';
           }
-        } else {
-          stateMap.v_year = '*';
         }
 
         switch (this.state.weekValue) {
@@ -741,39 +758,6 @@ class Cron extends Component<CronProps> {
             break;
         }
         break;
-      case 'v_year':
-        if (this.state.yearValue != 1) {
-          if (this.state.v_second == '*') {
-            stateMap.v_second = '0';
-          }
-          if (this.state.v_minute == '*') {
-            stateMap.v_minute = '0';
-          }
-          if (this.state.v_hour == '*') {
-            stateMap.v_hour = '0';
-          }
-          if (this.state.v_day == '*') {
-            stateMap.v_day = '0';
-          }
-          if (this.state.v_month == '*') {
-            stateMap.v_month = '0';
-          }
-        } else {
-          stateMap.v_year = '*';
-        }
-
-        switch (this.state.weekValue) {
-          case 1:
-            data = ''
-            break;
-          case 2:
-            data = '*'
-            break;
-          case 3:
-            data = `${this.state.weekStart_0}-${this.state.weekEnd_0}`
-            break;
-        }
-        break;
     }
     stateMap[`${type}`] = data;
     this.setState(stateMap, () => {
@@ -782,10 +766,7 @@ class Cron extends Component<CronProps> {
   }
 
   resetCronTime = () => {
-    let cron = `${this.state.v_second} ${this.state.v_minute} ${this.state.v_hour} ${this.state.v_day} ${this.state.v_month} ${this.state.v_week}`;
-    if (this.state.v_year != '') {
-      cron += ` ${this.state.v_year}`;
-    }
+    const cron = `${this.state.v_second} ${this.state.v_minute} ${this.state.v_hour} ${this.state.v_day} ${this.state.v_month} ${this.state.v_week}`;
     this.setState({
       cron,
     });
@@ -798,21 +779,15 @@ class Cron extends Component<CronProps> {
       height: '40px',
       lineHeight: '30px',
     };
-
-
     return (
       <div>
-        <Button type="primary" onClick={this.showModal}>
-          Cron工具
-        </Button>
+        <Icon
+          type="thunderbolt"
+          onClick={this.showModal}/>
         <Modal
           title="Cron计算器"
           visible={this.state.visible}
-          footer={[
-            <Button key="back" onClick={this.handleCancel}>
-              关闭
-            </Button>,
-          ]}
+          onOk={this.ok}
           width="80%"
           onCancel={this.handleCancel}
         >
@@ -1215,21 +1190,6 @@ class Cron extends Component<CronProps> {
                     </Radio>
                   </Radio.Group>
                 </TabPane>
-                <TabPane tab="年" key="7">
-                  <Radio.Group onChange={this.onYearChange} value={this.state.yearValue}>
-                    <Radio style={radioStyle} value={1}>
-                      不指定 允许的通配符[, - * /] 非必填
-                    </Radio>
-                    <Radio style={radioStyle} value={2}>
-                      每年
-                    </Radio>
-                    <Radio style={radioStyle} value={3}>
-                      周期从<InputNumber value={this.state.yearStart_0}
-                                      onChange={this.onValueChange.bind(this, 'yearStart_0')}/>-<InputNumber
-                      value={this.state.yearEnd_0} onChange={this.onValueChange.bind(this, 'yearEnd_0')}/>
-                    </Radio>
-                  </Radio.Group>
-                </TabPane>
               </Tabs>
               <Divider>Cron表达式</Divider>
               <Row gutter={8}>
@@ -1240,7 +1200,6 @@ class Cron extends Component<CronProps> {
                 <Col span={3}>日</Col>
                 <Col span={3}>月</Col>
                 <Col span={3}>星期</Col>
-                <Col span={3}>年</Col>
               </Row>
               <Row gutter={8}>
                 <Col span={3}>表达式字段:</Col>
@@ -1250,7 +1209,6 @@ class Cron extends Component<CronProps> {
                 <Col span={3}>{this.state.v_day}</Col>
                 <Col span={3}>{this.state.v_month}</Col>
                 <Col span={3}>{this.state.v_week}</Col>
-                <Col span={3}>{this.state.v_year}</Col>
               </Row>
               <br/>
               <Row gutter={8}>
@@ -1265,7 +1223,7 @@ class Cron extends Component<CronProps> {
                   header={<div>最近5次运行时间:</div>}
                   footer={null}
                   bordered
-                  dataSource={this.state.fiveRecentTimedata}
+                  dataSource={this.props.fiveRecentTimedata}
                   renderItem={item => <List.Item>{item}</List.Item>}
                 />
               </Row>
@@ -1298,7 +1256,6 @@ class Cron extends Component<CronProps> {
           </Tabs>
         </Modal>
       </div>
-
     );
   }
 }
