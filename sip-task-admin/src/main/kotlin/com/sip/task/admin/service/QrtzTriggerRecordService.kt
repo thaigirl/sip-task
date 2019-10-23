@@ -122,7 +122,8 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
             }
         }
         if (ids.isNotEmpty()){
-            mapper.updateBySql("set endTime = ${now},status = ${BaseEnum.JobStatus.TIMEOUT.name} where id in (${ids})")
+            mapper.updateBySql("set end_time = ${now},status = '${BaseEnum.JobStatus.TIMEOUT.name}' where id in " +
+                    "(${ids.joinToString(",")})")
         }
     }
 

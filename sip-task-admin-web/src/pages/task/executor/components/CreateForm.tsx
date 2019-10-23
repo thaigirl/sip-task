@@ -36,7 +36,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
     form.setFieldsValue({
       addressMap: keys,
     });
-  }
+  };
   const remove = (k: string) => {
     const keys: Map<string, string> = form.getFieldValue('addressMap');
     if (keys.size === 1) {
@@ -74,7 +74,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       callback(); // 校验通过
     }
     callback('请输入符合规范的域名/IP'); // 校验未通过
-  }
+  };
 
   const addressMap = new Map();
   addressMap.set(uuid(), '');

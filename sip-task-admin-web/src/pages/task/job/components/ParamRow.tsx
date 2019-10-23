@@ -16,6 +16,17 @@ interface ParamProps extends FormComponentProps{
 
 const ParamRow: React.FC<ParamProps> = props => {
   const {form,unk,removeIndex,handleParamChange,param} = props;
+  const validFunction = (rule: any, value: string, callback: any) => {
+    if (form.getFieldValue("type")[1] == "DATE"){
+      console.log("ok");
+      const sRegex = '^(?:(?!0000)[0-9]{4}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:0[48]|[2468][048]|[13579][26])00)-02-29)$';
+      const re = new RegExp(sRegex, 'g');
+      if (re.test(value)) {
+        callback(); // 校验通过
+      }
+      callback('日期格式yyyy-mm-dd'); // 校验未通过
+    }
+  };
   return (
     <Row gutter={{md: 8, lg: 24, xl: 48}}>
       <Col md={7} sm={24}>
@@ -44,7 +55,7 @@ const ParamRow: React.FC<ParamProps> = props => {
         <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="value">
           {form.getFieldDecorator(`value[1]`, {
             initialValue: param.value,
-            rules: [{required: true, message: 'value不允许为空！', min: 1}],
+            rules: [{required: true, message: 'value不允许为空！', min: 1},{validator:validFunction}],
           })(<Input onBlur={(e)=>{handleParamChange(unk,e,'value')}} placeholder="value"/>)}
         </FormItem>
       </Col>

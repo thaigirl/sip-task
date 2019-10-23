@@ -8,5 +8,8 @@ class Config {
         var REPEAT_URLS: String? = null
         val LOG_THRESHOLD = 10
         val LOG_DOING = "LOG_DOING"
+
+        val INDEX_JOB_INFO = "INDEX_JOB_INFO"
     }
+
 }

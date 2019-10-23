@@ -290,7 +290,7 @@ class TableList extends Component<TableListProps, TableListState> {
       },
     });
     message.success('删除成功');
-  }
+  };
 
   renderSimpleForm() {
     const {form} = this.props;

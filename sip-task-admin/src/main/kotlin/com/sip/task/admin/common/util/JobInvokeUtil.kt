@@ -63,7 +63,7 @@ object JobInvokeUtil {
                 return jobInvokeResult
             } catch (e: Exception) {
                 log.info("http请求异常,重试下一个地址")
-                logInfo.append("响应码:").append("fail").append("<br/>")
+                logInfo.append("响应码:").append("999").append("<br/>")
                         .append("响应内容:").append(e.message).append("<br/>")
                 jobInvokeResult.status = "fail"
                 jobInvokeResult.msg = e.message

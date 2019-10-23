@@ -5,6 +5,7 @@ import com.sip.task.admin.common.exception.TaskException
 import com.sip.task.admin.model.po.QrtzTriggerJob
 import org.quartz.*
 import org.slf4j.LoggerFactory
+import java.util.*
 
 /**
  * 定时任务工具类
@@ -119,4 +120,21 @@ object ScheduleUtil {
     fun deleteScheduleJob(scheduler: Scheduler, jobId: Long?) {
         scheduler.deleteJob(getJobKey(jobId))
     }
+
+    fun addTimerJob(scheduler: Scheduler,clazz: Class<out Job>){
+        val cron = "0/15 * * * * ?"
+        val uid = UUID.randomUUID().toString()
+        // 构建job信息
+        val jobDetail = JobBuilder.newJob(clazz).withIdentity(JobKey.jobKey(uid)).build()
+        // 表达式调度构建器
+        var cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cron)
+        // 按新的cronExpression表达式构建一个新的trigger
+        val trigger = TriggerBuilder.newTrigger().withIdentity(TriggerKey.triggerKey(uid))
+                .withSchedule<CronTrigger>(cronScheduleBuilder).build()
+        scheduler.scheduleJob(jobDetail, trigger)
+    }
+
+
+
+
 }

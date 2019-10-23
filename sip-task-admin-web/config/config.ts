@@ -220,6 +220,11 @@ export default {
               name: 'task',
               routes: [
                 {
+                  name: 'index',
+                  path: '/task/index',
+                  component: './task/index',
+                },
+                {
                   name: 'executor',
                   path: '/task/executor',
                   component: './task/executor',

@@ -50,5 +50,6 @@ export default {
   'menu.task': '调度系统',
   'menu.task.executor': '执行器',
   'menu.task.job': "任务",
-  'menu.task.record': "执行记录"
+  'menu.task.record': "执行记录",
+  'menu.task.index': "首页"
 };

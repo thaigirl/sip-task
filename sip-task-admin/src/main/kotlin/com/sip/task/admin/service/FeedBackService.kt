@@ -81,7 +81,10 @@ class FeedBackService {
         redisTemplate.expire(Config.LOG_DOING, 30, TimeUnit.SECONDS)
         try {
             val size = redisTemplate.opsForList().size(Config.LOG_KEY) ?: return
-            if (size == 0L) return
+            if (size == 0L) {
+                print("empty data")
+                return
+            }
             //处理日志
             val range = redisTemplate.opsForList().range(Config.LOG_KEY, 0, size - 1)
             if (range.isNullOrEmpty()) return

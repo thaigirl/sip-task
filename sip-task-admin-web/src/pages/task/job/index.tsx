@@ -315,7 +315,6 @@ class TableList extends Component<TableListProps, TableListState> {
   };
 
   handleModalVisible = (flag?: boolean) => {
-    console.log("去潇洒");
     if (flag) {
       this.initExecutorData();
     } else {
