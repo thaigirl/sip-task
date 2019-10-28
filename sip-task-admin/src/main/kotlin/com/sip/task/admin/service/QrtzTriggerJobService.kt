@@ -134,7 +134,6 @@ class QrtzTriggerJobService : BaseService<QrtzTriggerJobMapper, QrtzTriggerJob>(
                     }) > 0) throw CustomException("有未执行完成的任务,不允许修改执行策略")
         }
         //TODO 校验最低运行间隔时间
-
         if (CollectionUtils.isEmpty(vo.param)) {
             paramMapper.deleteByExample(example<QrtzTriggerJobParam> {
                 andEqualTo { jobId = vo.id }

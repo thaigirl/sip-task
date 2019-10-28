@@ -72,7 +72,7 @@ class QrtzTriggerRecordService : BaseService<QrtzTriggerRecordMapper, QrtzTrigge
                     map["INVOKE"] = v[0].value!!
                 }
                 BaseEnum.LogType.EXECUTE.name -> {
-                    v.forEach { builder.append(it.value).append("</br>") }
+                    v.forEach { builder.append(it.value).append("<br>") }
                 }
             }
         }

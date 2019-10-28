@@ -38,7 +38,6 @@ dependencies {
 			"org.jetbrains.kotlin:kotlin-reflect",
 			"com.sip:sip-task-core:1.0.4-SNAPSHOT"
 	)
-	compile group: 'cn.afterturn',name:'easypoi-spring-boot-starter',version:'3.3.0'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 dependencyManagement {

@@ -60,6 +60,7 @@ object JobInvokeUtil {
                 if (jobInvokeResult.status == "fail") {
                     return@forEach
                 }
+                jobInvokeResult.log = logInfo.toString()
                 return jobInvokeResult
             } catch (e: Exception) {
                 log.info("http请求异常,重试下一个地址")

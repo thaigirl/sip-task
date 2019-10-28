@@ -111,7 +111,6 @@ const Model: ModelType = {
     },
     * reload({payload, callback},{put, select}) {
       const search = yield select(state => state.record.search);
-      console.log(search);
       yield put({type: 'fetch', payload: search});
     },
   },

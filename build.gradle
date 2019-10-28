@@ -79,7 +79,8 @@ project(":sip-task-admin") {
         compile("mysql:mysql-connector-java:5.1.45",
                 "com.basicfu.sip:sip-core:0.0.4-4-SNAPSHOT",
                 "org.quartz-scheduler:quartz:2.2.3",
-                "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+                "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client",
+        "org.springframework.cloud:spring-cloud-starter-netflix-hystrix")
 
     }
 }

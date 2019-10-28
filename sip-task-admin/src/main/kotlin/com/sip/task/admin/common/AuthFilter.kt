@@ -27,7 +27,8 @@ class AuthFilter {
 
     private val objectMapper = ObjectMapper()
     //不需要鉴权的监控
-    private val SKIP_URLS = listOf("/user/login", "/user/logout", "/user/register")
+    private val SKIP_URLS = listOf("/user/login", "/user/logout", "/user/register","/feedback/record/status",
+            "/feedback/logger/insert")
 
     @Bean
     fun registFilter(): FilterRegistrationBean<Filter> {

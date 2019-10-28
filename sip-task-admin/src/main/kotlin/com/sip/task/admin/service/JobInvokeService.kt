@@ -85,9 +85,9 @@ class JobInvokeService{
         if (result.status == "fail"){
             record.status = BaseEnum.JobStatus.FAILED.name
             record.endTime = System.currentTimeMillis()
-            recordMapper.updateByPrimaryKeySelective(record)
             //TODO 这里是否需要去调度下一个job?
         }
+        recordMapper.updateByPrimaryKeySelective(record)
         recordLogMapper.insertSelective(generate {
             recordId = record.id
             type = BaseEnum.LogType.INVOKE.name

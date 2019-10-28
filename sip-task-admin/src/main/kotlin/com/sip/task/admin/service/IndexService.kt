@@ -74,7 +74,7 @@ class IndexService {
     }
 
 
-    fun triggerInfo(startTime: Long?, endTime: Long?):Any {
+    fun triggerInfo(startTime: Long?, endTime: Long?): Any {
         val now = Date()
         val start = startTime ?: addDays(now, -7)
         val end = endTime ?: now.time
@@ -86,11 +86,13 @@ class IndexService {
         })
         val groupBy = list.groupBy { timeStampToString(it.startTime!!) }
         val dtos = mutableListOf<LineChartDto>()
-        groupBy.forEach { (k, v) ->
+        for (i in 6 downTo 0) {
+            val diff = timeStampToString(addDays(now, -i))
             dtos.add(generate {
-                month=k
-                acc=v.size
+                month = diff
+                acc = groupBy[diff]?.size ?: 0
             })
+
         }
         return dtos
     }
@@ -109,3 +111,4 @@ class IndexService {
     }
 
 }
+

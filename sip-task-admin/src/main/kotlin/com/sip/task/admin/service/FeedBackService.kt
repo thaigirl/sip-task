@@ -43,7 +43,11 @@ class FeedBackService {
                 ?: throw CustomException("record not found with id:${vo.recordId}")
         exist.status = vo.status
         recordMapper.updateByPrimaryKeySelective(exist)
-        if (vo.status == BaseEnum.JobStatus.RUNNING.name) return
+        if (vo.status == BaseEnum.JobStatus.RUNNING.name) {
+            exist.endTime = System.currentTimeMillis()
+            recordMapper.updateByPrimaryKeySelective(exist)
+            return
+        }
         //如果状态不等于RUNNING(等于SUCCESS或者FAILED),则本次任务结束,需要根据任务的执行策略进一步判断
         if (exist.strategy == BaseEnum.Strategy.BLOCKING.name) {
             val waitList = recordMapper.selectByExample(example<QrtzTriggerRecord> {

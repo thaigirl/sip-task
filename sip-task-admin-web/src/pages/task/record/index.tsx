@@ -112,7 +112,7 @@ class TableList extends Component<TableListProps, TableListState> {
             value = "运行中";
             break;
           case "SUCCESS":
-            value = "执行成功";
+            value = <p style={{color: "green", margin: "auto"}}>执行成功</p>;
             break;
           case "FAILED":
             value = <p style={{color: "red", margin: "auto"}}>执行失败</p>;
@@ -138,7 +138,7 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'startTime',
       align:"center",
       sorter: true,
-      render: (val: string) => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: (val: string) => <span>{val ? moment(val).format('YYYY-MM-DD HH:mm:ss') : ""}</span>,
     },
     {
       title: '结束时间',

@@ -212,7 +212,7 @@ class UpdateForm extends Component<UpdateFormProps, UpdateFormState> {
             <FormItem labelCol={{span: 7}} wrapperCol={{span: 15}} label="描述">
               {form.getFieldDecorator('desc', {
                 initialValue: formVals.desc,
-                rules: [{required: true, message: '请输入至少五个字符！', min: 5}],
+                rules: [{required: false}],
               })(<TextArea placeholder="请输入"/>)}
             </FormItem>
           </Col>

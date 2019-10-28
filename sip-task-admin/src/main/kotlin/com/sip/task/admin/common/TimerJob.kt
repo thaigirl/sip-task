@@ -15,17 +15,10 @@ class TimerJob: CommandLineRunner {
     lateinit var scheduler: Scheduler
 
     override fun run(vararg args: String?) {
-        var jobKeys = scheduler.getJobKeys(GroupMatcher.anyGroup()).toMutableList()
-        val iterator = jobKeys.iterator()
-        while (iterator.hasNext()){
-            val next = iterator.next()
-            if (next.name.contains("TASK_CLASS_NAME")){
-                iterator.remove()
-            }
-        }
+        var jobKeys = scheduler.getJobKeys(GroupMatcher.anyGroup()).toMutableList().filter { !it.name.contains("TASK_CLASS_NAME") }
         scheduler.deleteJobs(jobKeys)
-//        ScheduleUtil.addTimerJob(scheduler, JobTimeOutExution::class.java)
-//        ScheduleUtil.addTimerJob(scheduler, LogExecution::class.java)
+        ScheduleUtil.addTimerJob(scheduler, JobTimeOutExution::class.java)
+        ScheduleUtil.addTimerJob(scheduler, LogExecution::class.java)
     }
 
 }

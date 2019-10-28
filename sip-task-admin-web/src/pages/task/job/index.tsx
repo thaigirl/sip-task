@@ -100,6 +100,10 @@ class TableList extends Component<TableListProps, TableListState> {
       dataIndex: 'executorName',
     },
     {
+      title: 'CODE',
+      dataIndex: 'code',
+    },
+    {
       title: 'cron表达式',
       dataIndex: 'cron',
     },

@@ -21,52 +21,56 @@ object ParamUtils {
     fun formateValue(paramType: Class<*>, value: Any?): Any? {
         if (value == null) return null
         val sdf = SimpleDateFormat(DATE_FORMATER)
-        return when (paramType) {
-            value::class.java -> value
-            Date::class.java -> try {
-                sdf.parse(value.toString())
-            } catch (var1: ParseException) {
-                throw RuntimeException(var1.message)
+        try {
+            return when (paramType) {
+                value::class.java -> value
+                Date::class.java -> try {
+                    sdf.parse(value.toString())
+                } catch (var1: ParseException) {
+                    throw RuntimeException(var1.message)
+                }
+                LocalDate::class.java -> try {
+                    LocalDate.parse(value.toString(), DateTimeFormatter.ofPattern(DATE_FORMATER))
+                } catch (var2: DateTimeParseException) {
+                    throw RuntimeException(var2.message)
+                }
+                LocalDateTime::class.java -> try {
+                    LocalDateTime.parse(value.toString(), DateTimeFormatter.ofPattern(DATE_FORMATER))
+                } catch (var3: DateTimeParseException) {
+                    throw RuntimeException(var3.message)
+                }
+                String::class.java -> value.toString()
+                Long::class.java  -> try {
+                    value.toString().toLong()
+                } catch (var4: Exception) {
+                    throw RuntimeException(var4.message)
+                }
+                Double::class.java  -> try {
+                    value.toString().toDouble()
+                } catch (var5: Exception) {
+                    throw RuntimeException(var5.message)
+                }
+                Float::class.java  -> try {
+                    value.toString().toFloat()
+                } catch (var6: Exception) {
+                    throw RuntimeException(var6.message)
+                }
+                Short::class.java  -> try {
+                    value.toString().toShort()
+                } catch (var7: Exception) {
+                    throw RuntimeException(var7.message)
+                }
+                Int::class.java  -> try {
+                    value.toString().toInt()
+                } catch (var8: Exception) {
+                    throw RuntimeException(var8.message)
+                }
+                else -> {
+                    throw RuntimeException("can not format with type:$paramType")
+                }
             }
-            LocalDate::class.java -> try {
-                LocalDate.parse(value.toString(), DateTimeFormatter.ofPattern(DATE_FORMATER))
-            } catch (var2: DateTimeParseException) {
-                throw RuntimeException(var2.message)
-            }
-            LocalDateTime::class.java -> try {
-                LocalDateTime.parse(value.toString(), DateTimeFormatter.ofPattern(DATE_FORMATER))
-            } catch (var3: DateTimeParseException) {
-                throw RuntimeException(var3.message)
-            }
-            String::class.java -> value.toString()
-            Long::class.java  -> try {
-                value.toString().toLong()
-            } catch (var4: Exception) {
-                throw RuntimeException(var4.message)
-            }
-            Double::class.java  -> try {
-                value.toString().toDouble()
-            } catch (var5: Exception) {
-                throw RuntimeException(var5.message)
-            }
-            Float::class.java  -> try {
-                value.toString().toFloat()
-            } catch (var6: Exception) {
-                throw RuntimeException(var6.message)
-            }
-            Short::class.java  -> try {
-                value.toString().toShort()
-            } catch (var7: Exception) {
-                throw RuntimeException(var7.message)
-            }
-            Int::class.java  -> try {
-                value.toString().toInt()
-            } catch (var8: Exception) {
-                throw RuntimeException(var8.message)
-            }
-            else -> {
-                throw RuntimeException("can not format with type:$paramType")
-            }
+        }catch (e: Exception){
+            throw RuntimeException("format error with type:$paramType, value:$value")
         }
     }
 
