@@ -107,29 +107,23 @@ class TableList extends Component<TableListProps, State> {
 
     return (
       <div>
-        <Row gutter={{md: 8, lg: 24, xl: 48}}>
-          <Col span={5}>
-            <Card title="执行器信息" extra={<a href="#">More</a>} style={{width: '100%'}}>
-              <p>Card content</p>
-              <p>Card content</p>
-            </Card>
-          </Col>
-          <Col span={5}>
-            <Card title="调度任务数:20" extra={<a href="#">More</a>} style={{width: '100%'}}>
-              <p>已启用:2</p>
-              <p>未启用:5</p>
-            </Card>
-          </Col>
-        </Row>
         <Row>
-          <Col span={24}>
-            <div style={{height: 24}}></div>
+          <Col span={12} style={{height: 506}}>
+            <Col span={24}>
+              <Card title="执行器信息" extra={<a href="#">More</a>} style={{width: '100%', height: 253}}>
+                <p>Card content</p>
+                <p>Card content</p>
+              </Card>
+            </Col>
+            <Col span={24}>
+              <Card title="调度任务数:20" extra={<a href="#">More</a>} style={{width: '100%', height: 253}}>
+                <p>已启用:2</p>
+                <p>未启用:5</p>
+              </Card>
+            </Col>
           </Col>
-        </Row>
-        <Row gutter={{md: 8, lg: 24, xl: 48}}>
           <Col span={12}>
-            <Card title={`调度次数:${triggerInfo.recordInfo.totalCount}`} extra={<a href="#">More</a>}
-                  style={{width: '100%'}}>
+            <Card title={`调度次数:${triggerInfo.recordInfo.totalCount}`} style={{width: '100%'}}>
               <div>
                 <Chart
                   height={400}
@@ -185,9 +179,11 @@ class TableList extends Component<TableListProps, State> {
               </div>
             </Card>
           </Col>
-          <Col span={12}>
-            <Card title={`调度次数:${triggerInfo.recordInfo.totalCount}`} extra={<a href="#">More</a>}
-                  style={{width: '100%'}}>
+
+        </Row>
+        <Row>
+          <Col span={24}>
+            <Card title={`调度次数:${triggerInfo.recordInfo.totalCount}`} style={{width: '100%'}}>
               <div>
                 <Chart data={triggerData} scale={triggerCols} forceFit height={400}>
                   <Axis
@@ -212,89 +208,6 @@ class TableList extends Component<TableListProps, State> {
                 </Chart>
               </div>
             </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={{md: 8, lg: 24, xl: 48}}>
-          <Col span={12}>
-            <div>
-              <Chart
-                height={400}
-                data={dv}
-                scale={cols}
-                padding={[20, 200, 20, 20]}
-                forceFit
-              >
-                <Coord type="theta" radius={0.75} innerRadius={0.6}/>
-                <Axis name="percent"/>
-                <Legend
-                  position="right"
-                  offsetY={-250}
-                  offsetX={10}
-                />
-                <Tooltip
-                  showTitle={false}
-                  itemTpl="<li><span style=&quot;background-color:{color};&quot; class=&quot;g2-tooltip-marker&quot;></span>{name}: {value}</li>"
-                />
-                <Guide>
-                  <Html
-                    position={["50%", "50%"]}
-                    html={`<div style="color:#8c8c8c;font-size:1.16em;text-align: center;width: 10em;">调度次数<br><span style="color:#262626;font-size:2.5em"></span>${triggerInfo.recordInfo.totalCount}次</div>`}
-                    alignX="middle"
-                    alignY="middle"
-                  />
-                </Guide>
-                <Geom
-                  type="intervalStack"
-                  position="percent"
-                  color="item"
-                  tooltip={[
-                    "item*percent",
-                    (item, percent) => {
-                      percent = `${percent * 100}%`;
-                      return {
-                        name: item,
-                        value: percent
-                      };
-                    }
-                  ]}
-                  style={{
-                    lineWidth: 1,
-                    stroke: "#fff"
-                  }}
-                >
-                  <Label
-                    content="percent"
-                    formatter={(val, item) => `${item.point.item}: ${val}`}
-                  />
-                </Geom>
-              </Chart>
-            </div>
-          </Col>
-          <Col span={12}>
-            <div>
-              <Chart data={triggerData} scale={triggerCols} forceFit height={400}>
-                <Axis
-                  name="month"
-                />
-                <Axis
-                  name="acc"
-                />
-                <Tooltip/>
-                <Geom
-                  type="line"
-                  position="month*acc"
-                  size={1}
-                  color="l (270) 0:rgba(255, 146, 255, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)"
-                  shape="smooth"
-                  style={{
-                    shadowColor: "l (270) 0:rgba(21, 146, 255, 0)",
-                    shadowBlur: 60,
-                    shadowOffsetY: 6
-                  }}
-                />
-              </Chart>
-            </div>
           </Col>
         </Row>
       </div>
