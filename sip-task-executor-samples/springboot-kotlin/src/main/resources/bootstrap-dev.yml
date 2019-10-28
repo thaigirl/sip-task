@@ -5,7 +5,7 @@ eureka:
     #刷新本地缓存时间
     registryFetchIntervalSeconds: 3
     serviceUrl:
-      defaultZone: http://${ENV_EUREKA_HOST:localhost}:${ENV_EUREKA_PORT:7000}/eureka/
+      defaultZone: http://${ENV_EUREKA_HOST:localhost}:${ENV_EUREKA_PORT:10000}/eureka/
   instance:
     #没有接收心跳剔除间隔为10s，需要eureka.server.eviction-interval-timer-in-ms否则无效
     lease-expiration-duration-in-seconds: 10

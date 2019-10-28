@@ -5,7 +5,7 @@ eureka:
     #刷新本地缓存时间
     registryFetchIntervalSeconds: 3
     serviceUrl:
-      defaultZone: http://${ENV_EUREKA_HOST:localhost}:${ENV_EUREKA_PORT:7000}/eureka/
+      defaultZone: http://${ENV_EUREKA_HOST:localhost}:${ENV_EUREKA_PORT:10000}/eureka/
   instance:
     #没有接收心跳剔除间隔为10s，需要eureka.server.eviction-interval-timer-in-ms否则无效
     lease-expiration-duration-in-seconds: 10
@@ -36,11 +36,10 @@ spring:
     host: ${ENV_REDIS_HOST:redis-dev.dmka.cn}
     port: ${ENV_REDIS_PORT:4379}
     password: ${ENV_REDIS_PASSWORD:root}
-    pool:
-      max-idle: 8
-      min-idle: 0
-      max-active: 8
-      max-wait: -1
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
 repeat:
   urls: /reptileQuestion/synQuestion
 
